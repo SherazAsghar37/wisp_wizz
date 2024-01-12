@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:wisp_wizz/core/app_enums.dart';
+import 'package:wisp_wizz/core/utils/app_enums.dart';
 
 class User extends Equatable {
   final String name;
@@ -80,15 +80,15 @@ class User extends Equatable {
   static CountryCodes _decodeCountryCode(String code) {
     switch (code) {
       case "+92":
-        return CountryCodes.PK;
+        return CountryCodes.pk;
       default:
-        return CountryCodes.PK;
+        return CountryCodes.pk;
     }
   }
 
   static String _encodeCountryCode(CountryCodes code) {
     switch (code) {
-      case CountryCodes.PK:
+      case CountryCodes.pk:
         return "+92";
       default:
         return "+92";
