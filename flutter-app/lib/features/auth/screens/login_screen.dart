@@ -2,7 +2,7 @@ import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wisp_wizz/core/utils/dimensions.dart';
-import 'package:wisp_wizz/features/auth/controllers/auth_controller.dart';
+import 'package:wisp_wizz/controller/auth_controller.dart';
 import 'package:wisp_wizz/features/auth/screens/verification_screen.dart';
 import 'package:wisp_wizz/features/auth/widgets/input_field.dart';
 import 'package:wisp_wizz/features/auth/widgets/number_pad.dart';

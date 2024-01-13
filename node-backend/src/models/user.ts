@@ -5,15 +5,18 @@ const userSchema = new Schema(
     phoneNumber: {
       type: Number,
       required: true,
+      trim: true,
       unique: true,
     },
     countryCode: {
       type: String,
       enum: ["+92"],
       default: "+92",
+      trim: true,
     },
     name: {
       type: String,
+      trim: true,
     },
     status: {
       type: Boolean,

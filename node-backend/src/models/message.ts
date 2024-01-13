@@ -7,14 +7,16 @@ const messageSchema = new Schema(
       required: true,
       ref: "user",
     },
-    receiverId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "user",
-    },
+
     content: {
       type: String,
       required: true,
+      trim: true,
+    },
+    chat: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "chat",
     },
   },
   { timestamps: true }

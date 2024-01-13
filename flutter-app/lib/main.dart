@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wisp_wizz/controller/main_controller.dart';
 import 'package:wisp_wizz/core/utils/dimensions.dart';
-import 'package:wisp_wizz/features/auth/controllers/auth_controller.dart';
+import 'package:wisp_wizz/controller/auth_controller.dart';
 import 'package:wisp_wizz/features/auth/screens/login_screen.dart';
 import 'package:wisp_wizz/router.dart';
 
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     Dimensions.screenHeight = MediaQuery.of(context).size.height;
     Dimensions.screenWidth = MediaQuery.of(context).size.width;
     return MaterialApp(
-      title: 'Bicycle Shop',
+      title: 'Wip Wiz',
       onGenerateRoute: (settings) => routesGenerator(settings),
       theme: context.watch<MainController>().themeData,
       home: const LoginScreen(),

@@ -55,17 +55,16 @@ class User extends Equatable {
     };
   }
 
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
-      name: map['name'] as String,
-      phoneNumber: map['phoneNumber'] as int,
-      countryCode: _decodeCountryCode(map['countryCode']),
-      id: map['id'] as String,
-      status: map['status'] as bool,
-      lastSeen: DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] as int),
-      profileUrl: map['profileUrl'] as String,
-    );
-  }
+  User.fromMap(Map<String, dynamic> map)
+      : this(
+          name: map['name'] as String,
+          phoneNumber: map['phoneNumber'] as int,
+          countryCode: _decodeCountryCode(map['countryCode']),
+          id: map['id'] as String,
+          status: map['status'] as bool,
+          lastSeen: DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] as int),
+          profileUrl: map['profileUrl'] as String,
+        );
 
   String toJson() => json.encode(toMap());
 

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:wisp_wizz/core/utils/app_constants.dart';
 import 'package:wisp_wizz/core/utils/app_icons.dart';
 import 'package:wisp_wizz/core/utils/dimensions.dart';
-import 'package:wisp_wizz/features/auth/controllers/auth_controller.dart';
+import 'package:wisp_wizz/controller/auth_controller.dart';
 import 'package:wisp_wizz/features/auth/widgets/digit_input_field.dart';
 import 'package:wisp_wizz/features/auth/widgets/number_pad.dart';
 import 'package:wisp_wizz/shared/widgets/primary_button.dart';
