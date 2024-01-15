@@ -7,8 +7,8 @@ import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 import 'package:wisp_wizz/controller/auth_controller.dart';
 import 'package:wisp_wizz/features/auth/presentation/widgets/digit_input_field.dart';
 import 'package:wisp_wizz/features/auth/presentation/widgets/number_pad.dart';
-import 'package:wisp_wizz/shared/widgets/primary_button.dart';
-import 'package:wisp_wizz/shared/widgets/primary_icon.dart';
+import 'package:wisp_wizz/features/app/shared/widgets/primary_button.dart';
+import 'package:wisp_wizz/features/app/shared/widgets/primary_icon.dart';
 
 class VerificationScreen extends StatelessWidget {
   static const String routeName = verificationScreen;

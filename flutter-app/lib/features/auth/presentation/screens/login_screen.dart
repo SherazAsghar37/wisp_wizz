@@ -1,13 +1,18 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wisp_wizz/features/app/constants/app_constants.dart';
+import 'package:wisp_wizz/features/app/constants/icons_constants.dart';
 import 'package:wisp_wizz/features/app/constants/screen_constants.dart';
+import 'package:wisp_wizz/features/app/theme/colors.dart';
+import 'package:wisp_wizz/features/app/theme/theme.dart';
 import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 import 'package:wisp_wizz/controller/auth_controller.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/verification_screen.dart';
 import 'package:wisp_wizz/features/auth/presentation/widgets/input_field.dart';
 import 'package:wisp_wizz/features/auth/presentation/widgets/number_pad.dart';
-import 'package:wisp_wizz/shared/widgets/primary_button.dart';
+import 'package:wisp_wizz/features/app/shared/widgets/primary_button.dart';
+import 'package:country_picker/country_picker.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = loginScreen;
@@ -18,8 +23,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  double scaleFactor = 1;
-  bool isVisible = true;
+  // double scaleFactor = 1;
+  // bool isVisible = true;
+  String countryCode = dCountryCode;
+  String flagCode = dFlagCode;
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -47,33 +54,55 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: Dimensions.height45,
                   child: Row(
                     children: [
-                      Container(
-                        height: Dimensions.height50,
-                        width: Dimensions.width80,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: Dimensions.width10),
-                        decoration: BoxDecoration(
-                            color: colorScheme.primary.withOpacity(0.2),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(Dimensions.height10),
-                                bottomLeft:
-                                    Radius.circular(Dimensions.height10))),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              height: Dimensions.height20,
-                              width: Dimensions.width20,
-                              child: Flag.fromCode(FlagsCode.PK,
-                                  flagSize: FlagSize.size_4x3),
-                            ),
-                            Text(
-                              "+92",
-                              style: theme.textTheme.bodyMedium!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            )
-                          ],
+                      MaterialButton(
+                        padding: const EdgeInsets.all(0),
+                        onPressed: () => showCountryPicker(
+                            context: context,
+                            countryListTheme: countryListThemeData(theme),
+                            onSelect: (Country country) {
+                              setState(() {
+                                flagCode = country.countryCode;
+                                RegExpMatch? match = contryCodeRegex
+                                    .firstMatch(country.displayName);
+                                countryCode = match != null
+                                    ? match.group(1)!
+                                    : dCountryCode;
+                              });
+                            }),
+                        child: Container(
+                          height: Dimensions.height50,
+                          width: Dimensions.width105,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: Dimensions.width10),
+                          decoration: BoxDecoration(
+                              color: colorScheme.primary.withOpacity(0.2),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(Dimensions.height10),
+                                  bottomLeft:
+                                      Radius.circular(Dimensions.height10))),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                height: Dimensions.height20,
+                                width: Dimensions.width20,
+                                child: Flag.fromString(flagCode),
+                              ),
+                              SizedBox(
+                                width: Dimensions.width2,
+                              ),
+                              Text(
+                                countryCode,
+                                style: theme.textTheme.bodyMedium!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const Icon(
+                                dropDownIcon,
+                                color: blackColor,
+                              )
+                            ],
+                          ),
                         ),
                       ),
                       Container(

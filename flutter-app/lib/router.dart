@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/verification_screen.dart';
-import 'package:wisp_wizz/shared/widgets/slide_page_transition.dart';
+import 'package:wisp_wizz/features/app/shared/widgets/slide_page_transition.dart';
 
 Route<dynamic> routesGenerator(RouteSettings routeSettings) {
   switch (routeSettings.name) {
