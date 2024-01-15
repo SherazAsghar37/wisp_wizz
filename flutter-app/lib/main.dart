@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wisp_wizz/controller/main_controller.dart';
-import 'package:wisp_wizz/core/utils/dimensions.dart';
 import 'package:wisp_wizz/controller/auth_controller.dart';
-import 'package:wisp_wizz/features/auth/screens/login_screen.dart';
+import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/router.dart';
 
 void main() {

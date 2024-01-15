@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/core/utils/app_constants.dart';
+import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 
 class AuthController extends ChangeNotifier {
   final TextEditingController _numberController = TextEditingController();

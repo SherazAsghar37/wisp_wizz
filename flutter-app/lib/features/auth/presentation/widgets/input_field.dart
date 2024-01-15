@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/core/utils/dimensions.dart';
+import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 
 class InputField extends StatelessWidget {
   final TextEditingController controller;

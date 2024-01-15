@@ -1,15 +1,16 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wisp_wizz/core/utils/dimensions.dart';
+import 'package:wisp_wizz/features/app/constants/screen_constants.dart';
+import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 import 'package:wisp_wizz/controller/auth_controller.dart';
-import 'package:wisp_wizz/features/auth/screens/verification_screen.dart';
-import 'package:wisp_wizz/features/auth/widgets/input_field.dart';
-import 'package:wisp_wizz/features/auth/widgets/number_pad.dart';
+import 'package:wisp_wizz/features/auth/presentation/screens/verification_screen.dart';
+import 'package:wisp_wizz/features/auth/presentation/widgets/input_field.dart';
+import 'package:wisp_wizz/features/auth/presentation/widgets/number_pad.dart';
 import 'package:wisp_wizz/shared/widgets/primary_button.dart';
 
 class LoginScreen extends StatefulWidget {
-  static const String routeName = "/login-screen";
+  static const String routeName = loginScreen;
   const LoginScreen({super.key});
 
   @override

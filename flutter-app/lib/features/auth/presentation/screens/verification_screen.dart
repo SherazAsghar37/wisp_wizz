@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wisp_wizz/core/utils/app_constants.dart';
-import 'package:wisp_wizz/core/utils/app_icons.dart';
-import 'package:wisp_wizz/core/utils/dimensions.dart';
+import 'package:wisp_wizz/features/app/constants/app_constants.dart';
+import 'package:wisp_wizz/features/app/constants/icons_constants.dart';
+import 'package:wisp_wizz/features/app/constants/screen_constants.dart';
+import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 import 'package:wisp_wizz/controller/auth_controller.dart';
-import 'package:wisp_wizz/features/auth/widgets/digit_input_field.dart';
-import 'package:wisp_wizz/features/auth/widgets/number_pad.dart';
+import 'package:wisp_wizz/features/auth/presentation/widgets/digit_input_field.dart';
+import 'package:wisp_wizz/features/auth/presentation/widgets/number_pad.dart';
 import 'package:wisp_wizz/shared/widgets/primary_button.dart';
 import 'package:wisp_wizz/shared/widgets/primary_icon.dart';
 
 class VerificationScreen extends StatelessWidget {
-  static const String routeName = "/verification-screen";
+  static const String routeName = verificationScreen;
   const VerificationScreen({super.key});
 
   @override

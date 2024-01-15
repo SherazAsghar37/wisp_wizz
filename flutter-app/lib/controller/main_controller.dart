@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/core/theme/theme.dart';
+import 'package:wisp_wizz/features/app/theme/theme.dart';
 
 class MainController extends ChangeNotifier {
   ThemeData _themeData = lightTheme;
