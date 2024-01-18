@@ -10,7 +10,7 @@ Route<dynamic> routesGenerator(RouteSettings routeSettings) {
         builder: (context) => const LoginScreen(),
       );
     case VerificationScreen.routeName:
-      return SlidePageRoute(widget: const VerificationScreen());
+      return SlidePageRoute(widget: VerificationScreen());
     default:
       return MaterialPageRoute(
         builder: (context) => const Scaffold(

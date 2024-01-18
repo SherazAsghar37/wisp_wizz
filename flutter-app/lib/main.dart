@@ -1,21 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:wisp_wizz/controller/main_controller.dart';
 import 'package:wisp_wizz/controller/auth_controller.dart';
 import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(
-      create: (context) => MainController(),
-    ),
-    ChangeNotifierProvider(
-      create: (context) => AuthController(),
-    )
-  ], child: const MyApp()));
+  runApp(MultiBlocProvider(
+          providers: [
+        BlocProvider(
+          create: (context) => PhoneNumberBloc(),
+        ),
+        BlocProvider(
+          create: (context) => OtpBloc(),
+        ),
+      ],
+          child: MultiProvider(providers: [
+            ChangeNotifierProvider(
+              create: (context) => MainController(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => AuthController(),
+            ),
+          ], child: const MyApp()))
+      // (providers: [
+      //   ChangeNotifierProvider(
+      //     create: (context) => MainController(),
+      //   ),
+      //   ChangeNotifierProvider(
+      //     create: (context) => AuthController(),
+      //   )
+      // ], child: const MyApp())
+      );
 }
 
 class MyApp extends StatelessWidget {

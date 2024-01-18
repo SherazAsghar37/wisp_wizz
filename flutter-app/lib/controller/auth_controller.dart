@@ -34,10 +34,11 @@ class AuthController extends ChangeNotifier {
       _codeInputFocus--;
     }
     notifyListeners();
-  }
 
-  void clearAll(TextEditingController controller) {
-    controller.clear();
-    notifyListeners();
+    
   }
+  void clearAll(TextEditingController controller) {
+      controller.clear();
+      notifyListeners();
+    }
 }

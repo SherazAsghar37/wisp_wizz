@@ -4,11 +4,9 @@ import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/secondary_button.dart';
 
 class NumberPad extends StatelessWidget {
-  final TextEditingController controller;
   final Function(int num) onPressed;
   const NumberPad({
     super.key,
-    required this.controller,
     required this.onPressed,
   });
 

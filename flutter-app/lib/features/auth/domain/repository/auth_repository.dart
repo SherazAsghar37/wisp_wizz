@@ -1,10 +1,13 @@
-import 'package:wisp_wizz/features/app/utils/app_enums.dart';
-import 'package:wisp_wizz/models/user.dart';
+import 'dart:io';
+
+import 'package:wisp_wizz/features/app/utils/typedef.dart';
 
 abstract class IAuthRepository {
-  Future<void> sendCode(
-      {required int phoneNumber, required CountryCodes countryCode});
-  Future<void> verify(
-      {required int phoneNumber, required int verificationCode});
-  Future<void> loginUser(User user);
+  FutureVoid sendCode({required int phoneNumber, required String countryCode});
+  FutureVoid verifyOTP({required int phoneNumber, required int otp});
+  FutureVoid loginUser(
+      {required String name,
+      required int phoneNumber,
+      required String countryCode,
+      File? image});
 }

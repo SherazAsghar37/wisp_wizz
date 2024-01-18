@@ -1,23 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:wisp_wizz/features/app/constants/app_constants.dart';
-import 'package:wisp_wizz/features/app/constants/icons_constants.dart';
-import 'package:wisp_wizz/features/app/constants/screen_constants.dart';
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
-import 'package:wisp_wizz/controller/auth_controller.dart';
-import 'package:wisp_wizz/features/auth/presentation/widgets/digit_input_field.dart';
-import 'package:wisp_wizz/features/auth/presentation/widgets/number_pad.dart';
-import 'package:wisp_wizz/features/app/shared/widgets/primary_button.dart';
-import 'package:wisp_wizz/features/app/shared/widgets/primary_icon.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart'
+    as phone_number_bloc;
+import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
 
 class VerificationScreen extends StatelessWidget {
   static const String routeName = verificationScreen;
   const VerificationScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final authController = Provider.of<AuthController>(context);
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -46,7 +37,7 @@ class VerificationScreen extends StatelessWidget {
                   height: Dimensions.height5,
                 ),
                 Text(
-                  "sent to +92${authController.numberController.text}",
+                  "sent to +92${context.read<phone_number_bloc.PhoneNumberBloc>().state.textEditingController.text}",
                   textAlign: TextAlign.center,
                   style: TextStyle(color: colorScheme.primary),
                 ),
@@ -57,14 +48,16 @@ class VerificationScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(
                     verificationCodeLength,
-                    (index) => DigitInputField(
-                      focusIndex: authController.codeInputFocus,
-                      index: index,
-                      text:
-                          authController.codeController.text.length >= index + 1
-                              ? authController.codeController.text
-                                  .substring(index, index + 1)
+                    (index) => BlocBuilder<OtpBloc, OtpState>(
+                      builder: (context, state) {
+                        return DigitInputField(
+                          focusIndex: state.focusFieldNumber,
+                          index: index,
+                          text: state.otp.length >= index + 1
+                              ? state.otp.substring(index, index + 1)
                               : "_",
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -99,16 +92,16 @@ class VerificationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: Dimensions.height20),
                 NumberPad(
-                  controller: authController.codeController,
                   onPressed: (int num) {
-                    if (num >= 0 &&
-                        authController.codeController.text.length <= 5) {
-                      authController.insertNumber(
-                          authController.codeController, num.toString(),
-                          inputfocus: authController.codeInputFocus);
+                    final otpBloc = BlocProvider.of<OtpBloc>(context);
+                    if (num >= 0) {
+                      otpBloc.add(InsertEvent(
+                        value: num,
+                      ));
                     } else if (num == -1) {
-                      authController.backSpace(authController.codeController,
-                          inputfocus: authController.codeInputFocus);
+                      otpBloc.add(const BackspaceEvent());
+                    } else if (num == -2) {
+                      otpBloc.add(const ClearEvent());
                     }
                   },
                 ),

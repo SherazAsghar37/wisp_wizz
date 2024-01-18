@@ -1,18 +1,5 @@
-import 'package:flag/flag.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:wisp_wizz/features/app/constants/app_constants.dart';
-import 'package:wisp_wizz/features/app/constants/icons_constants.dart';
-import 'package:wisp_wizz/features/app/constants/screen_constants.dart';
-import 'package:wisp_wizz/features/app/theme/colors.dart';
-import 'package:wisp_wizz/features/app/theme/theme.dart';
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
-import 'package:wisp_wizz/controller/auth_controller.dart';
-import 'package:wisp_wizz/features/auth/presentation/screens/verification_screen.dart';
-import 'package:wisp_wizz/features/auth/presentation/widgets/input_field.dart';
-import 'package:wisp_wizz/features/auth/presentation/widgets/number_pad.dart';
-import 'package:wisp_wizz/features/app/shared/widgets/primary_button.dart';
-import 'package:country_picker/country_picker.dart';
+import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = loginScreen;
@@ -22,16 +9,17 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+String countryCode = dCountryCode;
+String flagCode = dFlagCode;
+
 class _LoginScreenState extends State<LoginScreen> {
   // double scaleFactor = 1;
   // bool isVisible = true;
-  String countryCode = dCountryCode;
-  String flagCode = dFlagCode;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
-    final authController = Provider.of<AuthController>(context);
     return Scaffold(
       backgroundColor: colorScheme.background,
       extendBodyBehindAppBar: true,
@@ -109,11 +97,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: Dimensions.width1,
                         color: colorScheme.background,
                       ),
-                      Expanded(
-                        child: InputField(
-                            controller: context
-                                .watch<AuthController>()
-                                .numberController),
+                      BlocBuilder<PhoneNumberBloc, PhoneNumberState>(
+                        builder: (context, state) {
+                          return Expanded(
+                            child: InputField(
+                                controller: state.textEditingController),
+                          );
+                        },
                       )
                     ],
                   ),
@@ -150,15 +140,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ),
                 SizedBox(height: Dimensions.height20),
                 NumberPad(
-                  controller: authController.numberController,
                   onPressed: (int num) {
+                    final phoneNumberBloc =
+                        BlocProvider.of<PhoneNumberBloc>(context);
                     if (num >= 0) {
-                      authController.insertNumber(
-                          authController.numberController, num.toString());
+                      phoneNumberBloc.add(InsertEvent(value: num));
                     } else if (num == -1) {
-                      authController.backSpace(authController.numberController);
+                      phoneNumberBloc.add(const BackspaceEvent());
                     } else {
-                      authController.clearAll(authController.numberController);
+                      phoneNumberBloc.add(const ClearEvent());
                     }
                   },
                 ),

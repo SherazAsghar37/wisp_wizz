@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
-import 'package:wisp_wizz/features/app/utils/app_enums.dart';
 
 class User extends Equatable {
   final String name;
   final int phoneNumber;
-  final CountryCodes countryCode;
+  final String countryCode;
   final String id;
   final bool status;
   final DateTime lastSeen;
@@ -24,7 +23,7 @@ class User extends Equatable {
   User copyWith({
     String? name,
     int? phoneNumber,
-    CountryCodes? countryCode,
+    String? countryCode,
     String? id,
     bool? status,
     DateTime? lastSeen,
@@ -45,7 +44,7 @@ class User extends Equatable {
     return <String, dynamic>{
       'name': name,
       'phoneNumber': phoneNumber,
-      'countryCode': _encodeCountryCode(countryCode),
+      'countryCode': countryCode,
       'id': id,
       'status': status,
       'lastSeen': lastSeen.millisecondsSinceEpoch,
@@ -57,7 +56,7 @@ class User extends Equatable {
       : this(
           name: map['name'] as String,
           phoneNumber: map['phoneNumber'] as int,
-          countryCode: _decodeCountryCode(map['countryCode']),
+          countryCode: map['countryCode'],
           id: map['id'] as String,
           status: map['status'] as bool,
           lastSeen: DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] as int),
@@ -72,24 +71,6 @@ class User extends Equatable {
   @override
   String toString() {
     return 'User(name: $name, phoneNumber: $phoneNumber, countryCode: $countryCode, id: $id, status: $status, lastSeen: $lastSeen, profileUrl: $profileUrl)';
-  }
-
-  static CountryCodes _decodeCountryCode(String code) {
-    switch (code) {
-      case "+92":
-        return CountryCodes.pk;
-      default:
-        return CountryCodes.pk;
-    }
-  }
-
-  static String _encodeCountryCode(CountryCodes code) {
-    switch (code) {
-      case CountryCodes.pk:
-        return "+92";
-      default:
-        return "+92";
-    }
   }
 
   @override
