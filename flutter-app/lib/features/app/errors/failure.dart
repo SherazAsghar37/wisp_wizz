@@ -22,3 +22,10 @@ class ApiFailure extends Failure {
   @override
   List<Object?> get props => [message, statusCode];
 }
+
+class ValidationFailure extends Failure {
+  const ValidationFailure({required super.message, super.statusCode = 400});
+
+  @override
+  List<Object?> get props => [message, statusCode];
+}

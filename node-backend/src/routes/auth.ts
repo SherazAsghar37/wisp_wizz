@@ -8,8 +8,11 @@ const validation = container.resolve(Validation);
 const authController = container.resolve(AuthController);
 
 authRouter
-  .route("auth/verification/send")
+  .route("auth/verification/sendOtp")
   .post(validation.phoneNumberValidator, authController.sendVerificationCode);
 authRouter
-  .route("auth/verification/send")
+  .route("auth/verification/verifyOtp")
+  .post(validation.phoneNumberValidator, authController.sendVerificationCode);
+authRouter
+  .route("auth/login")
   .post(validation.phoneNumberValidator, authController.sendVerificationCode);

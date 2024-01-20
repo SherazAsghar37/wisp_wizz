@@ -4,29 +4,29 @@ import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
-import 'package:wisp_wizz/features/auth/domain/repository/auth_repository.dart';
+import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 
 class AuthRepository implements IAuthRepository {
   final RemoteDatasource _remoteDatasource;
   AuthRepository({required RemoteDatasource remoteDataSource})
       : _remoteDatasource = remoteDataSource;
   @override
-  FutureVoid loginUser(
-      {required String name,
+  FutureUser loginUser(
+      {required String? name,
       required int phoneNumber,
       required String countryCode,
       File? image}) async {
     try {
-      await _remoteDatasource.loginUser(
+      final response = await _remoteDatasource.loginUser(
           name: name,
           phoneNumber: phoneNumber,
           countryCode: countryCode,
           image: image);
-      return const Right(null);
+      return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
-    } catch (e) {
-      return Left(ApiFailure(message: e.toString(), statusCode: 500));
+      // } catch (e) {
+      //   return Left(ApiFailure(message: e.toString(), statusCode: 500));
     }
   }
 
@@ -39,8 +39,8 @@ class AuthRepository implements IAuthRepository {
       return const Right(null);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
-    } catch (e) {
-      return Left(ApiFailure(message: e.toString(), statusCode: 500));
+      // } catch (e) {
+      //   return Left(ApiFailure(message: e.toString(), statusCode: 500));
     }
   }
 
@@ -51,8 +51,8 @@ class AuthRepository implements IAuthRepository {
       return const Right(null);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
-    } catch (e) {
-      return Left(ApiFailure(message: e.toString(), statusCode: 500));
+      // } catch (e) {
+      //   return Left(ApiFailure(message: e.toString(), statusCode: 500));
     }
   }
 }

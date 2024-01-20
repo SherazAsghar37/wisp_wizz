@@ -5,8 +5,8 @@ import 'package:wisp_wizz/features/app/utils/typedef.dart';
 abstract class IAuthRepository {
   FutureVoid sendCode({required int phoneNumber, required String countryCode});
   FutureVoid verifyOTP({required int phoneNumber, required int otp});
-  FutureVoid loginUser(
-      {required String name,
+  FutureUser loginUser(
+      {required String? name,
       required int phoneNumber,
       required String countryCode,
       File? image});

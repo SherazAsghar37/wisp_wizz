@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:wisp_wizz/features/auth/domain/repository/auth_repository.dart';
+import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
-import '../repository/auth_repository_test.dart';
+import '../repository/i_auth_repository_test.dart';
 
 void main() {
   late IAuthRepository authRepository;
@@ -35,7 +35,7 @@ void main() {
           phoneNumber: params.phoneNumber,
           otp: params.otp,
         ),
-      );
+      ).called(1);
       verifyNoMoreInteractions(authRepository);
     });
   });

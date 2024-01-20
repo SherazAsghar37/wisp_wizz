@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:wisp_wizz/features/auth/domain/repository/auth_repository.dart';
+import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
+import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
 
-import '../repository/auth_repository_test.dart';
+import '../repository/i_auth_repository_test.dart';
 
 void main() {
   late IAuthRepository authRepository;
@@ -22,6 +23,7 @@ void main() {
       name: "whatever.name",
       phoneNumber: 123456789,
       image: File("whatever.file"));
+  final UserModel user = UserModel.empty();
 
   group("[Auth Repository] - ", () {
     test("It should call auth repository and should call only once", () async {
@@ -31,17 +33,17 @@ void main() {
               phoneNumber: any(named: "phoneNumber"),
               countryCode: any(named: "countryCode"),
               image: any(named: "image")))
-          .thenAnswer((invocation) async => const Right(null));
+          .thenAnswer((invocation) async => Right(user));
       //Assert
       final response = await loginUser(params);
-      expect(response, const Right<dynamic, void>(null));
+      expect(response, Right<dynamic, UserModel>(user));
       verify(
         () => authRepository.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
             countryCode: params.countryCode,
             image: params.image),
-      );
+      ).called(1);
       verifyNoMoreInteractions(authRepository);
     });
   });

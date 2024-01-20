@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:wisp_wizz/controller/main_controller.dart';
 import 'package:wisp_wizz/controller/auth_controller.dart';
+import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
     Dimensions.screenHeight = MediaQuery.of(context).size.height;
     Dimensions.screenWidth = MediaQuery.of(context).size.width;
     return MaterialApp(
-      title: 'Wip Wiz',
+      title: appName,
       onGenerateRoute: (settings) => routesGenerator(settings),
       theme: context.watch<MainController>().themeData,
       home: const LoginScreen(),

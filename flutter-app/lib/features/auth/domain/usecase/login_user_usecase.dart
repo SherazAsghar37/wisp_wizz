@@ -1,14 +1,15 @@
 import 'dart:io';
 
+import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/usecases/usecase.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
-import 'package:wisp_wizz/features/auth/domain/repository/auth_repository.dart';
+import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 
 class LoginUser extends UsecaseWithParam<void, CustomUserParam> {
   final IAuthRepository authRepository;
   const LoginUser({required this.authRepository});
   @override
-  FutureVoid call(CustomUserParam param) async {
+  FutureUser call(CustomUserParam param) async {
     return authRepository.loginUser(
         countryCode: param.countryCode,
         name: param.name,
@@ -17,15 +18,18 @@ class LoginUser extends UsecaseWithParam<void, CustomUserParam> {
   }
 }
 
-class CustomUserParam {
-  final String name;
+class CustomUserParam extends Equatable {
+  final String? name;
   final int phoneNumber;
   final String countryCode;
   final File? image;
 
-  CustomUserParam(
+  const CustomUserParam(
       {required this.countryCode,
       required this.name,
       required this.phoneNumber,
       required this.image});
+
+  @override
+  List<Object?> get props => [name, phoneNumber, countryCode, image];
 }
