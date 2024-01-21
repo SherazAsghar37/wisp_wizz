@@ -17,10 +17,10 @@ class DioClient {
 
   static BaseOptions _getBaseOptions() {
     return BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 5000),
-      receiveTimeout: const Duration(seconds: 5000),
-    );
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10));
   }
 
   static Interceptor _getLoggingInterceptor() {

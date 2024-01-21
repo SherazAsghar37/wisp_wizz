@@ -56,6 +56,8 @@ class RemoteDatasource {
         _dio.options.baseUrl + sendCodeUrl,
         data: {"phoneNumber": phoneNumber, "countryCode": countryCode},
       );
+      // .timeout(const Duration(seconds: 10));
+      print(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         return;
       } else {

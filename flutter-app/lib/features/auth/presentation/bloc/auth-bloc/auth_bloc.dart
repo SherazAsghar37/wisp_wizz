@@ -53,8 +53,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       VerifyOTPEvent event, Emitter<AuthState> emit) async {
     emit(const AuthVerifyingOTP());
     final validation = verifyOtpValidation(event.phoneNumber, event.otp);
-    validation.fold(
-        (f) => emit(AuthOTPVerificationFailed(f.message)), (s) => null);
+    if (validation.isLeft()) {
+      validation.fold(
+          (f) => emit(AuthOTPVerificationFailed(f.message)), (s) => null);
+      return;
+    }
 
     final res = await _verifyOTP(CustomVerificationParam(
         phoneNumber: event.phoneNumber, otp: event.otp));
@@ -63,10 +66,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLoginEvent(LoginEvent event, Emitter<AuthState> emit) async {
-    emit(const AuthloggedIn());
+    emit(const AuthloggingIn());
     final validation = loginValidation(
         event.countryCode, event.name, event.phoneNumber, event.image);
-    validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
+    if (validation.isLeft()) {
+      validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
+      return;
+    }
     final res = await _loginUser(CustomUserParam(
         countryCode: event.countryCode,
         name: event.name,

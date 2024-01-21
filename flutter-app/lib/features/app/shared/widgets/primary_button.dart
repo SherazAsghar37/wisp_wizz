@@ -5,6 +5,7 @@ import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 class PrimaryButton extends StatelessWidget {
   final String? text;
   final IconData? icon;
+  final Widget? widget;
   final VoidCallback onTap;
   final VoidCallback? onLogPress;
   const PrimaryButton({
@@ -13,6 +14,7 @@ class PrimaryButton extends StatelessWidget {
     this.icon,
     required this.onTap,
     this.onLogPress,
+    this.widget,
   });
 
   @override
@@ -23,6 +25,7 @@ class PrimaryButton extends StatelessWidget {
       onPressed: onTap,
       onLongPress: onLogPress,
       child: Container(
+          height: Dimensions.height50,
           width: double.maxFinite,
           padding: EdgeInsets.symmetric(
               vertical: Dimensions.height10, horizontal: Dimensions.width10),
@@ -35,11 +38,12 @@ class PrimaryButton extends StatelessWidget {
                       icon,
                       color: theme.primaryColor,
                     )
-                  : Text(
-                      text!,
-                      style: theme.textTheme.bodyMedium!
-                          .copyWith(color: whiteColor),
-                    ))),
+                  : widget ??
+                      Text(
+                        text!,
+                        style: theme.textTheme.bodyMedium!
+                            .copyWith(color: whiteColor),
+                      ))),
     );
   }
 }

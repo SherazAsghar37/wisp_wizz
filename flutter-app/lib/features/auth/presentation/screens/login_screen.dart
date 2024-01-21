@@ -1,3 +1,5 @@
+import 'package:bot_toast/bot_toast.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 
@@ -120,10 +122,47 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             Column(
               children: [
-                PrimaryButton(
-                  text: "Submit",
-                  onTap: () {
-                    Navigator.pushNamed(context, VerificationScreen.routeName);
+                BlocConsumer<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthSendingCode) {
+                      return PrimaryButton(
+                        onTap: () {},
+                        widget: SizedBox(
+                          width: Dimensions.height30,
+                          child: CircularProgressIndicator(
+                            color: colorScheme.background,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return PrimaryButton(
+                        text: "Submit",
+                        onTap: () {
+                          final String phoneNumber = context
+                              .read<PhoneNumberBloc>()
+                              .state
+                              .textEditingController
+                              .text;
+                          context.read<AuthBloc>().add(SendCodeEvent(
+                              countryCode: countryCode,
+                              phoneNumber: phoneNumber.isNotEmpty
+                                  ? int.parse(phoneNumber)
+                                  : 0));
+                        },
+                      );
+                    }
+                  },
+                  listener: (context, state) {
+                    if (state is AuthCodeSent) {
+                      Navigator.pushNamed(
+                          context, VerificationScreen.routeName);
+                    } else if (state is AuthCodeSentFailed) {
+                      print(state.message);
+                      BotToast.showText(
+                          text: state.message,
+                          contentColor: theme.primaryColorLight,
+                          textStyle: theme.textTheme.bodyMedium!);
+                    }
                   },
                 ),
                 // Transform.scale(

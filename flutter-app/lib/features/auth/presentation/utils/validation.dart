@@ -8,8 +8,8 @@ Either<ValidationFailure, bool> sendCodeValidation(
   if (countryCode.isEmpty) {
     return const Left(
         ValidationFailure(message: "Country Code cannot be empty"));
-  } else if (phoneNumber < 10000000) {
-    return const Left(ValidationFailure(message: "Invalied phone number"));
+  } else if (phoneNumber < 1000000) {
+    return const Left(ValidationFailure(message: "Invalid phone number"));
   } else {
     return const Right(true);
   }
@@ -18,8 +18,8 @@ Either<ValidationFailure, bool> sendCodeValidation(
 Either<ValidationFailure, bool> verifyOtpValidation(int phoneNumber, int otp) {
   if (otp < 100000) {
     return const Left(ValidationFailure(message: "Invalid code"));
-  } else if (phoneNumber < 8) {
-    return const Left(ValidationFailure(message: "Invalied phone number"));
+  } else if (phoneNumber < 1000000) {
+    return const Left(ValidationFailure(message: "Invalid phone number"));
   } else {
     return const Right(true);
   }
@@ -30,8 +30,8 @@ Either<ValidationFailure, bool> loginValidation(
   if (countryCode.isEmpty) {
     return const Left(
         ValidationFailure(message: "Country Code cannot be empty"));
-  } else if (phoneNumber < 10000000) {
-    return const Left(ValidationFailure(message: "Invalied phone number"));
+  } else if (phoneNumber < 1000000) {
+    return const Left(ValidationFailure(message: "Invalid phone number"));
   } else {
     return const Right(true);
   }

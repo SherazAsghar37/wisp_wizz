@@ -1,5 +1,5 @@
 import { NextFunction } from "express";
-import z, { ZodError, number } from "Zod";
+import z, { ZodError } from "Zod";
 import { Request, Response } from "express";
 import { singleton } from "tsyringe";
 import HttpStatusCode from "../utils/http_status_codes";
@@ -12,11 +12,7 @@ export default class Validation {
     next: NextFunction
   ) => {
     const numberSchema = z.object({
-      phoneNumber: z.coerce
-        .number() // Force it to be a number
-        .int() // Make sure it's an integer
-        .gte(1000000000) // Greater than or equal to the smallest 5 digit int
-        .lte(9999999999),
+      phoneNumber: z.coerce.number().int().gte(9999999).lte(100000000000000),
       countryCode: z.string().startsWith("+"),
     });
     try {
