@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 
@@ -34,13 +35,17 @@ class RemoteDatasource {
         data: FormData.fromMap(data),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return UserModel.fromMap(json.decode(response.data["user"]));
+        MapData userData = MapData.from(json.decode(response.data));
+        DebugHelper.printWarning(userData["user"].runtimeType.toString());
+        return UserModel.fromMap(userData["user"]);
       } else {
         throw DioException(
           requestOptions: RequestOptions(),
           message: response.data["message"],
         );
       }
+    } on ApiException {
+      rethrow;
     } on DioException catch (dioException) {
       throw ApiException(
           message: dioException.message.toString(), statusCode: 500);
@@ -49,45 +54,35 @@ class RemoteDatasource {
     }
   }
 
-  Future<void> sendCode(
-      {required int phoneNumber, required String countryCode}) async {
+  Future<UserModel?> getUser({
+    required int phoneNumber,
+    required String countryCode,
+  }) async {
     try {
-      final response = await _dio.post(
-        _dio.options.baseUrl + sendCodeUrl,
-        data: {"phoneNumber": phoneNumber, "countryCode": countryCode},
-      );
-      // .timeout(const Duration(seconds: 10));
-      print(response.toString());
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return;
-      } else {
-        throw DioException(
-          requestOptions: RequestOptions(),
-          message: response.data["message"],
-        );
-      }
-    } on DioException catch (dioException) {
-      throw ApiException(
-          message: dioException.message.toString(), statusCode: 500);
-    } catch (e) {
-      throw ApiException(message: e.toString(), statusCode: 500);
-    }
-  }
+      final String url = _dio.options.baseUrl + getUserUrl;
+      final MapData data = {
+        "phoneNumber": phoneNumber,
+        "countryCode": countryCode
+      };
 
-  Future<void> verifyOTP({required int phoneNumber, required int otp}) async {
-    try {
       final response = await _dio.post(
-        _dio.options.baseUrl + verifyOTPUrl,
-        data: {"phoneNumber": phoneNumber, "otp": otp},
+        url,
+        data: data,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return;
+        MapData userData = MapData.from(json.decode(response.data));
+        if (userData["user"] == null) {
+          return null;
+        }
+        return UserModel.fromMap(userData["user"]);
       } else {
         throw DioException(
           requestOptions: RequestOptions(),
           message: response.data["message"],
         );
       }
+    } on ApiException {
+      rethrow;
     } on DioException catch (dioException) {
       throw ApiException(
           message: dioException.message.toString(), statusCode: 500);

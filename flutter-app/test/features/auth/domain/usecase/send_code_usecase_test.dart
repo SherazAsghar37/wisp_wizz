@@ -14,22 +14,28 @@ void main() {
     sendCode = SendCode(authRepository: authRepository);
   });
 
-  final params = CustomPhoneParam(
+  const params = CustomPhoneParam(
     countryCode: "whatever.countryCode",
-    phoneNumber: 123456789,
+    phoneNumber: "123456789",
   );
+
+  const String verificationId = "1234";
+  const customPhoneResoponse =
+      CustomPhoneResoponse(verificationId: verificationId);
 
   group("[Auth Repository] - ", () {
     test("It should call auth repository.sendCode and should call only once",
         () async {
       //Arrange
       when(() => authRepository.sendCode(
-            phoneNumber: any(named: "phoneNumber"),
-            countryCode: any(named: "countryCode"),
-          )).thenAnswer((invocation) async => const Right(null));
+                phoneNumber: any(named: "phoneNumber"),
+                countryCode: any(named: "countryCode"),
+              ))
+          .thenAnswer((invocation) async => const Right(customPhoneResoponse));
       //Assert
       final response = await sendCode(params);
-      expect(response, const Right<dynamic, void>(null));
+      expect(response,
+          const Right<dynamic, CustomPhoneResoponse>(customPhoneResoponse));
       verify(
         () => authRepository.sendCode(
           phoneNumber: params.phoneNumber,

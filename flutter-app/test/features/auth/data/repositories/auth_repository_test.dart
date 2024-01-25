@@ -1,25 +1,38 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/firebase_authentication.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
 
+import '../../global/phone_auth_cradentials.mock.dart';
+
 class MRemoteDatasource extends Mock implements RemoteDatasource {}
+
+class MFirebaseAuthentication extends Mock implements FirebaseAuthentication {}
 
 void main() {
   late AuthRepository authRepository;
   late RemoteDatasource remoteDatasource;
+  late MFirebaseAuthentication firebaseAuthentication;
+  late PhoneAuthCredential phoneAuthCredential;
 
   setUp(() {
     remoteDatasource = MRemoteDatasource();
-    authRepository = AuthRepository(remoteDataSource: remoteDatasource);
+    firebaseAuthentication = MFirebaseAuthentication();
+    authRepository = AuthRepository(
+        remoteDataSource: remoteDatasource,
+        firebaseAuthentication: firebaseAuthentication);
+    phoneAuthCredential = MPhoneAuthCradential();
   });
 
   final params = CustomUserParam(
@@ -27,10 +40,19 @@ void main() {
       name: "whatever.name",
       phoneNumber: 123456789,
       image: File("whatever.file"));
-  final otpParams = CustomVerificationParam(
-    otp: 123456,
-    phoneNumber: 123456789,
+
+  const otpParams = CustomVerificationParam(
+    otp: "123456",
+    verificationId: "123456789",
   );
+
+  const phoneParams = CustomPhoneParam(
+    countryCode: "+92",
+    phoneNumber: "123456789",
+  );
+  const String verificationId = "1234";
+  const customPhoneResoponse =
+      CustomPhoneResoponse(verificationId: verificationId);
 
   const String message = 'whatever.message';
   const int statusCode = 500;
@@ -95,42 +117,43 @@ void main() {
     });
     group("[Verify OTP] - ", () {
       test(
-          "It should call remoteDataSource.verifyOTP and return void by calling only once",
+          "It should call firebaseAuthentication.verifyOTP and return void by calling only once",
           () async {
         //Arrange
-        when(() => remoteDatasource.verifyOTP(
+        when(() => firebaseAuthentication.verifyOTP(
               otp: any(named: "otp"),
-              phoneNumber: any(named: "phoneNumber"),
-            )).thenAnswer((invocation) async => const Right(null));
+              verificationId: any(named: "verificationId"),
+            )).thenAnswer((invocation) async => phoneAuthCredential);
         //Act
         final response = await authRepository.verifyOTP(
           otp: otpParams.otp,
-          phoneNumber: otpParams.phoneNumber,
+          verificationId: otpParams.verificationId,
         );
         //Assert
-        expect(response, const Right<dynamic, void>(null));
+        expect(
+            response, Right<dynamic, PhoneAuthCredential>(phoneAuthCredential));
         verify(
-          () => remoteDatasource.verifyOTP(
+          () => firebaseAuthentication.verifyOTP(
             otp: otpParams.otp,
-            phoneNumber: otpParams.phoneNumber,
+            verificationId: otpParams.verificationId,
           ),
         ).called(1);
         verifyNoMoreInteractions(remoteDatasource);
       });
       test(
-          "It should call remoteDataSource.verifyOTP and throw api exception by calling only once",
+          "It should call firebaseAuthentication.verifyOTP and throw api exception by calling only once",
           () async {
         //Arrange
-        when(() => remoteDatasource.verifyOTP(
+        when(() => firebaseAuthentication.verifyOTP(
                   otp: any(named: "otp"),
-                  phoneNumber: any(named: "phoneNumber"),
+                  verificationId: any(named: "verificationId"),
                 ))
             .thenThrow(
                 const ApiException(message: message, statusCode: statusCode));
         //Act
         final response = await authRepository.verifyOTP(
           otp: otpParams.otp,
-          phoneNumber: otpParams.phoneNumber,
+          verificationId: otpParams.verificationId,
         );
         //Assert
         expect(
@@ -138,9 +161,9 @@ void main() {
             const Left<ApiFailure, dynamic>(
                 ApiFailure(message: message, statusCode: statusCode)));
         verify(
-          () => remoteDatasource.verifyOTP(
+          () => firebaseAuthentication.verifyOTP(
             otp: otpParams.otp,
-            phoneNumber: otpParams.phoneNumber,
+            verificationId: otpParams.verificationId,
           ),
         ).called(1);
         verifyNoMoreInteractions(remoteDatasource);
@@ -148,33 +171,34 @@ void main() {
     });
     group("[Send Code] - ", () {
       test(
-          "It should call remoteDataSource.sendCode and return void by calling only once",
+          "It should call firebaseAuthentication.sendCode and return void by calling only once",
           () async {
         //Arrange
-        when(() => remoteDatasource.sendCode(
+        when(() => firebaseAuthentication.sendCode(
               phoneNumber: any(named: "phoneNumber"),
               countryCode: any(named: "countryCode"),
-            )).thenAnswer((invocation) async => const Right(null));
+            )).thenAnswer((invocation) async => customPhoneResoponse);
         //Act
         final response = await authRepository.sendCode(
-          phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
+          phoneNumber: phoneParams.phoneNumber,
+          countryCode: phoneParams.countryCode,
         );
         //Assert
-        expect(response, const Right<dynamic, void>(null));
+        expect(response,
+            const Right<dynamic, CustomPhoneResoponse>(customPhoneResoponse));
         verify(
-          () => remoteDatasource.sendCode(
-            phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
+          () => firebaseAuthentication.sendCode(
+            phoneNumber: phoneParams.phoneNumber,
+            countryCode: phoneParams.countryCode,
           ),
         ).called(1);
         verifyNoMoreInteractions(remoteDatasource);
       });
       test(
-          "It should call remoteDataSource.sendCode and throw api exception by calling only once",
+          "It should call firebaseAuthentication.sendCode and throw api exception by calling only once",
           () async {
         //Arrange
-        when(() => remoteDatasource.sendCode(
+        when(() => firebaseAuthentication.sendCode(
                   phoneNumber: any(named: "phoneNumber"),
                   countryCode: any(named: "countryCode"),
                 ))
@@ -182,8 +206,8 @@ void main() {
                 const ApiException(message: message, statusCode: statusCode));
         //Act
         final response = await authRepository.sendCode(
-          phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
+          phoneNumber: phoneParams.phoneNumber,
+          countryCode: phoneParams.countryCode,
         );
         //Assert
         expect(
@@ -191,9 +215,9 @@ void main() {
             const Left<ApiFailure, dynamic>(
                 ApiFailure(message: message, statusCode: statusCode)));
         verify(
-          () => remoteDatasource.sendCode(
-            phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
+          () => firebaseAuthentication.sendCode(
+            phoneNumber: phoneParams.phoneNumber,
+            countryCode: phoneParams.countryCode,
           ),
         ).called(1);
         verifyNoMoreInteractions(remoteDatasource);

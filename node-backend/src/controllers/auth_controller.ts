@@ -22,8 +22,8 @@ export default class AuthController {
     try {
       const { countryCode, phoneNumber } = req.body;
       const otpCode = await this._otpService.sendOtp(countryCode, phoneNumber);
-      const message = await this._otpService.createOtp(phoneNumber, otpCode);
-      return res.status(HttpStatusCode.OK).json({ message });
+      // const message = await this._otpService.createOtp(phoneNumber, otpCode);
+      return res.status(HttpStatusCode.OK).json({ message: "sent" });
     } catch (error) {
       this._errorHandler.handleError(error, res);
     }

@@ -17,6 +17,7 @@ export default class Validation {
     });
     try {
       numberSchema.parse(req.body);
+
       return next();
     } catch (error) {
       if (error instanceof ZodError) return zodErrorHandler(error, res);

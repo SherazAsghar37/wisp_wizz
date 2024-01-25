@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "469378792481",
+    "project_id": "wisp-wiz",
+    "storage_bucket": "wisp-wiz.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469378792481:android:527afc52afe39612307760",
+        "android_client_info": {
+          "package_name": "com.example.wisp_wizz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMiPXMMyjcB3V6AkZB8JjF-QLExAi4TZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

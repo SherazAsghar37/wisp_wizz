@@ -42,6 +42,29 @@ final class AuthOTPVerificationFailed extends AuthState {
   List<Object> get props => [message];
 }
 
+//get user
+final class AuthGettingUser extends AuthState {
+  const AuthGettingUser();
+}
+
+final class AuthUserFound extends AuthState {
+  final UserModel user;
+  const AuthUserFound({required this.user});
+  @override
+  List<Object> get props => [user];
+}
+
+final class AuthUserNotFound extends AuthState {
+  const AuthUserNotFound();
+}
+
+final class AuthFailedToGetUser extends AuthState {
+  final String message;
+  const AuthFailedToGetUser(this.message);
+  @override
+  List<Object> get props => [message];
+}
+
 //login
 
 //verification
@@ -50,7 +73,10 @@ final class AuthloggingIn extends AuthState {
 }
 
 final class AuthloggedIn extends AuthState {
-  const AuthloggedIn();
+  final UserModel user;
+  const AuthloggedIn({required this.user});
+  @override
+  List<Object> get props => [user];
 }
 
 final class AuthloginFailed extends AuthState {

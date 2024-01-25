@@ -13,8 +13,9 @@ const app = appConfig();
 app.listen(port, () => {
   console.log(`Server is listening on ${port}`.yellow.bold);
 });
-app.use((req, res) => {
+app.use((req, res, next) => {
   console.log("Called");
+  next();
 });
 app.use("/auth", authRouter);
 mongooseConfig();

@@ -8,12 +8,12 @@ const accountSid = process.env.TWILIO_SID as string;
 const authToken = process.env.TWILIO_AUTH_TOKEN as string;
 const client = new Twilio(accountSid, authToken);
 
-export default function sendMessage(
+export default async function sendMessage(
   countryCode: CountryCodes,
   phoneNumber: number,
   message: string
 ) {
-  client.messages
+  await client.messages
     .create({
       body: message,
       to: `${countryCode}${phoneNumber}`,
@@ -21,8 +21,9 @@ export default function sendMessage(
     })
     .then((message) => console.log(message.sid))
     .catch((error) => {
+      console.log(error);
       throw new CustomError(
-        "Unable to send Messagea",
+        "Unable to send Message",
         HttpStatusCode.INTERNAL_SERVER_ERROR
       );
     });
