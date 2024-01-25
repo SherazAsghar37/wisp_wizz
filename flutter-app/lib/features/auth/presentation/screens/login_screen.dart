@@ -1,13 +1,7 @@
-import 'package:flag/flag.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:wisp_wizz/features/app/constants/screen_constants.dart';
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
-import 'package:wisp_wizz/controller/auth_controller.dart';
-import 'package:wisp_wizz/features/auth/presentation/screens/verification_screen.dart';
-import 'package:wisp_wizz/features/auth/presentation/widgets/input_field.dart';
-import 'package:wisp_wizz/features/auth/presentation/widgets/number_pad.dart';
-import 'package:wisp_wizz/shared/widgets/primary_button.dart';
+import 'package:bot_toast/bot_toast.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
+import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = loginScreen;
@@ -17,125 +11,192 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+String countryCode = dCountryCode;
+String flagCode = dFlagCode;
+
 class _LoginScreenState extends State<LoginScreen> {
-  double scaleFactor = 1;
-  bool isVisible = true;
+  // double scaleFactor = 1;
+  // bool isVisible = true;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
-    final authController = Provider.of<AuthController>(context);
     return Scaffold(
       backgroundColor: colorScheme.background,
       extendBodyBehindAppBar: true,
-      body: Padding(
-        padding: EdgeInsets.fromLTRB(Dimensions.width20, Dimensions.height30,
-            Dimensions.width20, Dimensions.height30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              children: [
-                Text(
-                  "Enter Your Phone Number",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                SizedBox(
-                  height: Dimensions.height30,
-                ),
-                SizedBox(
-                  height: Dimensions.height45,
-                  child: Row(
-                    children: [
-                      Container(
-                        height: Dimensions.height50,
-                        width: Dimensions.width80,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: Dimensions.width10),
-                        decoration: BoxDecoration(
-                            color: colorScheme.primary.withOpacity(0.2),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(Dimensions.height10),
-                                bottomLeft:
-                                    Radius.circular(Dimensions.height10))),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              height: Dimensions.height20,
-                              width: Dimensions.width20,
-                              child: Flag.fromCode(FlagsCode.PK,
-                                  flagSize: FlagSize.size_4x3),
-                            ),
-                            Text(
-                              "+92",
-                              style: theme.textTheme.bodyMedium!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: Dimensions.width1,
-                        color: colorScheme.background,
-                      ),
-                      Expanded(
-                        child: InputField(
-                            controller: context
-                                .watch<AuthController>()
-                                .numberController),
-                      )
-                    ],
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(Dimensions.width20, Dimensions.height10,
+              Dimensions.width20, Dimensions.height30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  Text(
+                    "Enter Your Phone Number",
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                ),
-                SizedBox(
-                  height: Dimensions.height20,
-                ),
-                Text(
-                  "In order to verify this number, We will send you a one time password to this number",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: colorScheme.primary),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                PrimaryButton(
-                  text: "Submit",
-                  onTap: () {
-                    Navigator.pushNamed(context, VerificationScreen.routeName);
-                  },
-                ),
-                // Transform.scale(
-                //   scale: scaleFactor,
-                //   child: Visibility(
-                //     visible: isVisible,
-                //     child: PrimaryButton(
-                //       text: "Submit",
-                //       onTap: () {
-                //         // scale();
-                //       },
-                //     ),
-                //   ),
-                // ),
-                SizedBox(height: Dimensions.height20),
-                NumberPad(
-                  controller: authController.numberController,
-                  onPressed: (int num) {
-                    if (num >= 0) {
-                      authController.insertNumber(
-                          authController.numberController, num.toString());
-                    } else if (num == -1) {
-                      authController.backSpace(authController.numberController);
-                    } else {
-                      authController.clearAll(authController.numberController);
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(
+                    height: Dimensions.height30,
+                  ),
+                  SizedBox(
+                    height: Dimensions.height45,
+                    child: Row(
+                      children: [
+                        MaterialButton(
+                          padding: const EdgeInsets.all(0),
+                          onPressed: () => showCountryPicker(
+                              context: context,
+                              countryListTheme: countryListThemeData(theme),
+                              onSelect: (Country country) {
+                                setState(() {
+                                  flagCode = country.countryCode;
+                                  RegExpMatch? match = contryCodeRegex
+                                      .firstMatch(country.displayName);
+                                  countryCode = match != null
+                                      ? match.group(1)!
+                                      : dCountryCode;
+                                });
+                              }),
+                          child: Container(
+                            height: Dimensions.height50,
+                            width: Dimensions.width105,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: Dimensions.width10),
+                            decoration: BoxDecoration(
+                                color: colorScheme.primary.withOpacity(0.2),
+                                borderRadius: BorderRadius.only(
+                                    topLeft:
+                                        Radius.circular(Dimensions.height10),
+                                    bottomLeft:
+                                        Radius.circular(Dimensions.height10))),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  height: Dimensions.height20,
+                                  width: Dimensions.width20,
+                                  child: Flag.fromString(flagCode),
+                                ),
+                                SizedBox(
+                                  width: Dimensions.width2,
+                                ),
+                                Text(
+                                  countryCode,
+                                  style: theme.textTheme.bodyMedium!
+                                      .copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const Icon(
+                                  dropDownIcon,
+                                  color: blackColor,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: Dimensions.width1,
+                          color: colorScheme.background,
+                        ),
+                        BlocBuilder<PhoneNumberBloc, PhoneNumberState>(
+                          builder: (context, state) {
+                            return Expanded(
+                              child: InputField(
+                                  controller: state.textEditingController),
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: Dimensions.height20,
+                  ),
+                  Text(
+                    "In order to verify this number, We will send you a one time password to this number",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: colorScheme.primary),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  BlocConsumer<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      if (state is AuthSendingCode) {
+                        return PrimaryButton(
+                          onTap: () {},
+                          widget: SizedBox(
+                            width: Dimensions.height30,
+                            child: CircularProgressIndicator(
+                              color: colorScheme.background,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return PrimaryButton(
+                          text: "Submit",
+                          onTap: () {
+                            final String phoneNumber = context
+                                .read<PhoneNumberBloc>()
+                                .state
+                                .textEditingController
+                                .text;
+                            context.read<AuthBloc>().add(SendCodeEvent(
+                                countryCode: countryCode,
+                                phoneNumber: phoneNumber));
+                          },
+                        );
+                      }
+                    },
+                    listener: (context, state) {
+                      if (state is AuthCodeSent) {
+                        Navigator.pushNamed(
+                            context, VerificationScreen.routeName);
+                      } else if (state is AuthOTPVerified) {
+                        Navigator.pushReplacementNamed(
+                            context, VerificationScreen.routeName);
+                      } else if (state is AuthCodeSentFailed) {
+                        BotToast.showText(
+                            text: state.message,
+                            contentColor: theme.primaryColorLight,
+                            textStyle: theme.textTheme.bodyMedium!);
+                      }
+                    },
+                  ),
+                  // Transform.scale(
+                  //   scale: scaleFactor,
+                  //   child: Visibility(
+                  //     visible: isVisible,
+                  //     child: PrimaryButton(
+                  //       text: "Submit",
+                  //       onTap: () {
+                  //         // scale();
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(height: Dimensions.height20),
+                  NumberPad(
+                    onPressed: (int num) {
+                      final phoneNumberBloc =
+                          BlocProvider.of<PhoneNumberBloc>(context);
+                      if (num >= 0) {
+                        phoneNumberBloc.add(InsertEvent(value: num));
+                      } else if (num == -1) {
+                        phoneNumberBloc.add(const BackspaceEvent());
+                      } else {
+                        phoneNumberBloc.add(const ClearEvent());
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

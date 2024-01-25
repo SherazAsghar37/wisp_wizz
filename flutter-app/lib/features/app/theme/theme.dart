@@ -1,3 +1,4 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:wisp_wizz/features/app/theme/colors.dart';
 import 'package:wisp_wizz/features/app/utils/dimensions.dart';
@@ -54,3 +55,43 @@ ThemeData darkTheme = ThemeData(
         background: dBackgroundColor,
         primary: dPrimaryColor,
         secondary: dlightTextColor));
+
+CountryListThemeData countryListThemeData(ThemeData theme) {
+  return CountryListThemeData(
+    flagSize: 25,
+    backgroundColor: theme.colorScheme.background,
+    searchTextStyle: theme.textTheme.bodyMedium,
+
+    bottomSheetHeight: 500, // Optional. Country list modal height
+    borderRadius: BorderRadius.only(
+      topLeft: Radius.circular(Dimensions.height10),
+      topRight: Radius.circular(Dimensions.height10),
+    ),
+    //Optional. Styles the search field.
+    inputDecoration: InputDecoration(
+      contentPadding: const EdgeInsets.all(10.0),
+      filled: true,
+      fillColor: theme.primaryColorLight,
+      hintText: 'Search Country',
+      prefixIcon: const Icon(Icons.search),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Dimensions.height10),
+        borderSide: BorderSide(
+          color: theme.colorScheme.background,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Dimensions.height10),
+        borderSide: BorderSide(
+          color: theme.colorScheme.background,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Dimensions.height10),
+        borderSide: BorderSide(
+          color: theme.colorScheme.background,
+        ),
+      ),
+    ),
+  );
+}

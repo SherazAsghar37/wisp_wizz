@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import express from "express";
 import Validation from "../middlewares/validation";
 import { container } from "tsyringe";
@@ -8,8 +7,13 @@ const validation = container.resolve(Validation);
 const authController = container.resolve(AuthController);
 
 authRouter
-  .route("auth/verification/send")
+  .route("/verification/sendOtp")
   .post(validation.phoneNumberValidator, authController.sendVerificationCode);
 authRouter
-  .route("auth/verification/send")
+  .route("/verification/verifyOtp")
   .post(validation.phoneNumberValidator, authController.sendVerificationCode);
+authRouter
+  .route("/login")
+  .post(validation.phoneNumberValidator, authController.sendVerificationCode);
+
+export default authRouter;
