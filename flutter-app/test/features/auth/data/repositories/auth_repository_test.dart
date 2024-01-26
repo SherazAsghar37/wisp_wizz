@@ -223,5 +223,79 @@ void main() {
         verifyNoMoreInteractions(remoteDatasource);
       });
     });
+    group("[Get User] - ", () {
+      test(
+          "It should call remoteDataSource.getUSer and return UserModel by calling only once",
+          () async {
+        //Arrange
+        when(() => remoteDatasource.getUser(
+              phoneNumber: any(named: "phoneNumber"),
+              countryCode: any(named: "countryCode"),
+            )).thenAnswer((invocation) async => user);
+        //Act
+        final response = await authRepository.getUser(
+          phoneNumber: params.phoneNumber,
+          countryCode: params.countryCode,
+        );
+        //Assert
+        expect(response, Right<dynamic, UserModel>(user));
+        verify(
+          () => remoteDatasource.getUser(
+            phoneNumber: params.phoneNumber,
+            countryCode: params.countryCode,
+          ),
+        ).called(1);
+        verifyNoMoreInteractions(remoteDatasource);
+      });
+      test(
+          "It should call remoteDataSource.getUSer and return null by calling only once",
+          () async {
+        //Arrange
+        when(() => remoteDatasource.getUser(
+              phoneNumber: any(named: "phoneNumber"),
+              countryCode: any(named: "countryCode"),
+            )).thenAnswer((invocation) async => null);
+        //Act
+        final response = await authRepository.getUser(
+          phoneNumber: params.phoneNumber,
+          countryCode: params.countryCode,
+        );
+        //Assert
+        expect(response, const Right<dynamic, void>(null));
+        verify(
+          () => remoteDatasource.getUser(
+            phoneNumber: params.phoneNumber,
+            countryCode: params.countryCode,
+          ),
+        ).called(1);
+        verifyNoMoreInteractions(remoteDatasource);
+      });
+      test(
+          "It should call remoteDataSource.getUser and throw api exception by calling only once",
+          () async {
+        //Arrange
+        when(() => remoteDatasource.getUser(
+                  phoneNumber: any(named: "phoneNumber"),
+                  countryCode: any(named: "countryCode"),
+                ))
+            .thenThrow(
+                const ApiException(message: message, statusCode: statusCode));
+        //Act
+        final response = await authRepository.getUser(
+          phoneNumber: params.phoneNumber,
+          countryCode: params.countryCode,
+        );
+        //Assert
+        expect(
+            response,
+            const Left<ApiFailure, dynamic>(
+                ApiFailure(message: message, statusCode: statusCode)));
+        verify(() => remoteDatasource.getUser(
+              phoneNumber: params.phoneNumber,
+              countryCode: params.countryCode,
+            )).called(1);
+        verifyNoMoreInteractions(remoteDatasource);
+      });
+    });
   });
 }

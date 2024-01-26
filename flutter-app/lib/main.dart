@@ -14,6 +14,7 @@ import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_num
 import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/features/app/utils/router.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:wisp_wizz/features/auth/presentation/screens/user_registration_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
       theme: context.watch<MainController>().themeData,
       builder: BotToastInit(), //1. call BotToastInit
       navigatorObservers: [BotToastNavigatorObserver()],
-      home: const LoginScreen(),
+      home: UserRegistrationScreen(),
     );
   }
 }

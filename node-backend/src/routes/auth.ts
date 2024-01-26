@@ -7,13 +7,7 @@ const validation = container.resolve(Validation);
 const authController = container.resolve(AuthController);
 
 authRouter
-  .route("/verification/sendOtp")
-  .post(validation.phoneNumberValidator, authController.sendVerificationCode);
-authRouter
-  .route("/verification/verifyOtp")
-  .post(validation.phoneNumberValidator, authController.sendVerificationCode);
-authRouter
   .route("/login")
-  .post(validation.phoneNumberValidator, authController.sendVerificationCode);
+  .post(validation.phoneNumberValidator, authController.signUp);
 
 export default authRouter;

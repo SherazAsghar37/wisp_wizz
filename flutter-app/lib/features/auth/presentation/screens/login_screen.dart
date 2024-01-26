@@ -11,7 +11,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-String countryCode = dCountryCode;
+// String countryCode = dCountryCode;
 String flagCode = dFlagCode;
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -55,9 +55,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   flagCode = country.countryCode;
                                   RegExpMatch? match = contryCodeRegex
                                       .firstMatch(country.displayName);
-                                  countryCode = match != null
-                                      ? match.group(1)!
-                                      : dCountryCode;
+
+                                  context.read<PhoneNumberBloc>().add(
+                                      InsertCountryCodeEvent(
+                                          countryCode: match != null
+                                              ? match.group(1)!
+                                              : dCountryCode));
                                 });
                               }),
                           child: Container(
@@ -84,10 +87,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 SizedBox(
                                   width: Dimensions.width2,
                                 ),
-                                Text(
-                                  countryCode,
-                                  style: theme.textTheme.bodyMedium!
-                                      .copyWith(fontWeight: FontWeight.bold),
+                                BlocBuilder<PhoneNumberBloc, PhoneNumberState>(
+                                  builder: (context, state) => Text(
+                                    state.countryCode,
+                                    style: theme.textTheme.bodyMedium!
+                                        .copyWith(fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                                 const Icon(
                                   dropDownIcon,
@@ -145,6 +150,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 .state
                                 .textEditingController
                                 .text;
+                            final String countryCode = context
+                                .read<PhoneNumberBloc>()
+                                .state
+                                .countryCode;
                             context.read<AuthBloc>().add(SendCodeEvent(
                                 countryCode: countryCode,
                                 phoneNumber: phoneNumber));

@@ -9,9 +9,9 @@ export default class UserRepository {
       console.log("Before creating user...");
 
       const newUser = await userModel.create({
-        name: data.name as string,
-        profilePictureUrl: data.profilePictureUrl as string,
-        phoneNumber: data.phoneNumber,
+        name: data.name,
+        phoneNumber: data.phoneNumber as number,
+        image: data.image,
         countryCode: data.countryCode,
         status: data.status,
         lastSeen: data.lastSeen,
@@ -32,18 +32,22 @@ export default class UserRepository {
     }
   };
 
-  public findByPhoneNumber = async (phoneNumber: number): Promise<User> => {
+  public findByPhoneNumber = async (
+    phoneNumber: number,
+    countryCode: string
+  ): Promise<User | null> => {
     try {
       console.log("Before finding user...");
 
       const newUser = await userModel.findOne({
-        phoneNumber,
+        phoneNumber: phoneNumber,
+        countryCode: countryCode,
       });
 
       if (newUser) {
         return newUser as User;
       } else {
-        throw new CustomError("Unable to find user", HttpStatusCode.NOT_FOUND);
+        return null;
       }
     } catch (error) {
       throw new CustomError(

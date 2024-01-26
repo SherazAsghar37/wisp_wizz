@@ -79,7 +79,16 @@ class VerificationScreen extends StatelessWidget {
                         style: TextStyle(color: colorScheme.primary),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          final phoneNumberBloc =
+                              context.read<phone_number_bloc.PhoneNumberBloc>();
+                          context.read<auth_bloc.AuthBloc>().add(
+                              auth_bloc.GetUserEvent(
+                                  phoneNumber: phoneNumberBloc
+                                      .state.textEditingController.text,
+                                  countryCode:
+                                      phoneNumberBloc.state.countryCode));
+                        },
                         child: Text(
                           "Resend",
                           textAlign: TextAlign.center,
@@ -94,8 +103,8 @@ class VerificationScreen extends StatelessWidget {
                 children: [
                   BlocConsumer<auth_bloc.AuthBloc, auth_bloc.AuthState>(
                     builder: (context, state) {
-                      DebugHelper.printWarning(state.runtimeType.toString());
-                      if (state is auth_bloc.AuthVerifyingOTP) {
+                      if (state is auth_bloc.AuthVerifyingOTP ||
+                          state is auth_bloc.AuthGettingUser) {
                         return PrimaryButton(
                           onTap: () {},
                           widget: SizedBox(
@@ -120,9 +129,25 @@ class VerificationScreen extends StatelessWidget {
                     },
                     listener: (context, state) {
                       if (state is auth_bloc.AuthOTPVerified) {
+                        DebugHelper.printWarning(state.runtimeType.toString());
+                        final phoneNumberBloc =
+                            context.read<phone_number_bloc.PhoneNumberBloc>();
+                        context.read<auth_bloc.AuthBloc>().add(
+                            auth_bloc.GetUserEvent(
+                                phoneNumber: phoneNumberBloc
+                                    .state.textEditingController.text,
+                                countryCode:
+                                    phoneNumberBloc.state.countryCode));
+                      } else if (state is auth_bloc.AuthUserFound ||
+                          state is auth_bloc.AuthUserNotFound) {
                         Navigator.pushReplacementNamed(
                             context, HomeScreen.routeName);
                       } else if (state is auth_bloc.AuthOTPVerificationFailed) {
+                        BotToast.showText(
+                            text: state.message,
+                            contentColor: theme.primaryColorLight,
+                            textStyle: theme.textTheme.bodyMedium!);
+                      } else if (state is auth_bloc.AuthFailedToGetUser) {
                         BotToast.showText(
                             text: state.message,
                             contentColor: theme.primaryColorLight,

@@ -15,6 +15,14 @@ class InsertEvent extends PhoneNumberEvent {
   List<Object> get props => [value];
 }
 
+class InsertCountryCodeEvent extends PhoneNumberEvent {
+  final String countryCode;
+  const InsertCountryCodeEvent({required this.countryCode});
+
+  @override
+  List<Object> get props => [countryCode];
+}
+
 class BackspaceEvent extends PhoneNumberEvent {
   const BackspaceEvent();
 

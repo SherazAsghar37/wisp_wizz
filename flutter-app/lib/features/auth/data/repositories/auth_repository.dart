@@ -6,6 +6,7 @@ import 'package:wisp_wizz/features/app/errors/failure.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/firebase_authentication.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
+import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 
@@ -66,11 +67,12 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  FutureNullabeleUser getUser(
+  ResultFuture<UserModel?> getUser(
       {required int phoneNumber, required String countryCode}) async {
     try {
       final response = await _remoteDatasource.getUser(
           phoneNumber: phoneNumber, countryCode: countryCode);
+
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));

@@ -17,7 +17,7 @@ export default class Validation {
     });
     try {
       numberSchema.parse(req.body);
-
+      console.log(req.body);
       return next();
     } catch (error) {
       if (error instanceof ZodError) return zodErrorHandler(error, res);
@@ -32,10 +32,12 @@ export default class Validation {
     next: NextFunction
   ) => {
     const userSchema = z.object({
-      full_name: z.string(),
-      email: z.string().email(),
-      password: z.string().min(6),
-      gender: z.string(),
+      name: z.string(),
+      phoneNumber: z.coerce.number().int().gte(9999999).lte(100000000000000),
+      countryCode: z.string().startsWith("+"),
+      image: z.string(),
+      status: z.boolean(),
+      lastSeen: z.string(),
     });
     try {
       const user = req.body;
@@ -49,27 +51,7 @@ export default class Validation {
         .json({ message: "some thing went wrong" });
     }
   };
-  public userLoginValidator = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    const userSchema = z.object({
-      email: z.string().email(),
-      password: z.string().min(6),
-    });
-    try {
-      const user = req.body;
-      console.log(user);
-      userSchema.parse(user);
-      return next();
-    } catch (error) {
-      if (error instanceof ZodError) return zodErrorHandler(error, res);
-      return res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: "some thing went wrong" });
-    }
-  };
+
   public blogValidator = (req: Request, res: Response, next: NextFunction) => {
     const MAX_FILE_SIZE = 50000000;
     const ACCEPTED_IMAGE_TYPES = [

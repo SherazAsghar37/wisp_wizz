@@ -3,7 +3,6 @@ import 'dart:io';
 // ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_user_usecase.dart';
@@ -70,7 +69,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onVerifyOTPEvent(
       VerifyOTPEvent event, Emitter<AuthState> emit) async {
     emit(const AuthVerifyingOTP());
-    DebugHelper.printWarning("$_verificationId , ${event.otp} ");
     final validation = verifyOtpValidation(event.otp);
     if (validation.isLeft()) {
       validation.fold(
@@ -104,14 +102,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthGettingUser());
 
     final validation = sendCodeValidation(event.phoneNumber, event.countryCode);
-    final phoneNumber = int.parse(event.phoneNumber);
+
     if (validation.isLeft()) {
       validation.fold((f) => emit(AuthFailedToGetUser(f.message)), (s) => null);
       return;
     }
+    final phoneNumber = int.parse(event.phoneNumber);
 
     final res = await _getUser(CustomGetUserParam(
         phoneNumber: phoneNumber, countryCode: event.countryCode));
+
     res.fold(
         (f) => emit(AuthFailedToGetUser(f.message)),
         (s) => {

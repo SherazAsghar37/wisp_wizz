@@ -51,23 +51,27 @@ void main() {
       image: image);
   const customPhoneResponse =
       CustomPhoneResoponse(verificationId: verificationId);
+  const customGetUserParam =
+      CustomGetUserParam(phoneNumber: phoneNumberInt, countryCode: countryCode);
   const ApiFailure apiFailure =
       ApiFailure(message: "whatever.message", statusCode: 500);
-
+  UserModel userModel = UserModel.empty();
   setUp(() {
     sendCode = MSendCode();
     verifyOTP = MVerifyOTP();
     loginUser = MLoginUser();
+    getUser = MGetUser();
     authBloc = AuthBloc(
         loginUser: loginUser,
         sendCode: sendCode,
         verifyOTP: verifyOTP,
         getUser: getUser);
     phoneAuthCredential = MPhoneAuthCradential();
-    getUser = MGetUser();
+
     registerFallbackValue(customPhoneParam);
     registerFallbackValue(customVerificationParam);
     registerFallbackValue(customUserParam);
+    registerFallbackValue(customGetUserParam);
   });
   tearDown(() => authBloc.close());
 
@@ -196,12 +200,70 @@ void main() {
             verifyNoMoreInteractions(verifyOTP);
           });
     });
+    group("[GetUser] - ", () {
+      blocTest<AuthBloc, AuthState>(
+          'emits >[const AuthVerifyi<AuthState>[const AuthGettingUser(),AuthUserFound(user: UserModel.empty())], when MyEvent is added.',
+          build: () {
+            when(() => getUser(any()))
+                .thenAnswer((invocation) async => Right(userModel));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const GetUserEvent(
+              phoneNumber: phoneNumber, countryCode: countryCode)),
+          expect: () => <AuthState>[
+                const AuthGettingUser(),
+                AuthUserFound(user: userModel)
+              ],
+          verify: (bloc) {
+            verify(() => getUser(const CustomGetUserParam(
+                phoneNumber: phoneNumberInt,
+                countryCode: countryCode))).called(1);
+            verifyNoMoreInteractions(loginUser);
+          });
+      blocTest<AuthBloc, AuthState>(
+          'emits >[const AuthVerifyi<AuthState>[const AuthGettingUser(),AuthUserFound(user: UserModel.empty())], when MyEvent is added.',
+          build: () {
+            when(() => getUser(any()))
+                .thenAnswer((invocation) async => const Right(null));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const GetUserEvent(
+              phoneNumber: phoneNumber, countryCode: countryCode)),
+          expect: () =>
+              <AuthState>[const AuthGettingUser(), const AuthUserNotFound()],
+          verify: (bloc) {
+            verify(() => getUser(const CustomGetUserParam(
+                phoneNumber: phoneNumberInt,
+                countryCode: countryCode))).called(1);
+            verifyNoMoreInteractions(getUser);
+          });
+
+      blocTest<AuthBloc, AuthState>(
+          'emits <AuthState>[const AuthGettingUser(),AuthFailedToGetUser(apiFailure.message)] when MyEvent is added.',
+          build: () {
+            when(() => getUser(any()))
+                .thenAnswer((invocation) async => const Left(apiFailure));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const GetUserEvent(
+              phoneNumber: phoneNumber, countryCode: countryCode)),
+          expect: () => <AuthState>[
+                const AuthGettingUser(),
+                AuthFailedToGetUser(apiFailure.message)
+              ],
+          verify: (bloc) {
+            verify(() => getUser(const CustomGetUserParam(
+                phoneNumber: phoneNumberInt,
+                countryCode: countryCode))).called(1);
+            verifyNoMoreInteractions(loginUser);
+          });
+    });
     group("[Login] - ", () {
       blocTest<AuthBloc, AuthState>(
           'emits >[const AuthVerifyingOTP(), const AuthOTPVerified()] when MyEvent is added.',
           build: () {
             when(() => loginUser(any()))
-                .thenAnswer((invocation) async => Right(UserModel.empty()));
+                .thenAnswer((invocation) async => Right(userModel));
             return authBloc;
           },
           act: (bloc) => bloc.add(LoginEvent(
@@ -209,10 +271,8 @@ void main() {
               countryCode: countryCode,
               name: name,
               image: image)),
-          expect: () => <AuthState>[
-                const AuthloggingIn(),
-                AuthloggedIn(user: UserModel.empty())
-              ],
+          expect: () =>
+              <AuthState>[const AuthloggingIn(), AuthloggedIn(user: userModel)],
           verify: (bloc) {
             verify(() => loginUser(CustomUserParam(
                 phoneNumber: phoneNumberInt,

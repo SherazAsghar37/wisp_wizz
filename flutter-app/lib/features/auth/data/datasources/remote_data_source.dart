@@ -64,17 +64,20 @@ class RemoteDatasource {
         "phoneNumber": phoneNumber,
         "countryCode": countryCode
       };
+      Dio dio = Dio();
 
-      final response = await _dio.post(
+      final response = await dio.post(
         url,
         data: data,
       );
+      DebugHelper.printError(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
         if (userData["user"] == null) {
           return null;
+        } else {
+          return UserModel.fromMap(userData["user"]);
         }
-        return UserModel.fromMap(userData["user"]);
       } else {
         throw DioException(
           requestOptions: RequestOptions(),

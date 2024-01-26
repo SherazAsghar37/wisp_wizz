@@ -41,7 +41,7 @@ void main() {
   UserModel userModel = UserModel.empty();
   group("[Auth RemoteDataSource] - ", () {
     group("[Login User] - ", () {
-      test("It should post loginUser and return void by calling only once",
+      test("It should post loginUser and return userModel by calling only once",
           () async {
         //Arrange
         when(() => dio.post(
@@ -119,6 +119,112 @@ void main() {
             statusCode: statusCode,
           )),
         );
+      });
+    });
+    group("[Get User] - ", () {
+      test("It should post getUser and return userModel by calling only once",
+          () async {
+        //Arrange
+        when(() => dio.post(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenAnswer((invocation) async => Response(
+                requestOptions: RequestOptions(),
+                statusCode: 201,
+                data: jsonEncode({"user": userModel.toMap()})));
+        //Act
+        final response = await remoteDatasource.getUser(
+          phoneNumber: params.phoneNumber,
+          countryCode: params.countryCode,
+        );
+        //Assert
+        expect(response, isA<UserModel>());
+        verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
+              "phoneNumber": params.phoneNumber,
+              "countryCode": params.countryCode
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+      test("It should post getUser and return null by calling only once",
+          () async {
+        //Arrange
+        when(() => dio.post(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenAnswer((invocation) async => Response(
+                requestOptions: RequestOptions(),
+                statusCode: 201,
+                data: jsonEncode({"user": null})));
+        //Act
+        final response = await remoteDatasource.getUser(
+          phoneNumber: params.phoneNumber,
+          countryCode: params.countryCode,
+        );
+        //Assert
+        expect(response, null);
+        verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
+              "phoneNumber": params.phoneNumber,
+              "countryCode": params.countryCode
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+      test(
+          "It should call remoteDataSource.loginUser and throw api exception when dio Exception occurs calling only once",
+          () async {
+        //Arrange
+        when(() => dio.post(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenThrow(DioException(
+                requestOptions: RequestOptions(), message: errorMessage));
+        //Act
+        final response = remoteDatasource.getUser(
+          phoneNumber: params.phoneNumber,
+          countryCode: params.countryCode,
+        );
+        //Assert
+        expect(
+            response,
+            throwsA(const ApiException(
+                message: errorMessage, statusCode: statusCode)));
+        verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
+              "phoneNumber": params.phoneNumber,
+              "countryCode": params.countryCode
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+
+      test(
+          "It should call remoteDataSource.loginUser and throw api exception by calling only once",
+          () async {
+        //Arrange
+        when(() => dio.post(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenAnswer((invocation) async => Response(
+                requestOptions: RequestOptions(),
+                statusCode: statusCode,
+                data: {"message": errorMessage}));
+        //Assert
+        await expectLater(
+          remoteDatasource.getUser(
+            phoneNumber: params.phoneNumber,
+            countryCode: params.countryCode,
+          ),
+          throwsA(const ApiException(
+            message: errorMessage,
+            statusCode: statusCode,
+          )),
+        );
+        verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
+              "phoneNumber": params.phoneNumber,
+              "countryCode": params.countryCode
+            })).called(1);
+        verifyNoMoreInteractions(dio);
       });
     });
   });
