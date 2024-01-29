@@ -110,6 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (context, state) {
                             return Expanded(
                               child: InputField(
+                                  hintText: "0123456789",
+                                  leftBorder: Radius.zero,
+                                  readonly: true,
                                   controller: state.textEditingController),
                             );
                           },

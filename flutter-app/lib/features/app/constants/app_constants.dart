@@ -11,3 +11,7 @@ const dFlagCode = "PK";
 
 RegExp contryCodeRegex = RegExp(r'\[([^\]]*)\]');
 const int verificationCodeLength = 6;
+
+//fileManager
+const String mediaFolder = "media";
+const String profilePicturesFolder = "profile_pictures";

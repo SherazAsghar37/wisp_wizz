@@ -16,7 +16,7 @@ Route<dynamic> routesGenerator(RouteSettings routeSettings) {
     case HomeScreen.routeName:
       return SlidePageRoute(widget: const HomeScreen());
     case UserRegistrationScreen.routeName:
-      return SlidePageRoute(widget: const UserRegistrationScreen());
+      return SlidePageRoute(widget: UserRegistrationScreen());
     default:
       return MaterialPageRoute(
         builder: (context) => const Scaffold(
