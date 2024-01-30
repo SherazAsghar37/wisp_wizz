@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,11 +33,11 @@ void main() {
     phoneAuthCredential = MPhoneAuthCradential();
   });
 
-  final params = CustomUserParam(
+  const params = CustomUserParam(
       countryCode: "whatever.countryCode",
       name: "whatever.name",
       phoneNumber: 123456789,
-      image: File("whatever.file"));
+      image: "whatever.image");
 
   const otpParams = CustomVerificationParam(
     otp: "123456",

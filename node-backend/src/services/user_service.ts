@@ -16,6 +16,7 @@ export default class UserService {
     countryCode: string
   ): Promise<User | null> => {
     try {
+      console.log(countryCode);
       const user: User | null = await this._userRepository.findByPhoneNumber(
         phoneNumber,
         countryCode
@@ -38,20 +39,36 @@ export default class UserService {
     lastSeen: Date
   ): Promise<User> => {
     try {
-      const user = await this._userRepository.createByLocal({
-        name,
+      var user: User | null = await this._userRepository.findByPhoneNumber(
         phoneNumber,
-        countryCode,
-        image,
-        status,
-        lastSeen,
-      });
+        countryCode
+      );
+      if (!user) {
+        user = await this._userRepository.createByLocal({
+          name,
+          phoneNumber,
+          countryCode,
+          image,
+          status,
+          lastSeen,
+        });
+      } else {
+        user = user = await this._userRepository.updateUser({
+          name,
+          phoneNumber,
+          countryCode,
+          image,
+          status,
+          lastSeen,
+        });
+      }
 
       return user;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       } else {
+        console.log("!!!Criticial Error!!!", error);
         throw new ThrowCriticalError(error);
       }
     }

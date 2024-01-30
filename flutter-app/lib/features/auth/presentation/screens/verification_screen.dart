@@ -5,8 +5,8 @@ import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.da
 import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart'
     as phone_number_bloc;
+import 'package:wisp_wizz/features/auth/presentation/screens/user_registration_screen.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
-import 'package:wisp_wizz/features/chat/presentation/screens/home_screen.dart';
 
 class VerificationScreen extends StatelessWidget {
   static const String routeName = verificationScreen;
@@ -141,7 +141,7 @@ class VerificationScreen extends StatelessWidget {
                       } else if (state is auth_bloc.AuthUserFound ||
                           state is auth_bloc.AuthUserNotFound) {
                         Navigator.pushReplacementNamed(
-                            context, HomeScreen.routeName);
+                            context, UserRegistrationScreen.routeName);
                       } else if (state is auth_bloc.AuthOTPVerificationFailed) {
                         BotToast.showText(
                             text: state.message,

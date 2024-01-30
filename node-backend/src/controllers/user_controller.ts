@@ -14,7 +14,7 @@ export default class UserController {
   public getUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { countryCode, phoneNumber } = req.body;
-      const user = await this._userServices.getUser(countryCode, phoneNumber);
+      const user = await this._userServices.getUser(phoneNumber, countryCode);
       return res.status(HttpStatusCode.OK).json(JSON.stringify({ user: user }));
     } catch (error) {
       this._errorHandler.handleError(error, res);

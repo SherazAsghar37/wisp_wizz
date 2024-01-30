@@ -8,7 +8,7 @@ class UserModel extends Equatable {
   final String id;
   final bool status;
   final DateTime lastSeen;
-  final String image;
+  final String? image;
 
   const UserModel({
     required this.name,
@@ -17,7 +17,7 @@ class UserModel extends Equatable {
     required this.id,
     required this.status,
     required this.lastSeen,
-    required this.image,
+    this.image,
   });
 
   UserModel copyWith({
@@ -54,13 +54,13 @@ class UserModel extends Equatable {
 
   UserModel.fromMap(Map<String, dynamic> map)
       : this(
-          name: map['name'] as String,
-          phoneNumber: map['phoneNumber'] as int,
+          name: map['name'],
+          phoneNumber: map['phoneNumber'],
           countryCode: map['countryCode'],
-          id: map['id'] as String,
-          status: map['status'] as bool,
-          lastSeen: DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] as int),
-          image: map['image'] as String,
+          id: map['_id'],
+          status: map['status'],
+          lastSeen: DateTime.parse(map['lastSeen']),
+          image: map['image'],
         );
 
   String toJson() => json.encode(toMap());

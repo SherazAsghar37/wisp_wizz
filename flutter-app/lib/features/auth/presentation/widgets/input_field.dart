@@ -6,18 +6,21 @@ class InputField extends StatelessWidget {
   final String hintText;
   final Radius? leftBorder;
   final bool? readonly;
+  final TextInputType? inputType;
   const InputField({
     super.key,
     required this.controller,
     required this.hintText,
     this.leftBorder,
     this.readonly,
+    this.inputType,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return TextField(
+      keyboardType: inputType,
       controller: controller,
       showCursor: true,
       readOnly: readonly ?? false,

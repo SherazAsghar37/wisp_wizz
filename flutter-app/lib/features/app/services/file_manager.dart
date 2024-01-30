@@ -31,6 +31,6 @@ class FileManager {
     final filePath = '$profilePicturesPath/$fileName';
 
     await file.copy(filePath);
-    return fileName;
+    return filePath;
   }
 }

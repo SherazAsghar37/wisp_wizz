@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
-import 'package:wisp_wizz/features/app/config/dio_config.dart';
+import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/firebase_authentication.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/repositories/auth_repository.dart';
@@ -32,7 +32,9 @@ Future<void> init() async {
     ..registerLazySingleton<FirebaseAuthentication>(() =>
         FirebaseAuthentication(auth: sl(), phoneAuthProviderWrapper: sl()))
     //external dependency
-    ..registerLazySingleton<Dio>(() => DioClient.getInstance())
+    ..registerLazySingleton<Dio>(() => Dio(BaseOptions(
+          baseUrl: baseUrl,
+        )))
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
     ..registerLazySingleton<PhoneAuthProviderWrapper>(
         () => PhoneAuthProviderWrapper());

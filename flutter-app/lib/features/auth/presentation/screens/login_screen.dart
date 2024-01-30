@@ -113,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   hintText: "0123456789",
                                   leftBorder: Radius.zero,
                                   readonly: true,
+                                  inputType: TextInputType.none,
                                   controller: state.textEditingController),
                             );
                           },

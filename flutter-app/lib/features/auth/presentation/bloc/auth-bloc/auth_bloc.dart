@@ -1,5 +1,3 @@
-import 'dart:io';
-
 // ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -89,10 +87,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
       return;
     }
+    int phoneNumber = int.parse(event.phoneNumber);
     final res = await _loginUser(CustomUserParam(
         countryCode: event.countryCode,
         name: event.name,
-        phoneNumber: event.phoneNumber,
+        phoneNumber: phoneNumber,
         image: event.image));
     res.fold((f) => emit(AuthloginFailed(f.message)),
         (s) => emit(AuthloggedIn(user: s)));

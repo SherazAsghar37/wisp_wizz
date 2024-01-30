@@ -36,10 +36,10 @@ class GetUserEvent extends AuthEvent {
 }
 
 class LoginEvent extends AuthEvent {
-  final String name;
-  final int phoneNumber;
+  final String? name;
+  final String phoneNumber;
   final String countryCode;
-  final File? image;
+  final String? image;
   const LoginEvent({
     required this.phoneNumber,
     required this.countryCode,
@@ -48,7 +48,6 @@ class LoginEvent extends AuthEvent {
   });
   @override
   List<Object> get props => [
-        phoneNumber,
         phoneNumber,
         countryCode,
       ];

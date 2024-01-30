@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/usecases/usecase.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
@@ -22,7 +20,7 @@ class CustomUserParam extends Equatable {
   final String? name;
   final int phoneNumber;
   final String countryCode;
-  final File? image;
+  final String? image;
 
   const CustomUserParam(
       {required this.countryCode,

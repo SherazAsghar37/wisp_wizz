@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,8 +10,6 @@ import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
-
-import '../../../../../app/temp_path.dart';
 import '../../../global/phone_auth_cradentials.mock.dart';
 
 class MSendCode extends Mock implements SendCode {}
@@ -38,7 +34,7 @@ void main() {
   const String verificationId = "123456890";
   const String otp = "123456";
   const String name = "whatever.name";
-  File? image = tempFile;
+  String? image = "whatever.image";
 
   const customPhoneParam =
       CustomPhoneParam(phoneNumber: phoneNumber, countryCode: countryCode);
@@ -267,7 +263,7 @@ void main() {
             return authBloc;
           },
           act: (bloc) => bloc.add(LoginEvent(
-              phoneNumber: phoneNumberInt,
+              phoneNumber: phoneNumber,
               countryCode: countryCode,
               name: name,
               image: image)),
@@ -286,7 +282,7 @@ void main() {
         'emits [AuthVerifyingOTP(),AuthOTPVerificationFailed()] when country code validation fails',
         build: () => authBloc,
         act: (bloc) => bloc.add(LoginEvent(
-            phoneNumber: phoneNumberInt,
+            phoneNumber: phoneNumber,
             countryCode: "",
             name: name,
             image: image)),
@@ -299,7 +295,7 @@ void main() {
         'emits [AuthVerifyingOTP(),AuthOTPVerificationFailed()] when phone validation fails',
         build: () => authBloc,
         act: (bloc) => bloc.add(LoginEvent(
-            phoneNumber: 123456,
+            phoneNumber: "123456",
             countryCode: countryCode,
             name: name,
             image: image)),
@@ -316,7 +312,7 @@ void main() {
             return authBloc;
           },
           act: (bloc) => bloc.add(LoginEvent(
-              phoneNumber: phoneNumberInt,
+              phoneNumber: phoneNumber,
               countryCode: countryCode,
               name: name,
               image: image)),

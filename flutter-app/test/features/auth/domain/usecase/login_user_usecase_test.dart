@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -18,11 +16,11 @@ void main() {
     loginUser = LoginUser(authRepository: authRepository);
   });
 
-  final params = CustomUserParam(
+  const params = CustomUserParam(
       countryCode: "whatever.countryCode",
       name: "whatever.name",
       phoneNumber: 123456789,
-      image: File("whatever.file"));
+      image: "whatever.image");
   final UserModel user = UserModel.empty();
 
   group("[Auth Repository] - ", () {

@@ -26,7 +26,7 @@ export default class AuthController {
         status,
         lastSeen
       );
-      return res.status(HttpStatusCode.OK).json({ user: user });
+      return res.status(HttpStatusCode.OK).json(JSON.stringify({ user: user }));
     } catch (error) {
       this._errorHandler.handleError(error, res);
     }
