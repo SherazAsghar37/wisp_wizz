@@ -1,11 +1,9 @@
-import 'package:bot_toast/bot_toast.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart'
     as auth_bloc;
 import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart'
     as phone_number_bloc;
-import 'package:wisp_wizz/features/auth/presentation/screens/user_registration_screen.dart';
+
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
 
 class VerificationScreen extends StatelessWidget {
@@ -133,7 +131,6 @@ class VerificationScreen extends StatelessWidget {
                     },
                     listener: (context, state) {
                       if (state is auth_bloc.AuthOTPVerified) {
-                        DebugHelper.printWarning(state.runtimeType.toString());
                         final phoneNumberBloc =
                             context.read<phone_number_bloc.PhoneNumberBloc>();
                         context.read<auth_bloc.AuthBloc>().add(

@@ -1,11 +1,6 @@
-import 'dart:io';
-import 'package:bot_toast/bot_toast.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:wisp_wizz/features/app/services/file_manager.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
-import 'package:wisp_wizz/features/chat/presentation/screens/home_screen.dart';
 
 // ignore: must_be_immutable
 class UserRegistrationScreen extends StatefulWidget {

@@ -1,4 +1,3 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
@@ -113,6 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   hintText: "0123456789",
                                   leftBorder: Radius.zero,
                                   readonly: true,
+                                  autoFocus: true,
                                   inputType: TextInputType.none,
                                   controller: state.textEditingController),
                             );
