@@ -38,6 +38,7 @@ export class ErrorHandler {
     if (this.isTrustedError(error) && response) {
       this.handleTrustedError(error as CustomError, response);
     } else {
+      console.log("!!!Criticial Error!!!", error);
       this.handleCriticalError(error, response);
     }
   }

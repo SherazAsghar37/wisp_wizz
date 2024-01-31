@@ -35,24 +35,30 @@ class FirebaseAuthentication {
         },
         verificationFailed: (FirebaseAuthException e) {
           DebugHelper.printError("FirebaseAuthException: ${e.toString()}");
-          completer.completeError(const ApiException(
-            message: "Failed to send code, please try again later",
-            statusCode: StatusCode.FORBIDDEN,
-          ));
+          if (!completer.isCompleted) {
+            completer.completeError(const ApiException(
+              message: "Failed to send code, please try again later",
+              statusCode: StatusCode.FORBIDDEN,
+            ));
+          }
         },
         codeSent: (String verificationId, int? resendToken) {
-          _verificationId = verificationId;
-          completer.complete(CustomPhoneResoponse(
-            verificationId: _verificationId,
-            phoneAuthCredential: phoneAuthCredential,
-          ));
+          if (!completer.isCompleted) {
+            _verificationId = verificationId;
+            completer.complete(CustomPhoneResoponse(
+              verificationId: _verificationId,
+              phoneAuthCredential: phoneAuthCredential,
+            ));
+          }
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          _verificationId = verificationId;
-          completer.complete(CustomPhoneResoponse(
-            verificationId: _verificationId,
-            phoneAuthCredential: phoneAuthCredential,
-          ));
+          if (!completer.isCompleted) {
+            _verificationId = verificationId;
+            completer.complete(CustomPhoneResoponse(
+              verificationId: _verificationId,
+              phoneAuthCredential: phoneAuthCredential,
+            ));
+          }
         },
       );
 
@@ -75,8 +81,29 @@ class FirebaseAuthentication {
     try {
       final PhoneAuthCredential phoneAuthCredential = _phoneAuthProviderWrapper
           .credential(verificationId: verificationId, smsCode: otp);
-
+      await getUserByCradentials(phoneAuthCredential: phoneAuthCredential);
       return phoneAuthCredential;
+    } on FirebaseAuthException catch (authException) {
+      DebugHelper.printError("FirebaseAuthException: ${authException.message}");
+      throw const ApiException(
+          message: "Invalid OTP", statusCode: StatusCode.FORBIDDEN);
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      DebugHelper.printError("Exception: ${e.toString()}");
+      throw const ApiException(
+          message: "Invalid OTP", statusCode: StatusCode.FORBIDDEN);
+    }
+  }
+
+  Future<UserCredential> getUserByCradentials({
+    required PhoneAuthCredential phoneAuthCredential,
+  }) async {
+    try {
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(phoneAuthCredential);
+
+      return userCredential;
     } on FirebaseAuthException catch (authException) {
       DebugHelper.printError("FirebaseAuthException: ${authException.message}");
       throw const ApiException(

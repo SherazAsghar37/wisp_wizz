@@ -1,9 +1,9 @@
 import { CountryCodes } from "../utils/enums";
 type User = {
   name: string;
-  profilePictureUrl: string;
+  image: string;
   phoneNumber: number;
-  countryCode: CountryCodes;
+  countryCode: string;
   status: Boolean;
   lastSeen: Date;
 };

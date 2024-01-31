@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
@@ -13,11 +11,13 @@ abstract class IAuthRepository {
       {required String? name,
       required int phoneNumber,
       required String countryCode,
-      File? image});
+      String? image});
   FutureNullabeleUser getUser({
     required int phoneNumber,
     required String countryCode,
   });
+  NullabeleUser getCachedUser();
+  FutureVoid logout();
 }
 
 abstract class ICustomPhoneResponse {

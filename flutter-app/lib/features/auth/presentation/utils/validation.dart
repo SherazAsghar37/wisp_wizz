@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 
@@ -24,11 +22,11 @@ Either<ValidationFailure, bool> verifyOtpValidation(String otp) {
 }
 
 Either<ValidationFailure, bool> loginValidation(
-    String countryCode, String? name, int phoneNumber, File? image) {
+    String countryCode, String? name, String phoneNumber, String? image) {
   if (countryCode.isEmpty) {
     return const Left(
         ValidationFailure(message: "Country Code cannot be empty"));
-  } else if (phoneNumber < 1000000) {
+  } else if (phoneNumber.length < 7) {
     return const Left(ValidationFailure(message: "Invalid phone number"));
   } else {
     return const Right(true);

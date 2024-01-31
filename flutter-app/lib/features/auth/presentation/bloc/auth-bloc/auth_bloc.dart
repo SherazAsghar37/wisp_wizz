@@ -1,13 +1,12 @@
-import 'dart:io';
-
 // ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
+import 'package:wisp_wizz/features/auth/domain/usecase/get_cached_user.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:wisp_wizz/features/auth/domain/usecase/logout_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/validation.dart';
@@ -20,22 +19,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SendCode _sendCode;
   final VerifyOTP _verifyOTP;
   final GetUser _getUser;
+  final GetCachedUser _getCachedUser;
+  final LogoutUser _logoutUser;
   String _verificationId = "";
 
   AuthBloc(
       {required LoginUser loginUser,
       required SendCode sendCode,
       required VerifyOTP verifyOTP,
-      required GetUser getUser})
+      required GetUser getUser,
+      required GetCachedUser getCachedUser,
+      required LogoutUser logoutUser})
       : _loginUser = loginUser,
         _sendCode = sendCode,
         _verifyOTP = verifyOTP,
         _getUser = getUser,
-        super(const AuthInitial()) {
+        _getCachedUser = getCachedUser,
+        _logoutUser = logoutUser,
+        super(const AuthLoggedOut()) {
     on<SendCodeEvent>(_onSendCodeEvent);
     on<VerifyOTPEvent>(_onVerifyOTPEvent);
-    on<LoginEvent>(_onLoginEvent);
+    on<LoginEvent>(_onLogin);
     on<GetUserEvent>(_onGetUser);
+    on<GetCachedUserEvent>(_onGetCachedUser);
+    on<LogoutEvent>(_onLogout);
   }
 
   Future<void> _onSendCodeEvent(
@@ -70,7 +77,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onVerifyOTPEvent(
       VerifyOTPEvent event, Emitter<AuthState> emit) async {
     emit(const AuthVerifyingOTP());
-    DebugHelper.printWarning("$_verificationId , ${event.otp} ");
     final validation = verifyOtpValidation(event.otp);
     if (validation.isLeft()) {
       validation.fold(
@@ -83,7 +89,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (s) => emit(const AuthOTPVerified()));
   }
 
-  Future<void> _onLoginEvent(LoginEvent event, Emitter<AuthState> emit) async {
+  Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(const AuthloggingIn());
     final validation = loginValidation(
         event.countryCode, event.name, event.phoneNumber, event.image);
@@ -91,10 +97,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
       return;
     }
+    int phoneNumber = int.parse(event.phoneNumber);
     final res = await _loginUser(CustomUserParam(
         countryCode: event.countryCode,
         name: event.name,
-        phoneNumber: event.phoneNumber,
+        phoneNumber: phoneNumber,
         image: event.image));
     res.fold((f) => emit(AuthloginFailed(f.message)),
         (s) => emit(AuthloggedIn(user: s)));
@@ -104,14 +111,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthGettingUser());
 
     final validation = sendCodeValidation(event.phoneNumber, event.countryCode);
-    final phoneNumber = int.parse(event.phoneNumber);
+
     if (validation.isLeft()) {
       validation.fold((f) => emit(AuthFailedToGetUser(f.message)), (s) => null);
       return;
     }
+    final phoneNumber = int.parse(event.phoneNumber);
 
     final res = await _getUser(CustomGetUserParam(
         phoneNumber: phoneNumber, countryCode: event.countryCode));
+
     res.fold(
         (f) => emit(AuthFailedToGetUser(f.message)),
         (s) => {
@@ -120,5 +129,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               else
                 {emit(const AuthUserNotFound())}
             });
+  }
+
+  void _onGetCachedUser(GetCachedUserEvent event, Emitter<AuthState> emit) {
+    emit(const AuthGettingUser());
+
+    final res = _getCachedUser();
+
+    res.fold(
+        (f) => emit(AuthFailedToGetUser(f.message)),
+        (s) => {
+              if (s != null)
+                {emit(AuthloggedIn(user: s))}
+              else
+                {emit(const AuthLoggedOut())}
+            });
+  }
+
+  void _onLogout(LogoutEvent event, Emitter<AuthState> emit) async {
+    emit(const AuthLoggingout());
+
+    final res = await _logoutUser();
+
+    res.fold((f) => emit(AuthFailedToLogout(f.message)),
+        (s) => emit(const AuthLoggedOut()));
   }
 }

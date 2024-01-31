@@ -11,10 +11,12 @@ part 'phone_number_state.dart';
 class PhoneNumberBloc extends Bloc<PhoneNumberEvent, PhoneNumberState> {
   PhoneNumberBloc()
       : super(PhoneNumberInitial(
-            textEditingController: TextEditingController())) {
+            textEditingController: TextEditingController(),
+            countryCode: "+92")) {
     on<InsertEvent>(onInsertEvent);
     on<BackspaceEvent>(onBackSpace);
     on<ClearEvent>(onClear);
+    on<InsertCountryCodeEvent>(onInsertCountryCodeEvent);
   }
   FutureOr<void> onInsertEvent(
       InsertEvent event, Emitter<PhoneNumberState> emit) async {
@@ -23,8 +25,7 @@ class PhoneNumberBloc extends Bloc<PhoneNumberEvent, PhoneNumberState> {
       text: "${controller.text}${event.value}",
     );
     emit(PhoneNumberUpdated(
-      textEditingController: controller,
-    ));
+        textEditingController: controller, countryCode: state.countryCode));
   }
 
   FutureOr<void> onBackSpace(
@@ -36,14 +37,20 @@ class PhoneNumberBloc extends Bloc<PhoneNumberEvent, PhoneNumberState> {
       );
     }
     emit(PhoneNumberUpdated(
-      textEditingController: controller,
-    ));
+        textEditingController: controller, countryCode: state.countryCode));
   }
 
   void onClear(ClearEvent event, Emitter<PhoneNumberState> emit) {
     state.textEditingController.clear();
     emit(PhoneNumberUpdated(
-      textEditingController: state.textEditingController,
-    ));
+        textEditingController: state.textEditingController,
+        countryCode: state.countryCode));
+  }
+
+  void onInsertCountryCodeEvent(
+      InsertCountryCodeEvent event, Emitter<PhoneNumberState> emit) {
+    emit(PhoneNumberUpdated(
+        textEditingController: state.textEditingController,
+        countryCode: event.countryCode));
   }
 }

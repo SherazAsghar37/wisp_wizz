@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
@@ -15,16 +14,11 @@ class RemoteDatasource {
       {required String? name,
       required int phoneNumber,
       required String countryCode,
-      File? image}) async {
+      String? image}) async {
     try {
       final String url = _dio.options.baseUrl + loginUrl;
       final MapData data = {
-        'image': image != null
-            ? await MultipartFile.fromFile(
-                image.path,
-                filename: imageFileName,
-              )
-            : null,
+        'image': image,
         "name": name,
         "phoneNumber": phoneNumber,
         "countryCode": countryCode
@@ -32,25 +26,28 @@ class RemoteDatasource {
 
       final response = await _dio.post(
         url,
-        data: FormData.fromMap(data),
+        data: data,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
-        DebugHelper.printWarning(userData["user"].runtimeType.toString());
+        DebugHelper.printWarning(userData.toString());
         return UserModel.fromMap(userData["user"]);
       } else {
-        throw DioException(
-          requestOptions: RequestOptions(),
+        throw ApiException(
           message: response.data["message"],
+          statusCode: response.statusCode ?? 500,
         );
       }
     } on ApiException {
       rethrow;
     } on DioException catch (dioException) {
-      throw ApiException(
-          message: dioException.message.toString(), statusCode: 500);
+      DebugHelper.printError(dioException.message.toString());
+      throw const ApiException(
+          message: "Internal server error", statusCode: 500);
     } catch (e) {
-      throw ApiException(message: e.toString(), statusCode: 500);
+      DebugHelper.printError(e.toString());
+      throw const ApiException(
+          message: "Something went wrong", statusCode: 500);
     }
   }
 
@@ -69,25 +66,29 @@ class RemoteDatasource {
         url,
         data: data,
       );
+      DebugHelper.printError(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
         if (userData["user"] == null) {
           return null;
+        } else {
+          return UserModel.fromMap(userData["user"]);
         }
-        return UserModel.fromMap(userData["user"]);
       } else {
-        throw DioException(
-          requestOptions: RequestOptions(),
-          message: response.data["message"],
-        );
+        throw ApiException(
+            message: response.data["message"],
+            statusCode: response.statusCode ?? 500);
       }
     } on ApiException {
       rethrow;
     } on DioException catch (dioException) {
-      throw ApiException(
-          message: dioException.message.toString(), statusCode: 500);
+      DebugHelper.printError(dioException.message.toString());
+      throw const ApiException(
+          message: "Internal server error", statusCode: 500);
     } catch (e) {
-      throw ApiException(message: e.toString(), statusCode: 500);
+      DebugHelper.printError(e.toString());
+      throw const ApiException(
+          message: "Something went wrong", statusCode: 500);
     }
   }
 }

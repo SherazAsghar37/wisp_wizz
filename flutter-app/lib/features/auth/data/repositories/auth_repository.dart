@@ -1,39 +1,46 @@
-import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/firebase_authentication.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/local_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
+import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 
 class AuthRepository implements IAuthRepository {
   final RemoteDatasource _remoteDatasource;
   final FirebaseAuthentication _firebaseAuthentication;
+  final LocalDatasource _localDataSource;
   AuthRepository(
       {required RemoteDatasource remoteDataSource,
-      required FirebaseAuthentication firebaseAuthentication})
+      required FirebaseAuthentication firebaseAuthentication,
+      required LocalDatasource localDataSource})
       : _remoteDatasource = remoteDataSource,
-        _firebaseAuthentication = firebaseAuthentication;
+        _firebaseAuthentication = firebaseAuthentication,
+        _localDataSource = localDataSource;
   @override
   FutureUser loginUser(
       {required String? name,
       required int phoneNumber,
       required String countryCode,
-      File? image}) async {
+      String? image}) async {
     try {
       final response = await _remoteDatasource.loginUser(
           name: name,
           phoneNumber: phoneNumber,
           countryCode: countryCode,
           image: image);
+      await _localDataSource.cacheUserData(response);
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
       // } catch (e) {
       //   return Left(ApiFailure(message: e.toString(), statusCode: 500));
+    } on CacheException catch (e) {
+      return Left(CacheFailure.fromException(e));
     }
   }
 
@@ -66,14 +73,36 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  FutureNullabeleUser getUser(
+  ResultFuture<UserModel?> getUser(
       {required int phoneNumber, required String countryCode}) async {
     try {
       final response = await _remoteDatasource.getUser(
           phoneNumber: phoneNumber, countryCode: countryCode);
+
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
+    }
+  }
+
+  @override
+  Result<UserModel?> getCachedUser() {
+    try {
+      final response = _localDataSource.getCachedUserData();
+
+      return Right(response);
+    } on CacheException catch (e) {
+      return Left(CacheFailure.fromException(e));
+    }
+  }
+
+  @override
+  FutureVoid logout() async {
+    try {
+      final response = await _localDataSource.removeCachedUser();
+      return Right(response);
+    } on CacheException catch (e) {
+      return Left(CacheFailure.fromException(e));
     }
   }
 }

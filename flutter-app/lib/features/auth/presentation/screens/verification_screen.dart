@@ -1,12 +1,13 @@
-import 'package:bot_toast/bot_toast.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart'
     as auth_bloc;
 import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart'
     as phone_number_bloc;
+import 'package:wisp_wizz/features/auth/presentation/provider/auth_controller.dart';
+
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
-import 'package:wisp_wizz/features/chat/presentation/screens/home_screen.dart';
+// ignore: depend_on_referenced_packages
+import 'package:provider/provider.dart';
 
 class VerificationScreen extends StatelessWidget {
   static const String routeName = verificationScreen;
@@ -70,32 +71,60 @@ class VerificationScreen extends StatelessWidget {
                   SizedBox(
                     height: Dimensions.height20,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Did'nt receive code?",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: colorScheme.primary),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          "Resend",
+                  Consumer<AuthController>(builder: (context, value, child) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "You can request code in ${value.secondsRemaining} seconds ",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: theme.primaryColor),
+                          style: TextStyle(color: colorScheme.primary),
                         ),
-                      )
-                    ],
-                  ),
+                        TextButton(
+                          style: const ButtonStyle(
+                              padding:
+                                  MaterialStatePropertyAll(EdgeInsets.all(0))),
+                          onPressed: () {
+                            if (value.secondsRemaining == 0) {
+                              final phoneNumberBlocState = context
+                                  .read<phone_number_bloc.PhoneNumberBloc>()
+                                  .state;
+                              final String phoneNumber = phoneNumberBlocState
+                                  .textEditingController.text;
+                              final String countryCode =
+                                  phoneNumberBlocState.countryCode;
+                              context.read<auth_bloc.AuthBloc>().add(
+                                  auth_bloc.SendCodeEvent(
+                                      countryCode: countryCode,
+                                      phoneNumber: phoneNumber));
+                              value.startTimer();
+                            } else {
+                              BotToast.showText(
+                                  text:
+                                      "kindly wait for ${value.secondsRemaining} seconds",
+                                  contentColor: theme.primaryColorLight,
+                                  textStyle: theme.textTheme.bodyMedium!);
+                            }
+                          },
+                          child: Text(
+                            "Resend",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: theme.primaryColor),
+                          ),
+                        )
+                      ],
+                    );
+                  }),
                 ],
               ),
               Column(
                 children: [
                   BlocConsumer<auth_bloc.AuthBloc, auth_bloc.AuthState>(
                     builder: (context, state) {
-                      DebugHelper.printWarning(state.runtimeType.toString());
-                      if (state is auth_bloc.AuthVerifyingOTP) {
+                      if (state is auth_bloc.AuthVerifyingOTP ||
+                          state is auth_bloc.AuthGettingUser ||
+                          state is auth_bloc.AuthSendingCode) {
                         return PrimaryButton(
                           onTap: () {},
                           widget: SizedBox(
@@ -120,9 +149,24 @@ class VerificationScreen extends StatelessWidget {
                     },
                     listener: (context, state) {
                       if (state is auth_bloc.AuthOTPVerified) {
+                        final phoneNumberBloc =
+                            context.read<phone_number_bloc.PhoneNumberBloc>();
+                        context.read<auth_bloc.AuthBloc>().add(
+                            auth_bloc.GetUserEvent(
+                                phoneNumber: phoneNumberBloc
+                                    .state.textEditingController.text,
+                                countryCode:
+                                    phoneNumberBloc.state.countryCode));
+                      } else if (state is auth_bloc.AuthUserFound ||
+                          state is auth_bloc.AuthUserNotFound) {
                         Navigator.pushReplacementNamed(
-                            context, HomeScreen.routeName);
+                            context, UserRegistrationScreen.routeName);
                       } else if (state is auth_bloc.AuthOTPVerificationFailed) {
+                        BotToast.showText(
+                            text: state.message,
+                            contentColor: theme.primaryColorLight,
+                            textStyle: theme.textTheme.bodyMedium!);
+                      } else if (state is auth_bloc.AuthFailedToGetUser) {
                         BotToast.showText(
                             text: state.message,
                             contentColor: theme.primaryColorLight,

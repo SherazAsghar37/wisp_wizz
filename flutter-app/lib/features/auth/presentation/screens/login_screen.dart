@@ -1,5 +1,7 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart'
+    as otp_bloc;
+import 'package:wisp_wizz/features/auth/presentation/provider/auth_controller.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 
@@ -11,7 +13,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-String countryCode = dCountryCode;
+// String countryCode = dCountryCode;
 String flagCode = dFlagCode;
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -55,9 +57,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   flagCode = country.countryCode;
                                   RegExpMatch? match = contryCodeRegex
                                       .firstMatch(country.displayName);
-                                  countryCode = match != null
-                                      ? match.group(1)!
-                                      : dCountryCode;
+
+                                  context.read<PhoneNumberBloc>().add(
+                                      InsertCountryCodeEvent(
+                                          countryCode: match != null
+                                              ? match.group(1)!
+                                              : dCountryCode));
                                 });
                               }),
                           child: Container(
@@ -84,10 +89,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 SizedBox(
                                   width: Dimensions.width2,
                                 ),
-                                Text(
-                                  countryCode,
-                                  style: theme.textTheme.bodyMedium!
-                                      .copyWith(fontWeight: FontWeight.bold),
+                                BlocBuilder<PhoneNumberBloc, PhoneNumberState>(
+                                  builder: (context, state) => Text(
+                                    state.countryCode,
+                                    style: theme.textTheme.bodyMedium!
+                                        .copyWith(fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                                 const Icon(
                                   dropDownIcon,
@@ -105,6 +112,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (context, state) {
                             return Expanded(
                               child: InputField(
+                                  hintText: "0123456789",
+                                  leftBorder: Radius.zero,
+                                  readonly: true,
+                                  autoFocus: true,
+                                  inputType: TextInputType.none,
                                   controller: state.textEditingController),
                             );
                           },
@@ -140,14 +152,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         return PrimaryButton(
                           text: "Submit",
                           onTap: () {
-                            final String phoneNumber = context
-                                .read<PhoneNumberBloc>()
-                                .state
-                                .textEditingController
-                                .text;
-                            context.read<AuthBloc>().add(SendCodeEvent(
-                                countryCode: countryCode,
-                                phoneNumber: phoneNumber));
+                            AuthController authController =
+                                context.read<AuthController>();
+                            if (authController.secondsRemaining == 0 ||
+                                authController.timer == null) {
+                              final phoneNumberBlocState =
+                                  context.read<PhoneNumberBloc>().state;
+                              final String phoneNumber = phoneNumberBlocState
+                                  .textEditingController.text;
+                              final String countryCode =
+                                  phoneNumberBlocState.countryCode;
+                              context.read<AuthBloc>().add(SendCodeEvent(
+                                  countryCode: countryCode,
+                                  phoneNumber: phoneNumber));
+                              authController.startTimer();
+                            } else {
+                              BotToast.showText(
+                                  text:
+                                      "kindly wait for ${authController.secondsRemaining} seconds",
+                                  contentColor: theme.primaryColorLight,
+                                  textStyle: theme.textTheme.bodyMedium!);
+                            }
                           },
                         );
                       }
@@ -157,8 +182,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushNamed(
                             context, VerificationScreen.routeName);
                       } else if (state is AuthOTPVerified) {
-                        Navigator.pushReplacementNamed(
-                            context, VerificationScreen.routeName);
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          VerificationScreen.routeName,
+                          (route) => false,
+                        ).then((value) => context
+                            .read<otp_bloc.OtpBloc>()
+                            .add(const otp_bloc.ClearEvent()));
                       } else if (state is AuthCodeSentFailed) {
                         BotToast.showText(
                             text: state.message,
