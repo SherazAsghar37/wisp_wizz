@@ -53,6 +53,10 @@ class LoginEvent extends AuthEvent {
       ];
 }
 
+class LogoutEvent extends AuthEvent {
+  const LogoutEvent();
+}
+
 class GetCachedUserEvent extends AuthEvent {
   const GetCachedUserEvent();
 }

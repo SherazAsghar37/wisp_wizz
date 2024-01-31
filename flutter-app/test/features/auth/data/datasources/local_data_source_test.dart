@@ -56,8 +56,7 @@ void main() {
       });
     });
     group("[Get Cached User Data] - ", () {
-      test(
-          "It should post get String and return userModel by calling only once",
+      test("It should get String and return userModel by calling only once",
           () async {
         //Arrange
         when(() => sharedPreferences.getString(
@@ -72,7 +71,7 @@ void main() {
             )).called(1);
         verifyNoMoreInteractions(sharedPreferences);
       });
-      test("It should post get String and return null by calling only once",
+      test("It should get String and return null by calling only once",
           () async {
         //Arrange
         when(() => sharedPreferences.getString(
@@ -83,6 +82,42 @@ void main() {
         //Assert
         expect(response, equals(null));
         verify(() => sharedPreferences.getString(
+              sUserDataKey,
+            )).called(1);
+        verifyNoMoreInteractions(sharedPreferences);
+      });
+    });
+    group("[Remove Cached User Data] - ", () {
+      test("It should remove String and return null by calling only once",
+          () async {
+        //Arrange
+        when(() => sharedPreferences.remove(
+              any(),
+            )).thenAnswer((invocation) async => true);
+        //Act
+        final response = localDatasource.removeCachedUser();
+        //Assert
+        expect(response, completes);
+        verify(() => sharedPreferences.remove(
+              sUserDataKey,
+            )).called(1);
+        verifyNoMoreInteractions(sharedPreferences);
+      });
+      test(
+          "It should remove String and throw cache exception by calling only once",
+          () async {
+        //Arrange
+        when(() => sharedPreferences.remove(
+              any(),
+            )).thenAnswer((invocation) async => false);
+        //Act
+        final response = localDatasource.removeCachedUser();
+        //Assert
+        expect(
+            response,
+            throwsA(const CacheException(
+                message: "Failed to delete cached user data")));
+        verify(() => sharedPreferences.remove(
               sUserDataKey,
             )).called(1);
         verifyNoMoreInteractions(sharedPreferences);

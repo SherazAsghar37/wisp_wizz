@@ -376,7 +376,7 @@ void main() {
         verifyNoMoreInteractions(localDatasource);
       });
       test(
-          "It should calllocalDatasource.getCachedUser and throw api exception by calling only once",
+          "It should calllocalDatasource.getCachedUser and throw cache exception by calling only once",
           () async {
         //Arrange
         when(() => localDatasource.getCachedUserData())
@@ -392,6 +392,44 @@ void main() {
                 CacheFailure(message: "Failed to cache user data")));
         verify(
           () => localDatasource.getCachedUserData(),
+        ).called(1);
+        verifyNoMoreInteractions(localDatasource);
+      });
+    });
+    group("[Logout User] - ", () {
+      test(
+          "It should call localDatasource.removeCachedUser and return null by calling only once",
+          () async {
+        //Arrange
+        when(() => localDatasource.removeCachedUser())
+            .thenAnswer((invocation) async => Future.value());
+        //Act
+        final response = await authRepository.logout();
+        //Assert
+        expect(response, const Right<dynamic, void>(null));
+        verify(
+          () => localDatasource.removeCachedUser(),
+        ).called(1);
+        verifyNoMoreInteractions(localDatasource);
+      });
+
+      test(
+          "It should calllocalDatasource.removeCachedUser and throw cache exception by calling only once",
+          () async {
+        //Arrange
+        when(() => localDatasource.removeCachedUser())
+            .thenThrow(const CacheException(
+          message: "Failed to cache user data",
+        ));
+        //Act
+        final response = await authRepository.logout();
+        //Assert
+        expect(
+            response,
+            const Left<CacheFailure, dynamic>(
+                CacheFailure(message: "Failed to cache user data")));
+        verify(
+          () => localDatasource.removeCachedUser(),
         ).called(1);
         verifyNoMoreInteractions(localDatasource);
       });

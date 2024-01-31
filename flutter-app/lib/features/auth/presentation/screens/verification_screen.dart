@@ -3,8 +3,11 @@ import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.da
 import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart'
     as phone_number_bloc;
+import 'package:wisp_wizz/features/auth/presentation/provider/auth_controller.dart';
 
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
+// ignore: depend_on_referenced_packages
+import 'package:provider/provider.dart';
 
 class VerificationScreen extends StatelessWidget {
   static const String routeName = verificationScreen;
@@ -68,36 +71,51 @@ class VerificationScreen extends StatelessWidget {
                   SizedBox(
                     height: Dimensions.height20,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Did'nt receive code?",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: colorScheme.primary),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          final phoneNumberBlocState = context
-                              .read<phone_number_bloc.PhoneNumberBloc>()
-                              .state;
-                          final String phoneNumber =
-                              phoneNumberBlocState.textEditingController.text;
-                          final String countryCode =
-                              phoneNumberBlocState.countryCode;
-                          context.read<auth_bloc.AuthBloc>().add(
-                              auth_bloc.SendCodeEvent(
-                                  countryCode: countryCode,
-                                  phoneNumber: phoneNumber));
-                        },
-                        child: Text(
-                          "Resend",
+                  Consumer<AuthController>(builder: (context, value, child) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "You can request code in ${value.secondsRemaining} seconds ",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: theme.primaryColor),
+                          style: TextStyle(color: colorScheme.primary),
                         ),
-                      )
-                    ],
-                  ),
+                        TextButton(
+                          style: const ButtonStyle(
+                              padding:
+                                  MaterialStatePropertyAll(EdgeInsets.all(0))),
+                          onPressed: () {
+                            if (value.secondsRemaining == 0) {
+                              final phoneNumberBlocState = context
+                                  .read<phone_number_bloc.PhoneNumberBloc>()
+                                  .state;
+                              final String phoneNumber = phoneNumberBlocState
+                                  .textEditingController.text;
+                              final String countryCode =
+                                  phoneNumberBlocState.countryCode;
+                              context.read<auth_bloc.AuthBloc>().add(
+                                  auth_bloc.SendCodeEvent(
+                                      countryCode: countryCode,
+                                      phoneNumber: phoneNumber));
+                              value.startTimer();
+                            } else {
+                              BotToast.showText(
+                                  text:
+                                      "kindly wait for ${value.secondsRemaining} seconds",
+                                  contentColor: theme.primaryColorLight,
+                                  textStyle: theme.textTheme.bodyMedium!);
+                            }
+                          },
+                          child: Text(
+                            "Resend",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: theme.primaryColor),
+                          ),
+                        )
+                      ],
+                    );
+                  }),
                 ],
               ),
               Column(

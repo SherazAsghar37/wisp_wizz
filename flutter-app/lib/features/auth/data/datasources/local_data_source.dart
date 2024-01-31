@@ -43,4 +43,21 @@ class LocalDatasource {
       );
     }
   }
+
+  Future<void> removeCachedUser() async {
+    try {
+      bool? userData = await _sharedPreferences.remove(sUserDataKey);
+      if (!userData) {
+        throw const CacheException(
+            message: "Failed to delete cached user data");
+      }
+    } on CacheException {
+      rethrow;
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const CacheException(
+        message: "Something went wrong",
+      );
+    }
+  }
 }

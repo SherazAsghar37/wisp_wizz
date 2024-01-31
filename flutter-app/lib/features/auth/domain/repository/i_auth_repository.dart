@@ -17,6 +17,7 @@ abstract class IAuthRepository {
     required String countryCode,
   });
   NullabeleUser getCachedUser();
+  FutureVoid logout();
 }
 
 abstract class ICustomPhoneResponse {

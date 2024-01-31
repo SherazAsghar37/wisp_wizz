@@ -11,11 +11,12 @@ import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
+import 'package:wisp_wizz/features/auth/presentation/provider/auth_controller.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/features/app/utils/router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/splash_screen.dart';
-import 'package:wisp_wizz/features/chat/presentation/screens/home_screen.dart';
+import 'package:wisp_wizz/home_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -39,6 +40,9 @@ void main() async {
       child: MultiProvider(providers: [
         ChangeNotifierProvider(
           create: (context) => MainController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AuthController(),
         ),
       ], child: const MyApp())));
 }

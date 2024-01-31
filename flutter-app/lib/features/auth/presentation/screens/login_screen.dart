@@ -1,4 +1,7 @@
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart'
+    as otp_bloc;
+import 'package:wisp_wizz/features/auth/presentation/provider/auth_controller.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 
@@ -149,15 +152,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         return PrimaryButton(
                           text: "Submit",
                           onTap: () {
-                            final phoneNumberBlocState =
-                                context.read<PhoneNumberBloc>().state;
-                            final String phoneNumber =
-                                phoneNumberBlocState.textEditingController.text;
-                            final String countryCode =
-                                phoneNumberBlocState.countryCode;
-                            context.read<AuthBloc>().add(SendCodeEvent(
-                                countryCode: countryCode,
-                                phoneNumber: phoneNumber));
+                            AuthController authController =
+                                context.read<AuthController>();
+                            if (authController.secondsRemaining == 0 ||
+                                authController.timer == null) {
+                              final phoneNumberBlocState =
+                                  context.read<PhoneNumberBloc>().state;
+                              final String phoneNumber = phoneNumberBlocState
+                                  .textEditingController.text;
+                              final String countryCode =
+                                  phoneNumberBlocState.countryCode;
+                              context.read<AuthBloc>().add(SendCodeEvent(
+                                  countryCode: countryCode,
+                                  phoneNumber: phoneNumber));
+                              authController.startTimer();
+                            } else {
+                              BotToast.showText(
+                                  text:
+                                      "kindly wait for ${authController.secondsRemaining} seconds",
+                                  contentColor: theme.primaryColorLight,
+                                  textStyle: theme.textTheme.bodyMedium!);
+                            }
                           },
                         );
                       }
@@ -167,8 +182,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushNamed(
                             context, VerificationScreen.routeName);
                       } else if (state is AuthOTPVerified) {
-                        Navigator.pushReplacementNamed(
-                            context, VerificationScreen.routeName);
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          VerificationScreen.routeName,
+                          (route) => false,
+                        ).then((value) => context
+                            .read<otp_bloc.OtpBloc>()
+                            .add(const otp_bloc.ClearEvent()));
                       } else if (state is AuthCodeSentFailed) {
                         BotToast.showText(
                             text: state.message,

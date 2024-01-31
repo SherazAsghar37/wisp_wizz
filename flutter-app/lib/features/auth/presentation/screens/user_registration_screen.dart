@@ -133,7 +133,8 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
               },
               listener: (context, state) {
                 if (state is AuthloggedIn) {
-                  Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+                  Navigator.pushReplacementNamed(context, HomeScreen.routeName,
+                      arguments: state.user);
                 }
                 if (state is AuthloginFailed) {
                   BotToast.showText(

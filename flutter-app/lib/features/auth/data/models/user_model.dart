@@ -80,7 +80,7 @@ class UserModel extends Equatable {
             lastSeen: DateTime.now(),
             name: "empty.name",
             phoneNumber: 0000000000,
-            image: "/test",
+            image: null,
             status: false);
 
   @override

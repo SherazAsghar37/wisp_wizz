@@ -91,8 +91,16 @@ class AuthRepository implements IAuthRepository {
       final response = _localDataSource.getCachedUserData();
 
       return Right(response);
-    } on ApiException catch (e) {
-      return Left(ApiFailure.fromException(e));
+    } on CacheException catch (e) {
+      return Left(CacheFailure.fromException(e));
+    }
+  }
+
+  @override
+  FutureVoid logout() async {
+    try {
+      final response = await _localDataSource.removeCachedUser();
+      return Right(response);
     } on CacheException catch (e) {
       return Left(CacheFailure.fromException(e));
     }
