@@ -3,29 +3,53 @@ import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 
 abstract class Failure extends Equatable {
   final String message;
-  final int statusCode;
 
-  const Failure({required this.message, required this.statusCode});
+  const Failure({
+    required this.message,
+  });
 
   @override
-  String toString() => "$statusCode, Error: $message";
+  String toString() => "Error: $message";
   @override
-  List<Object?> get props => [message, statusCode];
+  List<Object?> get props => [
+        message,
+      ];
 }
 
 class ApiFailure extends Failure {
-  const ApiFailure({required super.message, required super.statusCode});
+  final int statusCode;
+  const ApiFailure({required super.message, required this.statusCode});
 
-  ApiFailure.fromException(ApiException failure)
-      : super(message: failure.message, statusCode: failure.statusCode);
+  ApiFailure.fromException(ApiException e)
+      : this(message: e.message, statusCode: e.statusCode);
+  @override
+  String toString() => "$statusCode, Error: $message";
 
   @override
   List<Object?> get props => [message, statusCode];
 }
 
 class ValidationFailure extends Failure {
-  const ValidationFailure({required super.message, super.statusCode = 400});
+  const ValidationFailure({
+    required super.message,
+  });
 
   @override
-  List<Object?> get props => [message, statusCode];
+  List<Object?> get props => [
+        message,
+      ];
+}
+
+class CacheFailure extends Failure {
+  const CacheFailure({
+    required super.message,
+  });
+
+  CacheFailure.fromException(CacheException e)
+      : this(
+          message: e.message,
+        );
+
+  @override
+  List<Object?> get props => [message];
 }

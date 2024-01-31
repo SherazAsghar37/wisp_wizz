@@ -45,9 +45,9 @@ class UserModel extends Equatable {
       'name': name,
       'phoneNumber': phoneNumber,
       'countryCode': countryCode,
-      'id': id,
+      '_id': id,
       'status': status,
-      'lastSeen': lastSeen.millisecondsSinceEpoch,
+      'lastSeen': lastSeen.toIso8601String(),
       'image': image,
     };
   }

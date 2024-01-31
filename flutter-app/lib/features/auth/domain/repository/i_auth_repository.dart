@@ -16,6 +16,7 @@ abstract class IAuthRepository {
     required int phoneNumber,
     required String countryCode,
   });
+  NullabeleUser getCachedUser();
 }
 
 abstract class ICustomPhoneResponse {

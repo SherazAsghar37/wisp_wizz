@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/firebase_authentication.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/local_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/data/repositories/auth_repository.dart';
@@ -18,18 +19,23 @@ class MRemoteDatasource extends Mock implements RemoteDatasource {}
 
 class MFirebaseAuthentication extends Mock implements FirebaseAuthentication {}
 
+class MLocalDatasource extends Mock implements LocalDatasource {}
+
 void main() {
   late AuthRepository authRepository;
   late RemoteDatasource remoteDatasource;
   late MFirebaseAuthentication firebaseAuthentication;
   late PhoneAuthCredential phoneAuthCredential;
+  late LocalDatasource localDatasource;
 
   setUp(() {
     remoteDatasource = MRemoteDatasource();
     firebaseAuthentication = MFirebaseAuthentication();
+    localDatasource = MLocalDatasource();
     authRepository = AuthRepository(
         remoteDataSource: remoteDatasource,
-        firebaseAuthentication: firebaseAuthentication);
+        firebaseAuthentication: firebaseAuthentication,
+        localDataSource: localDatasource);
     phoneAuthCredential = MPhoneAuthCradential();
   });
 
@@ -58,7 +64,7 @@ void main() {
   group("[Auth reposiotry Implementation] - ", () {
     group("[Login User] - ", () {
       test(
-          "It should call remoteDataSource.loginUser and return void by calling only once",
+          "It should call remoteDataSource.loginUser and return userModel by calling only once",
           () async {
         //Arrange
         when(() => remoteDatasource.loginUser(
@@ -66,6 +72,8 @@ void main() {
             phoneNumber: any(named: "phoneNumber"),
             countryCode: any(named: "countryCode"),
             image: any(named: "image"))).thenAnswer((invocation) async => user);
+        when(() => localDatasource.cacheUserData(user))
+            .thenAnswer((invocation) async => Future.value());
         //Act
         final response = await authRepository.loginUser(
             name: params.name,
@@ -81,7 +89,47 @@ void main() {
               countryCode: params.countryCode,
               image: params.image),
         ).called(1);
+        verify(
+          () => localDatasource.cacheUserData(user),
+        ).called(1);
         verifyNoMoreInteractions(remoteDatasource);
+        verifyNoMoreInteractions(localDatasource);
+      });
+
+      test(
+          "It should call remoteDataSource.loginUser throw cache exception by calling only once",
+          () async {
+        //Arrange
+        when(() => remoteDatasource.loginUser(
+            name: any(named: "name"),
+            phoneNumber: any(named: "phoneNumber"),
+            countryCode: any(named: "countryCode"),
+            image: any(named: "image"))).thenAnswer((invocation) async => user);
+        when(() => localDatasource.cacheUserData(user)).thenThrow(
+            const CacheException(message: "Failed to cache user data"));
+        //Act
+        final response = await authRepository.loginUser(
+            name: params.name,
+            phoneNumber: params.phoneNumber,
+            countryCode: params.countryCode,
+            image: params.image);
+        //Assert
+        expect(
+            response,
+            const Left<CacheFailure, dynamic>(
+                CacheFailure(message: "Failed to cache user data")));
+        verify(
+          () => remoteDatasource.loginUser(
+              name: params.name,
+              phoneNumber: params.phoneNumber,
+              countryCode: params.countryCode,
+              image: params.image),
+        ).called(1);
+        verify(
+          () => localDatasource.cacheUserData(user),
+        ).called(1);
+        verifyNoMoreInteractions(remoteDatasource);
+        verifyNoMoreInteractions(localDatasource);
       });
       test(
           "It should call remoteDataSource.loginUser and throw api exception by calling only once",
@@ -293,6 +341,59 @@ void main() {
               countryCode: params.countryCode,
             )).called(1);
         verifyNoMoreInteractions(remoteDatasource);
+      });
+    });
+
+    group("[Get Cached User] - ", () {
+      test(
+          "It should call localDatasource.getCachedUser and return UserModel by calling only once",
+          () async {
+        //Arrange
+        when(() => localDatasource.getCachedUserData())
+            .thenAnswer((invocation) => user);
+        //Act
+        final response = authRepository.getCachedUser();
+        //Assert
+        expect(response, Right<dynamic, UserModel>(user));
+        verify(
+          () => localDatasource.getCachedUserData(),
+        ).called(1);
+        verifyNoMoreInteractions(localDatasource);
+      });
+      test(
+          "It should call localDatasource.getCachedUser and return null by calling only once",
+          () async {
+        //Arrange
+        when(() => localDatasource.getCachedUserData())
+            .thenAnswer((invocation) => null);
+        //Act
+        final response = authRepository.getCachedUser();
+        //Assert
+        expect(response, const Right<dynamic, void>(null));
+        verify(
+          () => localDatasource.getCachedUserData(),
+        ).called(1);
+        verifyNoMoreInteractions(localDatasource);
+      });
+      test(
+          "It should calllocalDatasource.getCachedUser and throw api exception by calling only once",
+          () async {
+        //Arrange
+        when(() => localDatasource.getCachedUserData())
+            .thenThrow(const CacheException(
+          message: "Failed to cache user data",
+        ));
+        //Act
+        final response = authRepository.getCachedUser();
+        //Assert
+        expect(
+            response,
+            const Left<CacheFailure, dynamic>(
+                CacheFailure(message: "Failed to cache user data")));
+        verify(
+          () => localDatasource.getCachedUserData(),
+        ).called(1);
+        verifyNoMoreInteractions(localDatasource);
       });
     });
   });

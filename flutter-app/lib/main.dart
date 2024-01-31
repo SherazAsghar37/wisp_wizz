@@ -14,6 +14,8 @@ import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_num
 import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/features/app/utils/router.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:wisp_wizz/features/auth/presentation/screens/splash_screen.dart';
+import 'package:wisp_wizz/features/chat/presentation/screens/home_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -54,7 +56,20 @@ class MyApp extends StatelessWidget {
       theme: context.watch<MainController>().themeData,
       builder: BotToastInit(), //1. call BotToastInit
       navigatorObservers: [BotToastNavigatorObserver()],
-      home: const LoginScreen(),
+      home: BlocConsumer<AuthBloc, AuthState>(
+        builder: (context, state) {
+          return const SplashScreen();
+        },
+        listener: (context, state) {
+          if (state is AuthloggedIn) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, HomeScreen.routeName, (route) => false);
+          } else if (state is AuthLoggedOut) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, LoginScreen.routeName, (route) => false);
+          }
+        },
+      ),
     );
   }
 }

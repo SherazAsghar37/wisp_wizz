@@ -149,15 +149,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         return PrimaryButton(
                           text: "Submit",
                           onTap: () {
-                            final String phoneNumber = context
-                                .read<PhoneNumberBloc>()
-                                .state
-                                .textEditingController
-                                .text;
-                            final String countryCode = context
-                                .read<PhoneNumberBloc>()
-                                .state
-                                .countryCode;
+                            final phoneNumberBlocState =
+                                context.read<PhoneNumberBloc>().state;
+                            final String phoneNumber =
+                                phoneNumberBlocState.textEditingController.text;
+                            final String countryCode =
+                                phoneNumberBlocState.countryCode;
                             context.read<AuthBloc>().add(SendCodeEvent(
                                 countryCode: countryCode,
                                 phoneNumber: phoneNumber));

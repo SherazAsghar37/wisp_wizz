@@ -52,3 +52,7 @@ class LoginEvent extends AuthEvent {
         countryCode,
       ];
 }
+
+class GetCachedUserEvent extends AuthEvent {
+  const GetCachedUserEvent();
+}

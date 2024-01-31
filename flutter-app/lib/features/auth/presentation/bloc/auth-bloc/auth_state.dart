@@ -6,8 +6,8 @@ sealed class AuthState extends Equatable {
   List<Object> get props => [];
 }
 
-final class AuthInitial extends AuthState {
-  const AuthInitial();
+final class AuthLoggedOut extends AuthState {
+  const AuthLoggedOut();
 }
 
 //sending code

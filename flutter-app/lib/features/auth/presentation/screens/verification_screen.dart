@@ -80,14 +80,17 @@ class VerificationScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          final phoneNumberBloc =
-                              context.read<phone_number_bloc.PhoneNumberBloc>();
+                          final phoneNumberBlocState = context
+                              .read<phone_number_bloc.PhoneNumberBloc>()
+                              .state;
+                          final String phoneNumber =
+                              phoneNumberBlocState.textEditingController.text;
+                          final String countryCode =
+                              phoneNumberBlocState.countryCode;
                           context.read<auth_bloc.AuthBloc>().add(
-                              auth_bloc.GetUserEvent(
-                                  phoneNumber: phoneNumberBloc
-                                      .state.textEditingController.text,
-                                  countryCode:
-                                      phoneNumberBloc.state.countryCode));
+                              auth_bloc.SendCodeEvent(
+                                  countryCode: countryCode,
+                                  phoneNumber: phoneNumber));
                         },
                         child: Text(
                           "Resend",
@@ -104,7 +107,8 @@ class VerificationScreen extends StatelessWidget {
                   BlocConsumer<auth_bloc.AuthBloc, auth_bloc.AuthState>(
                     builder: (context, state) {
                       if (state is auth_bloc.AuthVerifyingOTP ||
-                          state is auth_bloc.AuthGettingUser) {
+                          state is auth_bloc.AuthGettingUser ||
+                          state is auth_bloc.AuthSendingCode) {
                         return PrimaryButton(
                           onTap: () {},
                           widget: SizedBox(

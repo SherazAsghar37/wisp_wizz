@@ -2,6 +2,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
+import 'package:wisp_wizz/features/auth/domain/usecase/get_cached_user.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
@@ -17,22 +18,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SendCode _sendCode;
   final VerifyOTP _verifyOTP;
   final GetUser _getUser;
+  final GetCachedUser _getCachedUser;
   String _verificationId = "";
 
   AuthBloc(
       {required LoginUser loginUser,
       required SendCode sendCode,
       required VerifyOTP verifyOTP,
-      required GetUser getUser})
+      required GetUser getUser,
+      required GetCachedUser getCachedUser})
       : _loginUser = loginUser,
         _sendCode = sendCode,
         _verifyOTP = verifyOTP,
         _getUser = getUser,
-        super(const AuthInitial()) {
+        _getCachedUser = getCachedUser,
+        super(const AuthLoggedOut()) {
     on<SendCodeEvent>(_onSendCodeEvent);
     on<VerifyOTPEvent>(_onVerifyOTPEvent);
     on<LoginEvent>(_onLoginEvent);
     on<GetUserEvent>(_onGetUser);
+    on<GetCachedUserEvent>(_onGetCachedUser);
   }
 
   Future<void> _onSendCodeEvent(
@@ -118,6 +123,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                 {emit(AuthUserFound(user: s))}
               else
                 {emit(const AuthUserNotFound())}
+            });
+  }
+
+  void _onGetCachedUser(GetCachedUserEvent event, Emitter<AuthState> emit) {
+    emit(const AuthGettingUser());
+
+    final res = _getCachedUser();
+
+    res.fold(
+        (f) => emit(AuthFailedToGetUser(f.message)),
+        (s) => {
+              if (s != null)
+                {emit(AuthloggedIn(user: s))}
+              else
+                {emit(const AuthLoggedOut())}
             });
   }
 }

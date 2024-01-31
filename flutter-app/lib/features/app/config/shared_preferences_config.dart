@@ -5,7 +5,7 @@ class SharedPreferencesConfig {
 
   SharedPreferencesConfig._internal();
 
-  Future<void> getInstance() async {
-    sharedPreferences ??= await SharedPreferences.getInstance();
+  static Future<SharedPreferences> getInstance() async {
+    return sharedPreferences ??= await SharedPreferences.getInstance();
   }
 }

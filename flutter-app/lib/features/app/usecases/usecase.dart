@@ -5,6 +5,11 @@ abstract class UsecaseWithoutParam<Type> {
   ResultFuture<Type> call();
 }
 
+abstract class UsecaseWithoutParamSync<Type> {
+  const UsecaseWithoutParamSync();
+  Result<Type> call();
+}
+
 abstract class UsecaseWithParam<Type, Param> {
   const UsecaseWithParam();
   ResultFuture<Type> call(Param param);

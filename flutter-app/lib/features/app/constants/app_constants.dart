@@ -15,3 +15,6 @@ const int verificationCodeLength = 6;
 //fileManager
 const String mediaFolder = "media";
 const String profilePicturesFolder = "profile_pictures";
+
+//sharedpreferences
+const String sUserDataKey = "shared-user-data-key";

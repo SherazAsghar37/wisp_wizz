@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
+import 'package:wisp_wizz/features/auth/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
@@ -20,12 +21,15 @@ class MLoginUser extends Mock implements LoginUser {}
 
 class MGetUser extends Mock implements GetUser {}
 
+class MGetCachedUser extends Mock implements GetCachedUser {}
+
 void main() {
   late SendCode sendCode;
   late VerifyOTP verifyOTP;
   late LoginUser loginUser;
   late AuthBloc authBloc;
   late GetUser getUser;
+  late GetCachedUser getCachedUser;
   late PhoneAuthCredential phoneAuthCredential;
 
   const String countryCode = "whatever.countryCode";
@@ -52,16 +56,19 @@ void main() {
   const ApiFailure apiFailure =
       ApiFailure(message: "whatever.message", statusCode: 500);
   UserModel userModel = UserModel.empty();
+
   setUp(() {
     sendCode = MSendCode();
     verifyOTP = MVerifyOTP();
     loginUser = MLoginUser();
     getUser = MGetUser();
+    getCachedUser = MGetCachedUser();
     authBloc = AuthBloc(
         loginUser: loginUser,
         sendCode: sendCode,
         verifyOTP: verifyOTP,
-        getUser: getUser);
+        getUser: getUser,
+        getCachedUser: getCachedUser);
     phoneAuthCredential = MPhoneAuthCradential();
 
     registerFallbackValue(customPhoneParam);
@@ -73,7 +80,7 @@ void main() {
 
   group("[Auth Bloc] - ", () {
     test("initial state should be", () {
-      expect(authBloc.state, equals(const AuthInitial()));
+      expect(authBloc.state, equals(const AuthLoggedOut()));
     });
     group("[Send code] - ", () {
       blocTest<AuthBloc, AuthState>(
@@ -198,7 +205,7 @@ void main() {
     });
     group("[GetUser] - ", () {
       blocTest<AuthBloc, AuthState>(
-          'emits >[const AuthVerifyi<AuthState>[const AuthGettingUser(),AuthUserFound(user: UserModel.empty())], when MyEvent is added.',
+          'emits <AuthState>[AuthGettingUser(),AuthUserFound(user: userModel)], when MyEvent is added.',
           build: () {
             when(() => getUser(any()))
                 .thenAnswer((invocation) async => Right(userModel));
@@ -217,7 +224,7 @@ void main() {
             verifyNoMoreInteractions(loginUser);
           });
       blocTest<AuthBloc, AuthState>(
-          'emits >[const AuthVerifyi<AuthState>[const AuthGettingUser(),AuthUserFound(user: UserModel.empty())], when MyEvent is added.',
+          'emits  <AuthState>[const AuthGettingUser(), const AuthUserNotFound()], when MyEvent is added.',
           build: () {
             when(() => getUser(any()))
                 .thenAnswer((invocation) async => const Right(null));
@@ -235,7 +242,7 @@ void main() {
           });
 
       blocTest<AuthBloc, AuthState>(
-          'emits <AuthState>[const AuthGettingUser(),AuthFailedToGetUser(apiFailure.message)] when MyEvent is added.',
+          'emits <AuthState>[const AuthGettingUser(), AuthFailedToGetUser(apiFailure.message)], when MyEvent is added.',
           build: () {
             when(() => getUser(any()))
                 .thenAnswer((invocation) async => const Left(apiFailure));
@@ -327,6 +334,56 @@ void main() {
                 name: name,
                 image: image))).called(1);
             verifyNoMoreInteractions(loginUser);
+          });
+    });
+
+    group("[GetUser] - ", () {
+      blocTest<AuthBloc, AuthState>(
+          'emits <AuthState>[const AuthGettingUser(),AuthloggedIn(user: userModel)], when MyEvent is added.',
+          build: () {
+            when(() => getCachedUser())
+                .thenAnswer((invocation) => Right(userModel));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const GetCachedUserEvent()),
+          expect: () => <AuthState>[
+                const AuthGettingUser(),
+                AuthloggedIn(user: userModel)
+              ],
+          verify: (bloc) {
+            verify(() => getCachedUser()).called(1);
+            verifyNoMoreInteractions(getCachedUser);
+          });
+      blocTest<AuthBloc, AuthState>(
+          'emits<AuthState>[const AuthGettingUser(), const AuthLoggedOut()], when MyEvent is added.',
+          build: () {
+            when(() => getCachedUser())
+                .thenAnswer((invocation) => const Right(null));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const GetCachedUserEvent()),
+          expect: () =>
+              <AuthState>[const AuthGettingUser(), const AuthLoggedOut()],
+          verify: (bloc) {
+            verify(() => getCachedUser()).called(1);
+            verifyNoMoreInteractions(getCachedUser);
+          });
+
+      blocTest<AuthBloc, AuthState>(
+          'emits <AuthState>[const AuthGettingUser(),AuthFailedToGetUser(apiFailure.message)] when MyEvent is added.',
+          build: () {
+            when(() => getCachedUser())
+                .thenAnswer((invocation) => const Left(apiFailure));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const GetCachedUserEvent()),
+          expect: () => <AuthState>[
+                const AuthGettingUser(),
+                AuthFailedToGetUser(apiFailure.message)
+              ],
+          verify: (bloc) {
+            verify(() => getCachedUser()).called(1);
+            verifyNoMoreInteractions(getCachedUser);
           });
     });
   });
