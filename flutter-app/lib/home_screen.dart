@@ -1,8 +1,12 @@
+import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
 import 'package:wisp_wizz/features/app/utils/utils.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/chat/presentation/screens/calls_screen.dart';
+import 'package:wisp_wizz/features/chat/presentation/screens/chats_screen.dart';
+import 'package:wisp_wizz/features/chat/presentation/screens/groups_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = homeScreen;
@@ -13,55 +17,35 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   TextEditingController searchController = TextEditingController();
+  final String notifications = "5";
+  final List<Widget> tabScreens = const [
+    ChatsScreen(),
+    GroupsScreen(),
+    CallsScreen(),
+  ];
 
-  Future<int?> _showPopupMenu(ThemeData theme, ColorScheme colorScheme) async {
-    int? val;
-    await showMenu(
-      context: context,
-      position: const RelativeRect.fromLTRB(100, 100, 0, 100),
-      color: colorScheme.background,
-      items: [
-        PopupMenuItem(
-          value: 1,
-          child: Text(
-            "profile",
-            style: theme.textTheme.bodyMedium,
-          ),
-        ),
-        PopupMenuItem(
-          value: 2,
-          child: Text(
-            "settings",
-            style: theme.textTheme.bodyMedium,
-          ),
-        ),
-        PopupMenuItem(
-          value: 3,
-          child: Text(
-            "logout",
-            style: theme.textTheme.bodyMedium,
-          ),
-        ),
-      ],
-      elevation: 8.0,
-    ).then((value) {
-      val = value;
-    });
-    return val;
+  final List<IconData> tabIcons = [personalChatIcon, groupChatIcon, callIcon];
+  late TabController tabController;
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(vsync: this, length: tabScreens.length);
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
+    final double radius = Dimensions.height9 + Dimensions.width9;
+
     return Scaffold(
         body: SafeArea(
             child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   Dimensions.width15,
-                  Dimensions.height15,
+                  Dimensions.height10,
                   Dimensions.width15,
                   Dimensions.height10,
                 ),
@@ -88,8 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: theme.primaryColor,
                                 ),
                               )
-                            : SizedBox(),
+                            : const SizedBox(),
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -106,8 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 TextButton(
                                   onPressed: () async {
                                     final int? selectedOption =
-                                        await _showPopupMenu(
-                                            theme, colorScheme);
+                                        await Utils.showPopupMenu(context,
+                                            ["profile", "settings", "logout"]);
                                     switch (selectedOption) {
                                       case 1:
                                         break;
@@ -117,8 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         // ignore: use_build_context_synchronously
                                         Utils.showAlertDialogue(
                                           context,
-                                          theme,
-                                          colorScheme,
                                           "Are you sure you want to logout?",
                                           failureBtnName: "Cancel",
                                           sucessBtnName: "Logout",
@@ -134,12 +117,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                     }
                                   },
                                   child: CircleAvatar(
-                                    backgroundImage:
-                                        Utils.getUserImage(widget.user),
+                                    radius: radius,
+                                    backgroundColor: theme.primaryColorDark,
+                                    child: CircleAvatar(
+                                      backgroundColor:
+                                          theme.colorScheme.background,
+                                      radius: radius - 1,
+                                      backgroundImage:
+                                          Utils.getUserImage(widget.user),
+                                    ),
                                   ),
                                 )
                               ],
                             ),
+                            SizedBox(height: Dimensions.height10),
+                            CustomTabBar(
+                                tabs: tabIcons, tabController: tabController),
+                            Expanded(
+                                child: TabBarView(
+                              controller: tabController,
+                              children: tabScreens,
+                            ))
                           ],
                         ),
                       ],

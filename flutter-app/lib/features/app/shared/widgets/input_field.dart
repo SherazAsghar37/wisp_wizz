@@ -27,7 +27,7 @@ class InputField extends StatefulWidget {
 }
 
 class _InputFieldState extends State<InputField> {
-  int _currIndex = 0;
+  int _currIndex = 1;
   ValueKey icon1 = const ValueKey('icon1');
   ValueKey icon2 = const ValueKey('icon2');
 
