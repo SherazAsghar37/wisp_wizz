@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wisp_wizz/features/app/shared/widgets/notification_icon.dart';
 import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 
 class GroupsScreen extends StatelessWidget {
@@ -14,10 +15,26 @@ class GroupsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Text(
+                "Chats",
+                style: theme.textTheme.bodyLarge!
+                    .copyWith(color: theme.primaryColorDark),
+              ),
+              SizedBox(
+                width: Dimensions.width5,
+              ),
+              const NotificationIcon(
+                notifications: "10",
+              )
+            ],
+          ),
           Text(
-            "Groups",
-            style: theme.textTheme.bodyMedium,
-          )
+            "Recent",
+            style: theme.textTheme.bodyMedium!
+                .copyWith(color: colorScheme.primary),
+          ),
         ],
       ),
     );

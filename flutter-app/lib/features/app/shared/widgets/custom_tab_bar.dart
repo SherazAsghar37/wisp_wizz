@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/features/app/shared/widgets/notification_icon.dart';
 import 'package:wisp_wizz/features/app/utils/dimensions.dart';
 
 class CustomTabBar extends StatefulWidget {
   final List<IconData> tabs;
   final TabController tabController;
+  final List<bool> notifications;
   const CustomTabBar(
-      {super.key, required this.tabs, required this.tabController});
+      {super.key,
+      required this.tabs,
+      required this.tabController,
+      required this.notifications});
 
   @override
   State<CustomTabBar> createState() => _CustomTabBarState();
@@ -14,42 +17,27 @@ class CustomTabBar extends StatefulWidget {
 
 class _CustomTabBarState extends State<CustomTabBar>
     with SingleTickerProviderStateMixin {
-  late AnimationController animationController;
-  late Animation<double> animation;
-  final Duration animationDuration = const Duration(milliseconds: 300);
-  int selectedIndex = 0;
+  double selectedIndex = 0;
 
-  String getMessage() {
-    switch (selectedIndex) {
+  double getAnimationFormula(int index) {
+    switch (index) {
       case 0:
-        return "Chats";
+        return selectedIndex > 1 ? 0 : 1 - selectedIndex;
       case 1:
-        return "Groups";
+        return selectedIndex < 1 ? selectedIndex : (2 - selectedIndex);
       case 2:
-        return "Calls";
+        return selectedIndex < 1 ? 0 : selectedIndex - 1;
       default:
-        return "Chats";
+        return 0;
     }
   }
 
-  String message = "Chats";
-
   @override
   void initState() {
-    animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    )..addListener(() {
-        setState(() {});
+    widget.tabController.animation!.addListener(() {
+      setState(() {
+        selectedIndex = widget.tabController.animation?.value ?? 0;
       });
-    animation = Tween<double>(begin: 1.0, end: 0).animate(
-        CurvedAnimation(parent: animationController, curve: Curves.easeIn));
-    widget.tabController.addListener(() {
-      if (widget.tabController.indexIsChanging) {
-        setState(() {
-          selectedIndex = widget.tabController.index;
-        });
-      }
     });
     super.initState();
   }
@@ -57,42 +45,16 @@ class _CustomTabBarState extends State<CustomTabBar>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    Color selectedColor = theme.primaryColor;
-    Color unSelectedColor = colorScheme.shadow.withOpacity(0.2);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FadeTransition(
-          opacity: animation,
-          child: Row(
-            children: [
-              Text(
-                message,
-                style: theme.textTheme.bodyLarge!
-                    .copyWith(color: theme.primaryColorDark),
-              ),
-              SizedBox(
-                width: Dimensions.width5,
-              ),
-              const NotificationIcon(
-                notifications: "5",
-              )
-            ],
-          ),
-        ),
-        SizedBox(
-          width: Dimensions.width5,
-        ),
         SizedBox(
           height: Dimensions.height60,
           child: Stack(
             children: [
               SizedBox(
                 height: Dimensions.height60,
-                child: AnimatedAlign(
-                  duration: animationDuration,
-                  curve: Curves.easeInOut,
+                child: Align(
                   alignment: FractionalOffset(
                       1 / (widget.tabs.length - 1) * selectedIndex, 0),
                   child: FractionallySizedBox(
@@ -110,38 +72,80 @@ class _CustomTabBarState extends State<CustomTabBar>
                 ),
               ),
               Row(
-                children: widget.tabs.asMap().entries.map((e) {
-                  final i = e.key;
-                  final val = e.value;
-                  final isAvtive = i == selectedIndex;
-                  return Expanded(
-                      child: TextButton(
-                    onPressed: () async {
-                      widget.tabController.animateTo(i);
-                      await animationController.forward();
-                      message = getMessage();
-                      await animationController.reverse();
-                    },
-                    child: AnimatedContainer(
-                      duration: animationDuration,
-                      curve: Curves.easeInOut,
-                      child: AnimatedSlide(
-                        duration: animationDuration,
-                        offset: Offset(0, isAvtive ? -0.15 : 0),
-                        child: Icon(
-                          val,
-                          size: Dimensions.height30,
-                          color: isAvtive ? selectedColor : unSelectedColor,
-                        ),
-                      ),
-                    ),
-                  ));
-                }).toList(),
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: widget.tabs
+                    .asMap()
+                    .entries
+                    .map(
+                      (e) => CustomTabBarElement(
+                          index: e.key,
+                          onPressed: () async {
+                            widget.tabController.animateTo(e.key);
+                          },
+                          value: getAnimationFormula(e.key),
+                          tabs: widget.tabs,
+                          hasNotification: widget.notifications[e.key]),
+                    )
+                    .toList(),
               ),
             ],
           ),
         ),
       ],
     );
+  }
+}
+
+class CustomTabBarElement extends StatelessWidget {
+  final int index;
+  final VoidCallback onPressed;
+  final double value;
+  final List tabs;
+  final bool hasNotification;
+  const CustomTabBarElement(
+      {super.key,
+      required this.index,
+      required this.onPressed,
+      required this.value,
+      required this.tabs,
+      required this.hasNotification});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox(
+        height: Dimensions.height60,
+        width: Dimensions.width60,
+        child: TextButton(
+          onPressed: onPressed,
+          child: Stack(
+            children: [
+              hasNotification
+                  ? Align(
+                      alignment: FractionalOffset(1, -value * 0.2),
+                      child: CircleAvatar(
+                        radius: Dimensions.height4,
+                        backgroundColor: theme.colorScheme.secondary,
+                      ),
+                    )
+                  : const SizedBox(),
+              Center(
+                child: Align(
+                  alignment: FractionalOffset(0.3, -value * 0.3),
+                  child: Stack(
+                    children: [
+                      Icon(
+                        tabs[index],
+                        size: Dimensions.height30,
+                        color: Color.lerp(theme.colorScheme.primary,
+                            theme.primaryColor, value)!,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }

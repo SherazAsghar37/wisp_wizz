@@ -16,6 +16,21 @@ class ChatsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                Text(
+                  "Chats",
+                  style: theme.textTheme.bodyLarge!
+                      .copyWith(color: theme.primaryColorDark),
+                ),
+                SizedBox(
+                  width: Dimensions.width5,
+                ),
+                const NotificationIcon(
+                  notifications: "100",
+                )
+              ],
+            ),
             Text(
               "Recent",
               style: theme.textTheme.bodyMedium!

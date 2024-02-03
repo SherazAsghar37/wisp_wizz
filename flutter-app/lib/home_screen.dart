@@ -132,7 +132,9 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                             SizedBox(height: Dimensions.height10),
                             CustomTabBar(
-                                tabs: tabIcons, tabController: tabController),
+                                tabs: tabIcons,
+                                tabController: tabController,
+                                notifications: const [true, false, false]),
                             Expanded(
                                 child: TabBarView(
                               controller: tabController,
