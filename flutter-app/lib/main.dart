@@ -7,7 +7,7 @@ import 'package:wisp_wizz/controller/main_controller.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/services/dependency_injection.dart'
     as dep;
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/otp/otp_bloc.dart';
@@ -17,8 +17,8 @@ import 'package:wisp_wizz/features/auth/presentation/provider/auth_controller.da
 import 'package:wisp_wizz/features/app/utils/router.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:wisp_wizz/features/auth/presentation/screens/splash_screen.dart';
-import 'package:wisp_wizz/home_screen.dart';
-import 'firebase_options.dart';
+import 'package:wisp_wizz/features/app/home/home_screen.dart';
+import 'features/app/config/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

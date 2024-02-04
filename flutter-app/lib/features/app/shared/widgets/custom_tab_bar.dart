@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 
 class CustomTabBar extends StatefulWidget {
   final List<IconData> tabs;
@@ -49,11 +49,11 @@ class _CustomTabBarState extends State<CustomTabBar>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: Dimensions.height60,
+          height: Dimensions.height50,
           child: Stack(
             children: [
               SizedBox(
-                height: Dimensions.height60,
+                height: Dimensions.height50,
                 child: Align(
                   alignment: FractionalOffset(
                       1 / (widget.tabs.length - 1) * selectedIndex, 0),
@@ -61,7 +61,7 @@ class _CustomTabBarState extends State<CustomTabBar>
                     widthFactor: 1 / widget.tabs.length,
                     child: Center(
                       child: Padding(
-                        padding: EdgeInsets.only(top: Dimensions.height20),
+                        padding: EdgeInsets.only(top: Dimensions.height30),
                         child: CircleAvatar(
                           radius: Dimensions.height3,
                           backgroundColor: theme.primaryColor,
@@ -80,7 +80,8 @@ class _CustomTabBarState extends State<CustomTabBar>
                       (e) => CustomTabBarElement(
                           index: e.key,
                           onPressed: () async {
-                            widget.tabController.animateTo(e.key);
+                            widget.tabController.animateTo(e.key,
+                                duration: const Duration(milliseconds: 300));
                           },
                           value: getAnimationFormula(e.key),
                           tabs: widget.tabs,
@@ -131,7 +132,7 @@ class CustomTabBarElement extends StatelessWidget {
                   : const SizedBox(),
               Center(
                 child: Align(
-                  alignment: FractionalOffset(0.3, -value * 0.3),
+                  alignment: FractionalOffset(0.3, -value * 1),
                   child: Stack(
                     children: [
                       Icon(

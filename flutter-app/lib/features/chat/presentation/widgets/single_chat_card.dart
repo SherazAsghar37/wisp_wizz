@@ -1,23 +1,16 @@
+import 'package:wisp_wizz/features/app/theme/colors.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
-class ChatCard extends StatelessWidget {
+class SingleChatCard extends StatelessWidget {
   final UserModel user;
-  final String? lastMessage;
-  final String? notifications;
-  final DateTime? lastMessageTime;
-  final String? messageStatus;
   final VoidCallback onPressed;
-  ChatCard({
+  SingleChatCard({
     super.key,
     required this.user,
-    this.lastMessage,
-    this.notifications,
-    this.lastMessageTime,
-    this.messageStatus,
     required this.onPressed,
   });
 
-  final double radius = Dimensions.height13 + Dimensions.width13;
+  final double radius = Dimensions.height12 + Dimensions.width12;
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -58,20 +51,18 @@ class ChatCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        messageStatus != null
-                            ? Row(
-                                children: [
-                                  ChatUtils.getMessageStatusIcon(
-                                      context, messageStatus!),
-                                  SizedBox(
-                                    width: Dimensions.width2,
-                                  ),
-                                ],
+                        user.status
+                            ? CircleAvatar(
+                                radius: radius,
+                                backgroundColor: greenColor,
                               )
                             : const SizedBox(),
                         SizedBox(
                           width: Dimensions.screenWidth * 0.45,
-                          child: Text(lastMessage ?? "",
+                          child: Text(
+                              user.status
+                                  ? "Online"
+                                  : user.lastSeen.toString().substring(2, 10),
                               maxLines: 1,
                               softWrap: false,
                               style: theme.textTheme.bodySmall!
@@ -83,22 +74,7 @@ class ChatCard extends StatelessWidget {
                 ),
               ],
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                notifications != null
-                    ? NotificationIcon(
-                        notifications: notifications!,
-                      )
-                    : const SizedBox(),
-                Text(
-                  lastMessageTime?.toString().substring(2, 10) ?? "",
-                  style: theme.textTheme.bodyMedium!.copyWith(
-                    fontSize: Dimensions.height13,
-                  ),
-                )
-              ],
-            )
+            MenuItemButton(child: Text(""))
           ],
         ),
       ),

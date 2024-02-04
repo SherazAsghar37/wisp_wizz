@@ -1,10 +1,11 @@
+import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
 import 'package:wisp_wizz/features/app/utils/utils.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
-import 'package:wisp_wizz/features/chat/presentation/screens/calls_screen.dart';
+import 'package:wisp_wizz/features/calls/presentation/screens/calls_screen.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/chats_screen.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/groups_screen.dart';
 
@@ -27,7 +28,11 @@ class _HomeScreenState extends State<HomeScreen>
     CallsScreen(),
   ];
 
-  final List<IconData> tabIcons = [personalChatIcon, groupChatIcon, callIcon];
+  final List<IconData> tabIcons = [
+    personalChatIcon,
+    groupChatIcon,
+    callRegularIcon
+  ];
   late TabController tabController;
   @override
   void initState() {
@@ -38,17 +43,14 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double radius = Dimensions.height9 + Dimensions.width9;
+    final double radius = Dimensions.height8 + Dimensions.width8;
 
     return Scaffold(
+        backgroundColor: theme.colorScheme.background,
         body: SafeArea(
             child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  Dimensions.width15,
-                  Dimensions.height10,
-                  Dimensions.width15,
-                  Dimensions.height10,
-                ),
+                padding: EdgeInsets.fromLTRB(Dimensions.width15,
+                    Dimensions.height5, Dimensions.width15, 0),
                 child: BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
                     if (state is AuthLoggedOut) {
@@ -76,45 +78,34 @@ class _HomeScreenState extends State<HomeScreen>
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              appName,
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.bold),
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 SizedBox(
-                                    height: Dimensions.height40,
+                                    height: Dimensions.height35,
                                     width: Dimensions.screenWidth / 1.4,
                                     child: InputField(
                                       controller: searchController,
                                       hintText: "Search",
                                       prefixInitialIcon: searchIcon,
                                       prefixFinalIcon: arrowBack,
+                                      iconSize: Dimensions.height18,
+                                      textStyle: theme.textTheme.bodyMedium!
+                                          .copyWith(
+                                              fontSize: Dimensions.height15),
+                                      contentPadding: const EdgeInsets.all(0),
                                     )),
                                 TextButton(
                                   onPressed: () async {
-                                    final int? selectedOption =
-                                        await Utils.showPopupMenu(context,
-                                            ["profile", "settings", "logout"]);
-                                    switch (selectedOption) {
-                                      case 1:
-                                        break;
-                                      case 2:
-                                        break;
-                                      case 3:
-                                        // ignore: use_build_context_synchronously
-                                        Utils.showAlertDialogue(
-                                          context,
-                                          "Are you sure you want to logout?",
-                                          failureBtnName: "Cancel",
-                                          sucessBtnName: "Logout",
-                                          success: () {
-                                            context
-                                                .read<AuthBloc>()
-                                                .add(const LogoutEvent());
-                                          },
-                                        );
-                                        break;
-                                      default:
-                                        break;
-                                    }
+                                    Navigator.pushNamed(
+                                        context, SettingScreen.routeName,
+                                        arguments: widget.user);
                                   },
                                   child: CircleAvatar(
                                     radius: radius,

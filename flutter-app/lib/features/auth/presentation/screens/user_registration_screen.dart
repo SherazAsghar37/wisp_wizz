@@ -4,7 +4,7 @@ import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
 
 // ignore: must_be_immutable
 class UserRegistrationScreen extends StatefulWidget {
-  static const String routeName = serRegistrationScreen;
+  static const String routeName = userRegistrationScreen;
   const UserRegistrationScreen({super.key});
 
   @override
@@ -62,7 +62,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                     ),
                     TextButton(
                       onPressed: () async {
-                        XFile? file = await pickImage();
+                        XFile? file = await Utils.pickImage();
                         if (file != null) {
                           setState(() {
                             image = File(file.path);
@@ -74,15 +74,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                         backgroundColor: theme.primaryColor,
                         child: CircleAvatar(
                             radius: radius - 5,
-                            backgroundImage: image == null
-                                ? Image.asset(
-                                    "images/profile.png",
-                                    fit: BoxFit.cover,
-                                  ).image
-                                : Image.file(
-                                    image!,
-                                    fit: BoxFit.cover,
-                                  ).image),
+                            backgroundImage: Utils.getFileImage(image)),
                       ),
                     ),
                     SizedBox(
@@ -147,9 +139,4 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
       )),
     );
   }
-}
-
-Future<XFile?> pickImage() async {
-  final ImagePicker picker = ImagePicker();
-  return await picker.pickImage(source: ImageSource.gallery);
 }

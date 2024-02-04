@@ -1,4 +1,4 @@
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 
 const String appName = 'Wisp Wiz';
 // const String baseUrl = "http://127.0.0.1:8000";
@@ -23,3 +23,5 @@ const String sUserDataKey = "shared-user-data-key";
 
 //
 final double notificationIconRadius = Dimensions.height12;
+
+final double borderRadius = Dimensions.height10;

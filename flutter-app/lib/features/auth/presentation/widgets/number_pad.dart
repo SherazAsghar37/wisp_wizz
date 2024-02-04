@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wisp_wizz/features/app/constants/icons_constants.dart';
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/secondary_button.dart';
 
 class NumberPad extends StatelessWidget {

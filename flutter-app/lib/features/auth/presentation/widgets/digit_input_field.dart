@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wisp_wizz/features/app/theme/colors.dart';
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 
 class DigitInputField extends StatelessWidget {
   final String text;

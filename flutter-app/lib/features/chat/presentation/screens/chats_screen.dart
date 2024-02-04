@@ -1,3 +1,4 @@
+import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class ChatsScreen extends StatelessWidget {
@@ -5,14 +6,16 @@ class ChatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
 
     final UserModel user = UserModel.empty();
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: Dimensions.width5, vertical: Dimensions.height5),
-      child: SingleChildScrollView(
+    return Scaffold(
+      backgroundColor: theme.colorScheme.background,
+      extendBodyBehindAppBar: true,
+      body: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: Dimensions.width5,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -31,22 +34,38 @@ class ChatsScreen extends StatelessWidget {
                 )
               ],
             ),
-            Text(
-              "Recent",
-              style: theme.textTheme.bodyMedium!
-                  .copyWith(color: colorScheme.primary),
-            ),
-            SizedBox(
-              height: Dimensions.height10,
-            ),
-            ChatCard(
-              user: user,
-              lastMessage: "asfasfasfas dasfasf asfasf afsf",
-              lastMessageTime: DateTime.now(),
-              messageStatus: "read",
-              notifications: "1000000000000",
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: Dimensions.height5),
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: Dimensions.height2),
+                    child: ChatCard(
+                      user: user,
+                      lastMessage: "Hello there $index",
+                      lastMessageTime: DateTime.now(),
+                      messageStatus: index % 2 == 0 ? "read" : "sent",
+                      notifications: "1000000000000",
+                      onPressed: () {
+                        Navigator.pushNamed(context, SingleChatScreen.routeName,
+                            arguments: user);
+                      },
+                    ),
+                  );
+                },
+              ),
             )
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, ContactsScreen.routeName);
+        },
+        child: Icon(
+          chatIcon,
+          size: Dimensions.height30,
         ),
       ),
     );

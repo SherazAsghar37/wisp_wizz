@@ -1,11 +1,15 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/features/app/constants/icons_constants.dart';
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 
 class Utils {
+  static Future<XFile?> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    return await picker.pickImage(source: ImageSource.gallery);
+  }
+
   static ImageProvider<Object> getUserImage(UserModel user) {
     try {
       if (user.image != null) {
@@ -16,6 +20,18 @@ class Utils {
     } catch (e) {
       return Image.asset("images/profile.png").image;
     }
+  }
+
+  static ImageProvider<Object> getFileImage(File? image) {
+    return image == null
+        ? Image.asset(
+            "images/profile.png",
+            fit: BoxFit.cover,
+          ).image
+        : Image.file(
+            image,
+            fit: BoxFit.cover,
+          ).image;
   }
 
   static Future<void> showAlertDialogue(BuildContext context, String content,
@@ -82,40 +98,5 @@ class Utils {
       val = value;
     });
     return val;
-  }
-
-  static Icon getMessageStatusIcon(BuildContext context, String status) {
-    final colorScheme = Theme.of(context).colorScheme;
-    switch (status) {
-      case "sent":
-        return Icon(
-          starHalfIcon,
-          color: colorScheme.primary,
-          size: Dimensions.height17,
-        );
-      case "sending":
-        return Icon(
-          clockIcon,
-          size: Dimensions.height17,
-          color: colorScheme.primary,
-        );
-      case "received":
-        return Icon(
-          size: Dimensions.height17,
-          starIcon,
-          color: colorScheme.primary,
-        );
-      case "read":
-        return Icon(
-          size: Dimensions.height17,
-          starIcon,
-          color: colorScheme.secondary,
-        );
-      default:
-        return Icon(
-          starHalfIcon,
-          color: colorScheme.primary,
-        );
-    }
   }
 }
