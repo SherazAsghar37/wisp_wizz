@@ -4,10 +4,14 @@ import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 class SingleChatCard extends StatelessWidget {
   final UserModel user;
   final VoidCallback onPressed;
+  final Function(String value) onSelected;
+  final Color color;
   SingleChatCard({
     super.key,
     required this.user,
     required this.onPressed,
+    required this.onSelected,
+    required this.color,
   });
 
   final double radius = Dimensions.height12 + Dimensions.width12;
@@ -18,10 +22,12 @@ class SingleChatCard extends StatelessWidget {
     return MaterialButton(
       padding: EdgeInsets.zero,
       onPressed: onPressed,
-      child: SizedBox(
-        // color: Colors.blue,
-        height: Dimensions.height55,
+      child: Container(
+        color: color,
+        height: Dimensions.height60,
         width: Dimensions.screenWidth,
+        padding: EdgeInsets.fromLTRB(Dimensions.width10, Dimensions.height5,
+            Dimensions.width10, Dimensions.height5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -74,7 +80,17 @@ class SingleChatCard extends StatelessWidget {
                 ),
               ],
             ),
-            MenuItemButton(child: Text(""))
+            PopupMenuButton<String>(
+              onSelected: onSelected,
+              itemBuilder: (BuildContext context) {
+                return {"settings"}.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            ),
           ],
         ),
       ),
