@@ -9,7 +9,14 @@ class InputField extends StatefulWidget {
   final TextInputType? inputType;
   final IconData? prefixInitialIcon;
   final IconData? prefixFinalIcon;
+  final double? iconSize;
   final bool? autoFocus;
+  final TextStyle? textStyle;
+  final EdgeInsets? contentPadding;
+  final VoidCallback? onSubmitted;
+  final VoidCallback? onTap;
+  final VoidCallback? onTapOutside;
+  final Color? filledColor;
   const InputField({
     super.key,
     required this.controller,
@@ -20,6 +27,13 @@ class InputField extends StatefulWidget {
     this.prefixInitialIcon,
     this.prefixFinalIcon,
     this.autoFocus,
+    this.iconSize,
+    this.textStyle,
+    this.contentPadding,
+    this.onSubmitted,
+    this.onTap,
+    this.onTapOutside,
+    this.filledColor,
   });
 
   @override
@@ -27,7 +41,7 @@ class InputField extends StatefulWidget {
 }
 
 class _InputFieldState extends State<InputField> {
-  int _currIndex = 0;
+  int _currIndex = 1;
   ValueKey icon1 = const ValueKey('icon1');
   ValueKey icon2 = const ValueKey('icon2');
 
@@ -42,10 +56,10 @@ class _InputFieldState extends State<InputField> {
       autofocus: widget.autoFocus ?? false,
       textAlign: TextAlign.left,
       textAlignVertical: TextAlignVertical.center,
-      style: theme.textTheme.bodyMedium,
+      style: widget.textStyle ?? theme.textTheme.bodyMedium,
       cursorColor: theme.primaryColor,
       decoration: InputDecoration(
-        prefixIcon: widget.prefixInitialIcon != null
+        prefixIcon: widget.prefixFinalIcon != null
             ? IconButton(
                 onPressed: () {
                   if (_currIndex == 0) {
@@ -55,50 +69,57 @@ class _InputFieldState extends State<InputField> {
                     });
                   }
                 },
+                iconSize: widget.iconSize,
                 icon: SwitchableIcon(
                   currIndex: _currIndex,
                   intitalIcon: widget.prefixInitialIcon!,
                   finalIcon: widget.prefixFinalIcon!,
                 ),
               )
-            : null,
-        contentPadding: const EdgeInsets.all(10.0),
+            : widget.prefixInitialIcon != null
+                ? Icon(
+                    widget.prefixInitialIcon,
+                    size: widget.iconSize,
+                  )
+                : null,
+        contentPadding: widget.contentPadding ??
+            EdgeInsets.symmetric(
+                vertical: Dimensions.height10, horizontal: Dimensions.width10),
         hintText: widget.hintText,
         filled: true,
-        fillColor: theme.primaryColorLight,
+        fillColor: widget.filledColor ?? theme.primaryColorLight,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.only(
-                topRight: Radius.circular(Dimensions.height10),
-                bottomRight: Radius.circular(Dimensions.height10),
-                topLeft:
-                    widget.leftBorder ?? Radius.circular(Dimensions.height10),
-                bottomLeft:
-                    widget.leftBorder ?? Radius.circular(Dimensions.height10)),
+                topRight: Radius.circular(borderRadius),
+                bottomRight: Radius.circular(borderRadius),
+                topLeft: widget.leftBorder ?? Radius.circular(borderRadius),
+                bottomLeft: widget.leftBorder ?? Radius.circular(borderRadius)),
             borderSide: BorderSide.none),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.only(
-                topRight: Radius.circular(Dimensions.height10),
-                bottomRight: Radius.circular(Dimensions.height10),
-                topLeft:
-                    widget.leftBorder ?? Radius.circular(Dimensions.height10),
-                bottomLeft:
-                    widget.leftBorder ?? Radius.circular(Dimensions.height10)),
+                topRight: Radius.circular(borderRadius),
+                bottomRight: Radius.circular(borderRadius),
+                topLeft: widget.leftBorder ?? Radius.circular(borderRadius),
+                bottomLeft: widget.leftBorder ?? Radius.circular(borderRadius)),
             borderSide: BorderSide.none),
       ),
       onTap: () {
         setState(() {
           _currIndex = 0;
+          widget.onTap != null ? widget.onTap!() : null;
         });
       },
       onSubmitted: (value) {
         setState(() {
           _currIndex = 1;
+          widget.onSubmitted != null ? widget.onSubmitted!() : null;
         });
       },
       onTapOutside: (event) {
         FocusScope.of(context).unfocus();
         setState(() {
           _currIndex = 1;
+          widget.onTapOutside != null ? widget.onTapOutside!() : null;
         });
       },
     );

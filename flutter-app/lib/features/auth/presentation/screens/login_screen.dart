@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               }),
                           child: Container(
                             height: Dimensions.height50,
-                            width: Dimensions.width105,
+                            width: Dimensions.width110,
                             padding: EdgeInsets.symmetric(
                                 horizontal: Dimensions.width10),
                             decoration: BoxDecoration(

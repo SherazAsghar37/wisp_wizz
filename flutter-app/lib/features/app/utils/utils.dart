@@ -1,23 +1,45 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/features/app/utils/dimensions.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 
 class Utils {
+  static Future<XFile?> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    return await picker.pickImage(source: ImageSource.gallery);
+  }
+
   static ImageProvider<Object> getUserImage(UserModel user) {
-    if (user.image != null) {
-      return Image.file(File(user.image!)).image;
-    } else {
+    try {
+      if (user.image != null) {
+        return Image.file(File(user.image!)).image;
+      } else {
+        return Image.asset("images/profile.png").image;
+      }
+    } catch (e) {
       return Image.asset("images/profile.png").image;
     }
   }
 
-  static Future<void> showAlertDialogue(BuildContext context, ThemeData theme,
-      ColorScheme colorScheme, String content,
+  static ImageProvider<Object> getFileImage(File? image) {
+    return image == null
+        ? Image.asset(
+            "images/profile.png",
+            fit: BoxFit.cover,
+          ).image
+        : Image.file(
+            image,
+            fit: BoxFit.cover,
+          ).image;
+  }
+
+  static Future<void> showAlertDialogue(BuildContext context, String content,
       {required String sucessBtnName,
       required String failureBtnName,
       required Function success}) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -50,5 +72,31 @@ class Utils {
         ],
       ),
     );
+  }
+
+  static Future<int?> showPopupMenu(
+      BuildContext context, List<String> options) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    int? val;
+    await showMenu(
+      context: context,
+      position: const RelativeRect.fromLTRB(100, 100, 0, 100),
+      color: colorScheme.background,
+      items: List.generate(
+        options.length,
+        (index) => PopupMenuItem(
+          value: index + 1,
+          child: Text(
+            options[index],
+            style: theme.textTheme.bodyMedium,
+          ),
+        ),
+      ),
+      elevation: 8.0,
+    ).then((value) {
+      val = value;
+    });
+    return val;
   }
 }

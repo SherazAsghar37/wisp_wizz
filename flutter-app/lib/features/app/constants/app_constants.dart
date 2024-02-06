@@ -1,4 +1,6 @@
-const String appName = 'Wip Wiz';
+import 'package:wisp_wizz/features/app/helper/dimensions.dart';
+
+const String appName = 'Wisp Wiz';
 // const String baseUrl = "http://127.0.0.1:8000";
 const String baseUrl = "http://192.168.1.106:8000";
 const String sendCodeUrl = "/auth/verification/sendOtp";
@@ -18,3 +20,8 @@ const String profilePicturesFolder = "profile_pictures";
 
 //sharedpreferences
 const String sUserDataKey = "shared-user-data-key";
+
+//
+final double notificationIconRadius = Dimensions.height12;
+
+final double borderRadius = Dimensions.height10;
