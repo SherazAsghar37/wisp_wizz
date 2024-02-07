@@ -30,3 +30,7 @@ const IconData micIcon = FluentIcons.mic_16_regular;
 const IconData attachIcon = FluentIcons.attach_16_regular;
 const IconData cameraIcon = FluentIcons.camera_16_filled;
 const IconData doubleArrowIcon = Icons.double_arrow_rounded;
+const IconData sendIcon = FluentIcons.send_16_regular;
+const IconData documnetIcon = FluentIcons.document_20_filled;
+const IconData imageIcon = FluentIcons.image_20_filled;
+const IconData headphonesIcon = FluentIcons.headphones_20_filled;

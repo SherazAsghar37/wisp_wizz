@@ -16,6 +16,7 @@ class InputField extends StatefulWidget {
   final VoidCallback? onSubmitted;
   final VoidCallback? onTap;
   final VoidCallback? onTapOutside;
+  final Function(String value)? onChanged;
   final Color? filledColor;
   const InputField({
     super.key,
@@ -34,6 +35,7 @@ class InputField extends StatefulWidget {
     this.onTap,
     this.onTapOutside,
     this.filledColor,
+    this.onChanged,
   });
 
   @override
@@ -122,6 +124,7 @@ class _InputFieldState extends State<InputField> {
           widget.onTapOutside != null ? widget.onTapOutside!() : null;
         });
       },
+      onChanged: widget.onChanged,
     );
   }
 }

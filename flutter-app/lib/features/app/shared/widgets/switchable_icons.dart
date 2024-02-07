@@ -7,10 +7,12 @@ class SwitchableIcon extends StatelessWidget {
     required this.intitalIcon,
     required this.finalIcon,
     required int currIndex,
+    this.angle,
   }) : _currIndex = currIndex;
 
   final IconData intitalIcon;
   final IconData finalIcon;
+  final double? angle;
   final int _currIndex;
 
   ValueKey icon1 = const ValueKey('icon1');
@@ -27,9 +29,17 @@ class SwitchableIcon extends StatelessWidget {
             ),
         child: _currIndex == 0
             ? Icon(finalIcon, key: icon1)
-            : Icon(
-                intitalIcon,
-                key: icon2,
-              ));
+            : angle != null
+                ? Transform.rotate(
+                    key: icon2,
+                    angle: angle!,
+                    child: Icon(
+                      intitalIcon,
+                    ),
+                  )
+                : Icon(
+                    intitalIcon,
+                    key: icon2,
+                  ));
   }
 }

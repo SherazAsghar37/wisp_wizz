@@ -17,10 +17,9 @@ class ChatCard extends StatelessWidget {
     required this.onPressed,
   });
 
-  final double radius = Dimensions.height13 + Dimensions.width13;
+  final double radius = Dimensions.height12 + Dimensions.width12;
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
     return MaterialButton(
       padding: EdgeInsets.zero,
@@ -36,11 +35,7 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: radius,
-                  backgroundColor: colorScheme.primary,
-                  child: CircleAvatar(
-                    radius: radius - 2,
-                    backgroundImage: Utils.getUserImage(user),
-                  ),
+                  backgroundImage: Utils.getUserImage(user),
                 ),
                 SizedBox(
                   width: Dimensions.width10,

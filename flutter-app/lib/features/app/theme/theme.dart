@@ -7,6 +7,9 @@ import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     useMaterial3: true,
+    buttonTheme: ButtonThemeData(
+        splashColor: lightPrimaryColor.withOpacity(0.9),
+        buttonColor: lightPrimaryColor),
     textTheme: TextTheme(
         bodyLarge: TextStyle(
             color: lightPrimaryColor,
