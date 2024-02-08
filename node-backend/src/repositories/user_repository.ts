@@ -12,7 +12,6 @@ export default class UserRepository {
         name: data.name,
         phoneNumber: data.phoneNumber as number,
         image: data.image,
-        countryCode: data.countryCode,
         status: data.status,
         lastSeen: data.lastSeen,
       });
@@ -38,13 +37,11 @@ export default class UserRepository {
       const newUser = await userModel.findOneAndUpdate(
         {
           phoneNumber: data.phoneNumber,
-          countryCode: data.countryCode,
         },
         {
           name: data.name,
           phoneNumber: data.phoneNumber as number,
           image: data.image,
-          countryCode: data.countryCode,
           status: data.status,
           lastSeen: data.lastSeen,
         }
@@ -64,15 +61,13 @@ export default class UserRepository {
     }
   };
   public findByPhoneNumber = async (
-    phoneNumber: number,
-    countryCode: string
+    phoneNumber: number
   ): Promise<User | null> => {
     try {
       console.log("Before finding user...");
 
       const newUser = await userModel.findOne({
         phoneNumber: phoneNumber,
-        countryCode: countryCode,
       });
 
       if (newUser) {

@@ -11,15 +11,10 @@ export default class UserService {
     private readonly _userRepository: UserRepository
   ) {}
 
-  public getUser = async (
-    phoneNumber: number,
-    countryCode: string
-  ): Promise<User | null> => {
+  public getUser = async (phoneNumber: number): Promise<User | null> => {
     try {
-      console.log(countryCode);
       const user: User | null = await this._userRepository.findByPhoneNumber(
-        phoneNumber,
-        countryCode
+        phoneNumber
       );
       return user;
     } catch (error) {
@@ -33,21 +28,18 @@ export default class UserService {
   public signUpLocal = async (
     name: string,
     phoneNumber: number,
-    countryCode: string,
     image: string,
     status: boolean,
     lastSeen: Date
   ): Promise<User> => {
     try {
       var user: User | null = await this._userRepository.findByPhoneNumber(
-        phoneNumber,
-        countryCode
+        phoneNumber
       );
       if (!user) {
         user = await this._userRepository.createByLocal({
           name,
           phoneNumber,
-          countryCode,
           image,
           status,
           lastSeen,
@@ -56,7 +48,6 @@ export default class UserService {
         user = user = await this._userRepository.updateUser({
           name,
           phoneNumber,
-          countryCode,
           image,
           status,
           lastSeen,

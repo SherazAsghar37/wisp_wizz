@@ -12,8 +12,7 @@ export default class Validation {
     next: NextFunction
   ) => {
     const numberSchema = z.object({
-      phoneNumber: z.coerce.number().int().gte(9999999).lte(100000000000000),
-      countryCode: z.string().startsWith("+"),
+      countrphoneNumberyCode: z.string().startsWith("+"),
     });
     try {
       numberSchema.parse(req.body);
@@ -33,8 +32,7 @@ export default class Validation {
   ) => {
     const userSchema = z.object({
       name: z.string(),
-      phoneNumber: z.coerce.number().int().gte(9999999).lte(100000000000000),
-      countryCode: z.string().startsWith("+"),
+      phoneNumber: z.string().startsWith("+"),
       image: z.string(),
       status: z.boolean(),
       lastSeen: z.string(),

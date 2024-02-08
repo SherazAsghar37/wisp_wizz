@@ -15,13 +15,11 @@ export default class AuthController {
 
   public signUp = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, phoneNumber, countryCode, image, status, lastSeen } =
-        req.body;
+      const { name, phoneNumber, image, status, lastSeen } = req.body;
 
       const user: User = await this._userServices.signUpLocal(
         name,
         phoneNumber,
-        countryCode,
         image,
         status,
         lastSeen

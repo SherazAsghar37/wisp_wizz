@@ -8,11 +8,7 @@ const userSchema = new Schema(
       required: true,
       trim: true,
     },
-    countryCode: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+
     name: {
       type: String,
       trim: true,
@@ -33,13 +29,12 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
-userSchema.index({ phoneNumber: 1, countryCode: 1 }, { unique: true });
+// userSchema.index({ phoneNumber: 1, countryCode: 1 }, { unique: true });
 
 userSchema.pre("save", function (next) {
   if (!this.name) {
-    this.name = `${this.countryCode}${this.phoneNumber}`;
+    this.name = `${this.phoneNumber}`;
   }
-
   next();
 });
 

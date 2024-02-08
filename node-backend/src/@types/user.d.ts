@@ -3,7 +3,6 @@ type User = {
   name: string;
   image: string;
   phoneNumber: number;
-  countryCode: string;
   status: Boolean;
   lastSeen: Date;
 };
