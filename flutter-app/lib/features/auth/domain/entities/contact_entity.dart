@@ -2,13 +2,16 @@
 
 import 'dart:typed_data';
 
-class ContactEntity {
+import 'package:equatable/equatable.dart';
+
+class ContactEntity extends Equatable {
   final String? phoneNumber;
   final String? _id;
-  final Uint8List userProfile;
-  ContactEntity(
-      {required String id,
-      required this.phoneNumber,
-      required this.userProfile})
+  final Uint8List image;
+  const ContactEntity(
+      {required String id, required this.phoneNumber, required this.image})
       : _id = id;
+
+  @override
+  List<Object?> get props => [phoneNumber, _id, image];
 }
