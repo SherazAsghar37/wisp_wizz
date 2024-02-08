@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/firebase_authentication.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/local_data_source.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_firebase_datasource.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
@@ -15,18 +15,18 @@ import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
 
 import '../../global/phone_auth_cradentials.mock.dart';
 
-class MRemoteDatasource extends Mock implements RemoteDatasource {}
+class MRemoteDatasource extends Mock implements AuthRemoteDatasource {}
 
-class MFirebaseAuthentication extends Mock implements FirebaseAuthentication {}
+class MFirebaseAuthentication extends Mock implements AuthFirebaseDatasource {}
 
-class MLocalDatasource extends Mock implements LocalDatasource {}
+class MLocalDatasource extends Mock implements AuthLocalDatasource {}
 
 void main() {
   late AuthRepository authRepository;
-  late RemoteDatasource remoteDatasource;
+  late AuthRemoteDatasource remoteDatasource;
   late MFirebaseAuthentication firebaseAuthentication;
   late PhoneAuthCredential phoneAuthCredential;
-  late LocalDatasource localDatasource;
+  late AuthLocalDatasource localDatasource;
 
   setUp(() {
     remoteDatasource = MRemoteDatasource();
@@ -40,9 +40,8 @@ void main() {
   });
 
   const params = CustomUserParam(
-      countryCode: "whatever.countryCode",
       name: "whatever.name",
-      phoneNumber: 123456789,
+      phoneNumber: "+92123456789",
       image: "whatever.image");
 
   const otpParams = CustomVerificationParam(
@@ -51,7 +50,6 @@ void main() {
   );
 
   const phoneParams = CustomPhoneParam(
-    countryCode: "+92",
     phoneNumber: "123456789",
   );
   const String verificationId = "1234";
@@ -70,7 +68,6 @@ void main() {
         when(() => remoteDatasource.loginUser(
             name: any(named: "name"),
             phoneNumber: any(named: "phoneNumber"),
-            countryCode: any(named: "countryCode"),
             image: any(named: "image"))).thenAnswer((invocation) async => user);
         when(() => localDatasource.cacheUserData(user))
             .thenAnswer((invocation) async => Future.value());
@@ -78,7 +75,6 @@ void main() {
         final response = await authRepository.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
             image: params.image);
         //Assert
         expect(response, Right<dynamic, UserModel>(user));
@@ -86,7 +82,6 @@ void main() {
           () => remoteDatasource.loginUser(
               name: params.name,
               phoneNumber: params.phoneNumber,
-              countryCode: params.countryCode,
               image: params.image),
         ).called(1);
         verify(
@@ -103,7 +98,6 @@ void main() {
         when(() => remoteDatasource.loginUser(
             name: any(named: "name"),
             phoneNumber: any(named: "phoneNumber"),
-            countryCode: any(named: "countryCode"),
             image: any(named: "image"))).thenAnswer((invocation) async => user);
         when(() => localDatasource.cacheUserData(user)).thenThrow(
             const CacheException(message: "Failed to cache user data"));
@@ -111,7 +105,6 @@ void main() {
         final response = await authRepository.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
             image: params.image);
         //Assert
         expect(
@@ -122,7 +115,6 @@ void main() {
           () => remoteDatasource.loginUser(
               name: params.name,
               phoneNumber: params.phoneNumber,
-              countryCode: params.countryCode,
               image: params.image),
         ).called(1);
         verify(
@@ -138,7 +130,6 @@ void main() {
         when(() => remoteDatasource.loginUser(
                 name: any(named: "name"),
                 phoneNumber: any(named: "phoneNumber"),
-                countryCode: any(named: "countryCode"),
                 image: any(named: "image")))
             .thenThrow(
                 const ApiException(message: message, statusCode: statusCode));
@@ -146,7 +137,6 @@ void main() {
         final response = await authRepository.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
             image: params.image);
         //Assert
         expect(
@@ -156,7 +146,6 @@ void main() {
         verify(() => remoteDatasource.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
             image: params.image)).called(1);
         verifyNoMoreInteractions(remoteDatasource);
       });
@@ -222,12 +211,10 @@ void main() {
         //Arrange
         when(() => firebaseAuthentication.sendCode(
               phoneNumber: any(named: "phoneNumber"),
-              countryCode: any(named: "countryCode"),
             )).thenAnswer((invocation) async => customPhoneResoponse);
         //Act
         final response = await authRepository.sendCode(
           phoneNumber: phoneParams.phoneNumber,
-          countryCode: phoneParams.countryCode,
         );
         //Assert
         expect(response,
@@ -235,7 +222,6 @@ void main() {
         verify(
           () => firebaseAuthentication.sendCode(
             phoneNumber: phoneParams.phoneNumber,
-            countryCode: phoneParams.countryCode,
           ),
         ).called(1);
         verifyNoMoreInteractions(remoteDatasource);
@@ -246,14 +232,12 @@ void main() {
         //Arrange
         when(() => firebaseAuthentication.sendCode(
                   phoneNumber: any(named: "phoneNumber"),
-                  countryCode: any(named: "countryCode"),
                 ))
             .thenThrow(
                 const ApiException(message: message, statusCode: statusCode));
         //Act
         final response = await authRepository.sendCode(
           phoneNumber: phoneParams.phoneNumber,
-          countryCode: phoneParams.countryCode,
         );
         //Assert
         expect(
@@ -263,7 +247,6 @@ void main() {
         verify(
           () => firebaseAuthentication.sendCode(
             phoneNumber: phoneParams.phoneNumber,
-            countryCode: phoneParams.countryCode,
           ),
         ).called(1);
         verifyNoMoreInteractions(remoteDatasource);
@@ -276,19 +259,16 @@ void main() {
         //Arrange
         when(() => remoteDatasource.getUser(
               phoneNumber: any(named: "phoneNumber"),
-              countryCode: any(named: "countryCode"),
             )).thenAnswer((invocation) async => user);
         //Act
         final response = await authRepository.getUser(
           phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
         );
         //Assert
         expect(response, Right<dynamic, UserModel>(user));
         verify(
           () => remoteDatasource.getUser(
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
           ),
         ).called(1);
         verifyNoMoreInteractions(remoteDatasource);
@@ -299,19 +279,16 @@ void main() {
         //Arrange
         when(() => remoteDatasource.getUser(
               phoneNumber: any(named: "phoneNumber"),
-              countryCode: any(named: "countryCode"),
             )).thenAnswer((invocation) async => null);
         //Act
         final response = await authRepository.getUser(
           phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
         );
         //Assert
         expect(response, const Right<dynamic, void>(null));
         verify(
           () => remoteDatasource.getUser(
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
           ),
         ).called(1);
         verifyNoMoreInteractions(remoteDatasource);
@@ -322,14 +299,12 @@ void main() {
         //Arrange
         when(() => remoteDatasource.getUser(
                   phoneNumber: any(named: "phoneNumber"),
-                  countryCode: any(named: "countryCode"),
                 ))
             .thenThrow(
                 const ApiException(message: message, statusCode: statusCode));
         //Act
         final response = await authRepository.getUser(
           phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
         );
         //Assert
         expect(
@@ -338,7 +313,6 @@ void main() {
                 ApiFailure(message: message, statusCode: statusCode)));
         verify(() => remoteDatasource.getUser(
               phoneNumber: params.phoneNumber,
-              countryCode: params.countryCode,
             )).called(1);
         verifyNoMoreInteractions(remoteDatasource);
       });

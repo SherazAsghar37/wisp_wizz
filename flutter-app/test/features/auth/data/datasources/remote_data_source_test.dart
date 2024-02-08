@@ -5,7 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
 
@@ -16,18 +16,17 @@ class MDio extends Mock implements Dio {
 }
 
 void main() {
-  late RemoteDatasource remoteDatasource;
+  late AuthRemoteDatasource remoteDatasource;
   late Dio dio;
   // MultipartFile? multipartFile;
   const params = CustomUserParam(
-      countryCode: "whatever.countryCode",
       name: "whatever.name",
-      phoneNumber: 123456789,
+      phoneNumber: "+92123456789",
       image: "whatever.image");
 
   setUp(() {
     dio = MDio(options: BaseOptions(baseUrl: baseUrl));
-    remoteDatasource = RemoteDatasource(dio: dio);
+    remoteDatasource = AuthRemoteDatasource(dio: dio);
     // multipartFile = params.image != null
     //     ? await MultipartFile.fromFile(params.image!.path,
     //         filename: imageFileName)
@@ -56,7 +55,6 @@ void main() {
         final response = await remoteDatasource.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
             image: params.image);
         //Assert
         expect(response, equals(UserModel.fromMap(userMap)));
@@ -64,7 +62,6 @@ void main() {
               "image": params.image,
               "name": params.name,
               "phoneNumber": params.phoneNumber,
-              "countryCode": params.countryCode
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -82,7 +79,6 @@ void main() {
         final response = remoteDatasource.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
             image: params.image);
         //Assert
         expect(
@@ -93,7 +89,6 @@ void main() {
               "image": params.image,
               "name": params.name,
               "phoneNumber": params.phoneNumber,
-              "countryCode": params.countryCode
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -115,7 +110,6 @@ void main() {
           remoteDatasource.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
             image: params.image,
           ),
           throwsA(const ApiException(
@@ -127,7 +121,6 @@ void main() {
               "image": params.image,
               "name": params.name,
               "phoneNumber": params.phoneNumber,
-              "countryCode": params.countryCode
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -147,13 +140,11 @@ void main() {
         //Act
         final response = await remoteDatasource.getUser(
           phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
         );
         //Assert
         expect(response, equals(UserModel.fromMap(userMap)));
         verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
               "phoneNumber": params.phoneNumber,
-              "countryCode": params.countryCode
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -171,13 +162,11 @@ void main() {
         //Act
         final response = await remoteDatasource.getUser(
           phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
         );
         //Assert
         expect(response, null);
         verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
               "phoneNumber": params.phoneNumber,
-              "countryCode": params.countryCode
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -194,7 +183,6 @@ void main() {
         //Act
         final response = remoteDatasource.getUser(
           phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
         );
         //Assert
         expect(
@@ -203,7 +191,6 @@ void main() {
                 message: "Internal server error", statusCode: statusCode)));
         verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
               "phoneNumber": params.phoneNumber,
-              "countryCode": params.countryCode
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -224,7 +211,6 @@ void main() {
         await expectLater(
           remoteDatasource.getUser(
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
           ),
           throwsA(const ApiException(
             message: errorMessage,
@@ -233,7 +219,6 @@ void main() {
         );
         verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
               "phoneNumber": params.phoneNumber,
-              "countryCode": params.countryCode
             })).called(1);
         verifyNoMoreInteractions(dio);
       });

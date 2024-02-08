@@ -1,4 +1,4 @@
-part of "./firebase_authentication.dart";
+part of 'auth_firebase_datasource.dart';
 
 class PhoneAuthProviderWrapper {
   PhoneAuthCredential credential({

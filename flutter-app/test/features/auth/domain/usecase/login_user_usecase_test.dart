@@ -17,9 +17,8 @@ void main() {
   });
 
   const params = CustomUserParam(
-      countryCode: "whatever.countryCode",
       name: "whatever.name",
-      phoneNumber: 123456789,
+      phoneNumber: "+92123456789",
       image: "whatever.image");
   final UserModel user = UserModel.empty();
 
@@ -29,7 +28,6 @@ void main() {
       when(() => authRepository.loginUser(
               name: any(named: "name"),
               phoneNumber: any(named: "phoneNumber"),
-              countryCode: any(named: "countryCode"),
               image: any(named: "image")))
           .thenAnswer((invocation) async => Right(user));
       //Assert
@@ -39,7 +37,6 @@ void main() {
         () => authRepository.loginUser(
             name: params.name,
             phoneNumber: params.phoneNumber,
-            countryCode: params.countryCode,
             image: params.image),
       ).called(1);
       verifyNoMoreInteractions(authRepository);

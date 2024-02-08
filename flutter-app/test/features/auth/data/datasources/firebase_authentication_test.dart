@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/firebase_authentication.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_firebase_datasource.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
 
@@ -10,21 +10,26 @@ class MFirebaseAuth extends Mock implements FirebaseAuth {}
 
 class MPhoneAuthCredential extends Mock implements PhoneAuthCredential {}
 
+class MUserCradentials extends Mock implements UserCredential {}
+
 class MPhoneAuthProviderWrapper extends Mock
     implements PhoneAuthProviderWrapper {}
 
 void main() {
   late FirebaseAuth firebaseAuth;
-  late FirebaseAuthentication firebaseAuthentication;
+  late AuthFirebaseDatasource firebaseAuthentication;
   late PhoneAuthCredential phoneAuthCredential;
   late MPhoneAuthProviderWrapper phoneAuthProviderWrapper;
+  late MUserCradentials userCradentials;
 
   setUp(() {
     firebaseAuth = MFirebaseAuth();
     phoneAuthProviderWrapper = MPhoneAuthProviderWrapper();
-    firebaseAuthentication = FirebaseAuthentication(
+    firebaseAuthentication = AuthFirebaseDatasource(
         auth: firebaseAuth, phoneAuthProviderWrapper: phoneAuthProviderWrapper);
     phoneAuthCredential = MPhoneAuthCredential();
+    userCradentials = MUserCradentials();
+    registerFallbackValue(phoneAuthCredential);
   });
 
   const otpParams = CustomVerificationParam(
@@ -33,7 +38,6 @@ void main() {
   );
 
   const customPhoneParam = CustomPhoneParam(
-    countryCode: "+92",
     phoneNumber: "123456789",
   );
   const int statusCode = 403;
@@ -42,7 +46,7 @@ void main() {
 
   group("[Auth FirebaseAuthentication] - ", () {
     group("[Send Code] - ", () {
-      test("It should post sendCode and return CustomPhoneResoponse ",
+      test("It should call verifyPhoneNumber and return CustomPhoneResoponse ",
           () async {
         //Arrange
         when(() => firebaseAuth.verifyPhoneNumber(
@@ -61,7 +65,6 @@ void main() {
         //Act
         final response = await firebaseAuthentication.sendCode(
           phoneNumber: customPhoneParam.phoneNumber,
-          countryCode: customPhoneParam.countryCode,
         );
         //Assert
         expect(
@@ -69,7 +72,8 @@ void main() {
             CustomPhoneResoponse(
                 verificationId: "", phoneAuthCredential: phoneAuthCredential));
       });
-      test("It should post sendCode and throw Api exception ", () async {
+      test("It should call verifyPhoneNumber and throw Api exception ",
+          () async {
         //Arrange
         when(() => firebaseAuth.verifyPhoneNumber(
               phoneNumber: any(named: "phoneNumber"),
@@ -86,19 +90,18 @@ void main() {
         });
         //Act
         final response = firebaseAuthentication.sendCode(
-          phoneNumber: customPhoneParam.phoneNumber,
-          countryCode: customPhoneParam.countryCode,
+          phoneNumber: "+9230111123123",
         );
         //Assert
         await expectLater(
             response,
             throwsA(const ApiException(
-                message: "Failed to sent code, please try again later",
+                message: "Failed to send code, please try again later",
                 statusCode: statusCode)));
       });
 
       test(
-          "It should post sendCode and return CustomPhoneResoponse with verificationId",
+          "It should call verifyPhoneNumber and return CustomPhoneResoponse with verificationId",
           () async {
         //Arrange
         when(() => firebaseAuth.verifyPhoneNumber(
@@ -116,7 +119,6 @@ void main() {
         //Act
         final response = await firebaseAuthentication.sendCode(
           phoneNumber: customPhoneParam.phoneNumber,
-          countryCode: customPhoneParam.countryCode,
         );
         //Assert
         expect(
@@ -126,7 +128,7 @@ void main() {
                 phoneAuthCredential: null));
       });
       test(
-          "It should post sendCode and return CustomPhoneResoponse when PhoneCodeAutoRetrievalTimeout",
+          "It should call verifyPhoneNumber and return CustomPhoneResoponse when PhoneCodeAutoRetrievalTimeout",
           () async {
         //Arrange
         when(() => firebaseAuth.verifyPhoneNumber(
@@ -147,7 +149,6 @@ void main() {
         //Act
         final response = await firebaseAuthentication.sendCode(
           phoneNumber: customPhoneParam.phoneNumber,
-          countryCode: customPhoneParam.countryCode,
         );
         //Assert
         expect(
@@ -164,6 +165,8 @@ void main() {
               verificationId: otpParams.verificationId,
               smsCode: otpParams.otp,
             )).thenAnswer((invocation) => phoneAuthCredential);
+        when(() => firebaseAuth.signInWithCredential(any()))
+            .thenAnswer((invocation) async => userCradentials);
         //Act
         final response = await firebaseAuthentication.verifyOTP(
           verificationId: otpParams.verificationId,

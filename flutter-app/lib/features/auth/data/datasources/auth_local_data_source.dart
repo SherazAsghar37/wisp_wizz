@@ -4,12 +4,14 @@ import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
+import 'package:wisp_wizz/features/auth/domain/datasources/i_local_datasource.dart';
 
-class LocalDatasource {
+class AuthLocalDatasource implements IAuthLocalDatasource {
   final SharedPreferences _sharedPreferences;
-  LocalDatasource({required SharedPreferences sharedPreferences})
+  AuthLocalDatasource({required SharedPreferences sharedPreferences})
       : _sharedPreferences = sharedPreferences;
 
+  @override
   Future<void> cacheUserData(UserModel user) async {
     try {
       final res = await _sharedPreferences.setString(
@@ -28,6 +30,7 @@ class LocalDatasource {
     }
   }
 
+  @override
   UserModel? getCachedUserData() {
     try {
       String? userData = _sharedPreferences.getString(sUserDataKey);
@@ -44,6 +47,7 @@ class LocalDatasource {
     }
   }
 
+  @override
   Future<void> removeCachedUser() async {
     try {
       bool? userData = await _sharedPreferences.remove(sUserDataKey);

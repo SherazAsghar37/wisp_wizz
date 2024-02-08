@@ -96,8 +96,7 @@ class VerificationScreen extends StatelessWidget {
                                   phoneNumberBlocState.countryCode;
                               context.read<auth_bloc.AuthBloc>().add(
                                   auth_bloc.SendCodeEvent(
-                                      countryCode: countryCode,
-                                      phoneNumber: phoneNumber));
+                                      phoneNumber: countryCode + phoneNumber));
                               value.startTimer();
                             } else {
                               BotToast.showText(
@@ -151,12 +150,13 @@ class VerificationScreen extends StatelessWidget {
                       if (state is auth_bloc.AuthOTPVerified) {
                         final phoneNumberBloc =
                             context.read<phone_number_bloc.PhoneNumberBloc>();
-                        context.read<auth_bloc.AuthBloc>().add(
-                            auth_bloc.GetUserEvent(
-                                phoneNumber: phoneNumberBloc
-                                    .state.textEditingController.text,
-                                countryCode:
-                                    phoneNumberBloc.state.countryCode));
+                        context
+                            .read<auth_bloc.AuthBloc>()
+                            .add(auth_bloc.GetUserEvent(
+                              phoneNumber: phoneNumberBloc.state.countryCode +
+                                  phoneNumberBloc
+                                      .state.textEditingController.text,
+                            ));
                       } else if (state is auth_bloc.AuthUserFound ||
                           state is auth_bloc.AuthUserNotFound) {
                         Navigator.pushReplacementNamed(

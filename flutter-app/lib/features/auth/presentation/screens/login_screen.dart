@@ -163,8 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               final String countryCode =
                                   phoneNumberBlocState.countryCode;
                               context.read<AuthBloc>().add(SendCodeEvent(
-                                  countryCode: countryCode,
-                                  phoneNumber: phoneNumber));
+                                  phoneNumber: countryCode + phoneNumber));
                               authController.startTimer();
                             } else {
                               BotToast.showText(

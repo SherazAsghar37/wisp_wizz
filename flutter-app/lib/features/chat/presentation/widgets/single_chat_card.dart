@@ -22,11 +22,15 @@ class SingleChatCard extends StatelessWidget {
       padding: EdgeInsets.zero,
       onPressed: onPressed,
       child: Container(
-        color: color,
-        height: Dimensions.height60,
+        height: Dimensions.height70,
         width: Dimensions.screenWidth,
         padding: EdgeInsets.fromLTRB(Dimensions.width5, Dimensions.height5,
             Dimensions.width5, Dimensions.height5),
+        decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(borderRadius),
+                bottomRight: Radius.circular(borderRadius))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

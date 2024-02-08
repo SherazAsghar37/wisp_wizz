@@ -8,11 +8,10 @@ sealed class AuthEvent extends Equatable {
 }
 
 class SendCodeEvent extends AuthEvent {
-  final String countryCode;
   final String phoneNumber;
-  const SendCodeEvent({required this.countryCode, required this.phoneNumber});
+  const SendCodeEvent({required this.phoneNumber});
   @override
-  List<Object> get props => [countryCode, phoneNumber];
+  List<Object> get props => [phoneNumber];
 }
 
 class VerifyOTPEvent extends AuthEvent {
@@ -26,30 +25,27 @@ class VerifyOTPEvent extends AuthEvent {
 
 class GetUserEvent extends AuthEvent {
   final String phoneNumber;
-  final String countryCode;
   const GetUserEvent({
     required this.phoneNumber,
-    required this.countryCode,
   });
   @override
-  List<Object> get props => [phoneNumber, countryCode];
+  List<Object> get props => [
+        phoneNumber,
+      ];
 }
 
 class LoginEvent extends AuthEvent {
   final String? name;
   final String phoneNumber;
-  final String countryCode;
   final String? image;
   const LoginEvent({
     required this.phoneNumber,
-    required this.countryCode,
     required this.name,
     this.image,
   });
   @override
   List<Object> get props => [
         phoneNumber,
-        countryCode,
       ];
 }
 

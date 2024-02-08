@@ -75,7 +75,7 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                             width: Dimensions.width180,
                             child: InputField(
                               controller: messageController,
-                              hintText: "Message",
+                              hintText: "Type your Message...",
                               iconSize: Dimensions.height18,
                               textStyle: theme.textTheme.bodyMedium!
                                   .copyWith(fontSize: Dimensions.height15),

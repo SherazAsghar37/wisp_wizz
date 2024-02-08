@@ -5,15 +5,16 @@ import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
+import 'package:wisp_wizz/features/auth/domain/datasources/i_auth_remote_data.dart';
 
-class RemoteDatasource {
+class AuthRemoteDatasource implements IAuthRemoteDatasource {
   final Dio _dio;
-  RemoteDatasource({required Dio dio}) : _dio = dio;
+  AuthRemoteDatasource({required Dio dio}) : _dio = dio;
 
+  @override
   Future<UserModel> loginUser(
       {required String? name,
-      required int phoneNumber,
-      required String countryCode,
+      required String phoneNumber,
       String? image}) async {
     try {
       final String url = _dio.options.baseUrl + loginUrl;
@@ -21,7 +22,6 @@ class RemoteDatasource {
         'image': image,
         "name": name,
         "phoneNumber": phoneNumber,
-        "countryCode": countryCode
       };
 
       final response = await _dio.post(
@@ -51,15 +51,14 @@ class RemoteDatasource {
     }
   }
 
+  @override
   Future<UserModel?> getUser({
-    required int phoneNumber,
-    required String countryCode,
+    required String phoneNumber,
   }) async {
     try {
       final String url = _dio.options.baseUrl + getUserUrl;
       final MapData data = {
         "phoneNumber": phoneNumber,
-        "countryCode": countryCode
       };
 
       final response = await _dio.post(

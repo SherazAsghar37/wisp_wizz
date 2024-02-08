@@ -3,18 +3,15 @@ import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 
 abstract class IAuthRepository {
-  ResultFuture<CustomPhoneResoponse> sendCode(
-      {required String phoneNumber, required String countryCode});
+  ResultFuture<CustomPhoneResoponse> sendCode({
+    required String phoneNumber,
+  });
   ResultFuture<PhoneAuthCredential> verifyOTP(
       {required String verificationId, required String otp});
   FutureUser loginUser(
-      {required String? name,
-      required int phoneNumber,
-      required String countryCode,
-      String? image});
+      {required String? name, required String phoneNumber, String? image});
   FutureNullabeleUser getUser({
-    required int phoneNumber,
-    required String countryCode,
+    required String phoneNumber,
   });
   NullabeleUser getCachedUser();
   FutureVoid logout();

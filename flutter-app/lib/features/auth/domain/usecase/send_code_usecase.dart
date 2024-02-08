@@ -10,20 +10,21 @@ class SendCode extends UsecaseWithParam<void, CustomPhoneParam> {
   @override
   ResultFuture<CustomPhoneResoponse> call(CustomPhoneParam param) async {
     return authRepository.sendCode(
-        phoneNumber: param.phoneNumber, countryCode: param.countryCode);
+      phoneNumber: param.phoneNumber,
+    );
   }
 }
 
 class CustomPhoneParam extends Equatable {
   final String phoneNumber;
-  final String countryCode;
   const CustomPhoneParam({
     required this.phoneNumber,
-    required this.countryCode,
   });
 
   @override
-  List<Object?> get props => [phoneNumber, countryCode];
+  List<Object?> get props => [
+        phoneNumber,
+      ];
 }
 
 class CustomPhoneResoponse extends Equatable implements ICustomPhoneResponse {

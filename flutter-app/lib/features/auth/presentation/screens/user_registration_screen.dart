@@ -111,9 +111,9 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                                   context.read<PhoneNumberBloc>().state;
                               // ignore: use_build_context_synchronously
                               context.read<AuthBloc>().add(LoginEvent(
-                                  phoneNumber: phoneNumberBloc
-                                      .textEditingController.text,
-                                  countryCode: phoneNumberBloc.countryCode,
+                                  phoneNumber: phoneNumberBloc.countryCode +
+                                      phoneNumberBloc
+                                          .textEditingController.text,
                                   name: nameController.text.isEmpty
                                       ? null
                                       : nameController.text,

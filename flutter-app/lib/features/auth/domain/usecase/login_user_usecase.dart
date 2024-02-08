@@ -9,25 +9,18 @@ class LoginUser extends UsecaseWithParam<void, CustomUserParam> {
   @override
   FutureUser call(CustomUserParam param) async {
     return authRepository.loginUser(
-        countryCode: param.countryCode,
-        name: param.name,
-        phoneNumber: param.phoneNumber,
-        image: param.image);
+        name: param.name, phoneNumber: param.phoneNumber, image: param.image);
   }
 }
 
 class CustomUserParam extends Equatable {
   final String? name;
-  final int phoneNumber;
-  final String countryCode;
+  final String phoneNumber;
   final String? image;
 
   const CustomUserParam(
-      {required this.countryCode,
-      required this.name,
-      required this.phoneNumber,
-      required this.image});
+      {required this.name, required this.phoneNumber, required this.image});
 
   @override
-  List<Object?> get props => [name, phoneNumber, countryCode, image];
+  List<Object?> get props => [name, phoneNumber, image];
 }

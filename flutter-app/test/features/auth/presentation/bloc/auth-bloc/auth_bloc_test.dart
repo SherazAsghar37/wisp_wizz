@@ -35,28 +35,24 @@ void main() {
   late GetCachedUser getCachedUser;
   late LogoutUser logoutUser;
   late PhoneAuthCredential phoneAuthCredential;
-
-  const String countryCode = "whatever.countryCode";
-  const String phoneNumber = "123456890";
-  const int phoneNumberInt = 123456890;
+  const String phoneNumber = "+92123456890";
   const String verificationId = "123456890";
   const String otp = "123456";
   const String name = "whatever.name";
   String? image = "whatever.image";
 
-  const customPhoneParam =
-      CustomPhoneParam(phoneNumber: phoneNumber, countryCode: countryCode);
+  const customPhoneParam = CustomPhoneParam(
+    phoneNumber: phoneNumber,
+  );
   const customVerificationParam =
       CustomVerificationParam(verificationId: verificationId, otp: otp);
-  final customUserParam = CustomUserParam(
-      countryCode: countryCode,
-      name: name,
-      phoneNumber: 1234567890,
-      image: image);
+  final customUserParam =
+      CustomUserParam(name: name, phoneNumber: phoneNumber, image: image);
   const customPhoneResponse =
       CustomPhoneResoponse(verificationId: verificationId);
-  const customGetUserParam =
-      CustomGetUserParam(phoneNumber: phoneNumberInt, countryCode: countryCode);
+  const customGetUserParam = CustomGetUserParam(
+    phoneNumber: phoneNumber,
+  );
   const ApiFailure apiFailure =
       ApiFailure(message: "whatever.message", statusCode: 500);
   const CacheFailure cacheFailure = CacheFailure(
@@ -99,13 +95,14 @@ void main() {
                 (invocation) async => const Right(customPhoneResponse));
             return authBloc;
           },
-          act: (bloc) => bloc.add(const SendCodeEvent(
-              countryCode: countryCode, phoneNumber: phoneNumber)),
+          act: (bloc) =>
+              bloc.add(const SendCodeEvent(phoneNumber: phoneNumber)),
           expect: () =>
               <AuthState>[const AuthSendingCode(), const AuthCodeSent()],
           verify: (bloc) {
             verify(() => sendCode(const CustomPhoneParam(
-                phoneNumber: phoneNumber, countryCode: countryCode))).called(1);
+                  phoneNumber: phoneNumber,
+                ))).called(1);
             verifyNoMoreInteractions(sendCode);
           });
       blocTest<AuthBloc, AuthState>(
@@ -117,31 +114,30 @@ void main() {
                     phoneAuthCredential: phoneAuthCredential)));
             return authBloc;
           },
-          act: (bloc) => bloc.add(const SendCodeEvent(
-              countryCode: countryCode, phoneNumber: phoneNumber)),
+          act: (bloc) =>
+              bloc.add(const SendCodeEvent(phoneNumber: phoneNumber)),
           expect: () =>
               <AuthState>[const AuthSendingCode(), const AuthOTPVerified()],
           verify: (bloc) {
             verify(() => sendCode(const CustomPhoneParam(
-                phoneNumber: phoneNumber, countryCode: countryCode))).called(1);
+                  phoneNumber: phoneNumber,
+                ))).called(1);
             verifyNoMoreInteractions(sendCode);
           });
 
       blocTest<AuthBloc, AuthState>(
         'emits [AuthSendingCode(),AuthCodeSentFailed()] when countrycode validation fails',
         build: () => authBloc,
-        act: (bloc) => bloc.add(
-            const SendCodeEvent(countryCode: "", phoneNumber: phoneNumber)),
+        act: (bloc) => bloc.add(const SendCodeEvent(phoneNumber: "32214")),
         expect: () => <AuthState>[
           const AuthSendingCode(),
-          const AuthCodeSentFailed("Country Code cannot be empty")
+          const AuthCodeSentFailed("Invalid phone number")
         ],
       );
       blocTest<AuthBloc, AuthState>(
         'emits [AuthSendingCode(),AuthCodeSentFailed()] when phone validation fails',
         build: () => authBloc,
-        act: (bloc) => bloc.add(const SendCodeEvent(
-            countryCode: countryCode, phoneNumber: "123456")),
+        act: (bloc) => bloc.add(const SendCodeEvent(phoneNumber: "+9211")),
         expect: () => <AuthState>[
           const AuthSendingCode(),
           const AuthCodeSentFailed("Invalid phone number")
@@ -154,15 +150,16 @@ void main() {
                 .thenAnswer((invocation) async => const Left(apiFailure));
             return authBloc;
           },
-          act: (bloc) => bloc.add(const SendCodeEvent(
-              countryCode: countryCode, phoneNumber: phoneNumber)),
+          act: (bloc) =>
+              bloc.add(const SendCodeEvent(phoneNumber: phoneNumber)),
           expect: () => <AuthState>[
                 const AuthSendingCode(),
                 AuthCodeSentFailed(apiFailure.message)
               ],
           verify: (bloc) {
             verify(() => sendCode(const CustomPhoneParam(
-                phoneNumber: phoneNumber, countryCode: countryCode))).called(1);
+                  phoneNumber: phoneNumber,
+                ))).called(1);
             verifyNoMoreInteractions(sendCode);
           });
     });
@@ -221,15 +218,16 @@ void main() {
             return authBloc;
           },
           act: (bloc) => bloc.add(const GetUserEvent(
-              phoneNumber: phoneNumber, countryCode: countryCode)),
+                phoneNumber: phoneNumber,
+              )),
           expect: () => <AuthState>[
                 const AuthGettingUser(),
                 AuthUserFound(user: userModel)
               ],
           verify: (bloc) {
             verify(() => getUser(const CustomGetUserParam(
-                phoneNumber: phoneNumberInt,
-                countryCode: countryCode))).called(1);
+                  phoneNumber: phoneNumber,
+                ))).called(1);
             verifyNoMoreInteractions(loginUser);
           });
       blocTest<AuthBloc, AuthState>(
@@ -240,13 +238,14 @@ void main() {
             return authBloc;
           },
           act: (bloc) => bloc.add(const GetUserEvent(
-              phoneNumber: phoneNumber, countryCode: countryCode)),
+                phoneNumber: phoneNumber,
+              )),
           expect: () =>
               <AuthState>[const AuthGettingUser(), const AuthUserNotFound()],
           verify: (bloc) {
             verify(() => getUser(const CustomGetUserParam(
-                phoneNumber: phoneNumberInt,
-                countryCode: countryCode))).called(1);
+                  phoneNumber: phoneNumber,
+                ))).called(1);
             verifyNoMoreInteractions(getUser);
           });
 
@@ -258,15 +257,16 @@ void main() {
             return authBloc;
           },
           act: (bloc) => bloc.add(const GetUserEvent(
-              phoneNumber: phoneNumber, countryCode: countryCode)),
+                phoneNumber: phoneNumber,
+              )),
           expect: () => <AuthState>[
                 const AuthGettingUser(),
                 AuthFailedToGetUser(apiFailure.message)
               ],
           verify: (bloc) {
             verify(() => getUser(const CustomGetUserParam(
-                phoneNumber: phoneNumberInt,
-                countryCode: countryCode))).called(1);
+                  phoneNumber: phoneNumber,
+                ))).called(1);
             verifyNoMoreInteractions(loginUser);
           });
     });
@@ -278,43 +278,31 @@ void main() {
                 .thenAnswer((invocation) async => Right(userModel));
             return authBloc;
           },
-          act: (bloc) => bloc.add(LoginEvent(
-              phoneNumber: phoneNumber,
-              countryCode: countryCode,
-              name: name,
-              image: image)),
+          act: (bloc) => bloc.add(
+              LoginEvent(phoneNumber: phoneNumber, name: name, image: image)),
           expect: () =>
               <AuthState>[const AuthloggingIn(), AuthloggedIn(user: userModel)],
           verify: (bloc) {
             verify(() => loginUser(CustomUserParam(
-                phoneNumber: phoneNumberInt,
-                countryCode: countryCode,
-                name: name,
-                image: image))).called(1);
+                phoneNumber: phoneNumber, name: name, image: image))).called(1);
             verifyNoMoreInteractions(loginUser);
           });
 
       blocTest<AuthBloc, AuthState>(
         'emits [AuthVerifyingOTP(),AuthOTPVerificationFailed()] when country code validation fails',
         build: () => authBloc,
-        act: (bloc) => bloc.add(LoginEvent(
-            phoneNumber: phoneNumber,
-            countryCode: "",
-            name: name,
-            image: image)),
+        act: (bloc) => bloc
+            .add(LoginEvent(phoneNumber: "123123", name: name, image: image)),
         expect: () => <AuthState>[
           const AuthloggingIn(),
-          const AuthloginFailed("Country Code cannot be empty")
+          const AuthloginFailed("Invalid phone number")
         ],
       );
       blocTest<AuthBloc, AuthState>(
         'emits [AuthVerifyingOTP(),AuthOTPVerificationFailed()] when phone validation fails',
         build: () => authBloc,
-        act: (bloc) => bloc.add(LoginEvent(
-            phoneNumber: "123456",
-            countryCode: countryCode,
-            name: name,
-            image: image)),
+        act: (bloc) =>
+            bloc.add(LoginEvent(phoneNumber: "+921", name: name, image: image)),
         expect: () => <AuthState>[
           const AuthloggingIn(),
           const AuthloginFailed("Invalid phone number")
@@ -327,21 +315,15 @@ void main() {
                 .thenAnswer((invocation) async => const Left(apiFailure));
             return authBloc;
           },
-          act: (bloc) => bloc.add(LoginEvent(
-              phoneNumber: phoneNumber,
-              countryCode: countryCode,
-              name: name,
-              image: image)),
+          act: (bloc) => bloc.add(
+              LoginEvent(phoneNumber: phoneNumber, name: name, image: image)),
           expect: () => <AuthState>[
                 const AuthloggingIn(),
                 AuthloginFailed(apiFailure.message)
               ],
           verify: (bloc) {
             verify(() => loginUser(CustomUserParam(
-                phoneNumber: phoneNumberInt,
-                countryCode: countryCode,
-                name: name,
-                image: image))).called(1);
+                phoneNumber: phoneNumber, name: name, image: image))).called(1);
             verifyNoMoreInteractions(loginUser);
           });
     });

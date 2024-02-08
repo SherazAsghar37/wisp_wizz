@@ -17,8 +17,7 @@ void main() {
   });
 
   const params = CustomGetUserParam(
-    countryCode: "whatever.countryCode",
-    phoneNumber: 123456789,
+    phoneNumber: "+92123456789",
   );
   final UserModel user = UserModel.empty();
 
@@ -27,16 +26,15 @@ void main() {
       //Arrange
       when(() => authRepository.getUser(
             phoneNumber: any(named: "phoneNumber"),
-            countryCode: any(named: "countryCode"),
           )).thenAnswer((invocation) async => Right(user));
       //Assert
       final response = await getUser(CustomGetUserParam(
-          phoneNumber: params.phoneNumber, countryCode: params.countryCode));
+        phoneNumber: params.phoneNumber,
+      ));
       expect(response, Right<dynamic, UserModel>(user));
       verify(
         () => authRepository.getUser(
           phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
         ),
       ).called(1);
       verifyNoMoreInteractions(authRepository);

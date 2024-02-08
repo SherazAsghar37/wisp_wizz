@@ -15,7 +15,6 @@ void main() {
   });
 
   const params = CustomPhoneParam(
-    countryCode: "whatever.countryCode",
     phoneNumber: "123456789",
   );
 
@@ -29,7 +28,6 @@ void main() {
       //Arrange
       when(() => authRepository.sendCode(
                 phoneNumber: any(named: "phoneNumber"),
-                countryCode: any(named: "countryCode"),
               ))
           .thenAnswer((invocation) async => const Right(customPhoneResoponse));
       //Assert
@@ -39,7 +37,6 @@ void main() {
       verify(
         () => authRepository.sendCode(
           phoneNumber: params.phoneNumber,
-          countryCode: params.countryCode,
         ),
       ).called(1);
       verifyNoMoreInteractions(authRepository);

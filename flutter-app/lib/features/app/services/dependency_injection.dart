@@ -3,10 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/firebase_authentication.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/local_data_source.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/remote_data_source.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_firebase_datasource.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/repositories/auth_repository.dart';
+import 'package:wisp_wizz/features/auth/domain/datasources/i_auth_firebase_datasource.dart';
+import 'package:wisp_wizz/features/auth/domain/datasources/i_auth_remote_data.dart';
+import 'package:wisp_wizz/features/auth/domain/datasources/i_local_datasource.dart';
 import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_user_usecase.dart';
@@ -48,11 +51,12 @@ Future<void> init() async {
         firebaseAuthentication: sl(),
         localDataSource: sl()))
     //data sources
-    ..registerLazySingleton<RemoteDatasource>(() => RemoteDatasource(dio: sl()))
-    ..registerLazySingleton<FirebaseAuthentication>(() =>
-        FirebaseAuthentication(auth: sl(), phoneAuthProviderWrapper: sl()))
-    ..registerLazySingleton<LocalDatasource>(
-        () => LocalDatasource(sharedPreferences: sl()))
+    ..registerLazySingleton<IAuthRemoteDatasource>(
+        () => AuthRemoteDatasource(dio: sl()))
+    ..registerLazySingleton<IAuthFirebaseDatasource>(() =>
+        AuthFirebaseDatasource(auth: sl(), phoneAuthProviderWrapper: sl()))
+    ..registerLazySingleton<IAuthLocalDatasource>(
+        () => AuthLocalDatasource(sharedPreferences: sl()))
     //external dependency
     ..registerLazySingleton<Dio>(() => Dio(BaseOptions(
           baseUrl: baseUrl,

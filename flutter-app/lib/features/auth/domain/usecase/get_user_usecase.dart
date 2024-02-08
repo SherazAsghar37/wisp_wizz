@@ -8,19 +8,18 @@ class GetUser extends UsecaseWithParam<void, CustomGetUserParam> {
   const GetUser({required this.authRepository});
   @override
   FutureNullabeleUser call(CustomGetUserParam param) async {
-    return authRepository.getUser(
-        phoneNumber: param.phoneNumber, countryCode: param.countryCode);
+    return authRepository.getUser(phoneNumber: param.phoneNumber);
   }
 }
 
 class CustomGetUserParam extends Equatable {
-  final int phoneNumber;
-  final String countryCode;
+  final String phoneNumber;
   const CustomGetUserParam({
     required this.phoneNumber,
-    required this.countryCode,
   });
 
   @override
-  List<Object?> get props => [phoneNumber, countryCode];
+  List<Object?> get props => [
+        phoneNumber,
+      ];
 }

@@ -5,18 +5,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/local_data_source.dart';
+import 'package:wisp_wizz/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 
 class MSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
-  late LocalDatasource localDatasource;
+  late AuthLocalDatasource localDatasource;
   late SharedPreferences sharedPreferences;
 
   setUp(() {
     sharedPreferences = MSharedPreferences();
-    localDatasource = LocalDatasource(sharedPreferences: sharedPreferences);
+    localDatasource = AuthLocalDatasource(sharedPreferences: sharedPreferences);
   });
 
   UserModel userModel = UserModel.empty();

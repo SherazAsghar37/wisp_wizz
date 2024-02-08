@@ -49,7 +49,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       SendCodeEvent event, Emitter<AuthState> emit) async {
     emit(const AuthSendingCode());
 
-    final validation = sendCodeValidation(event.phoneNumber, event.countryCode);
+    final validation = sendCodeValidation(
+      event.phoneNumber,
+    );
 
     if (validation.isLeft()) {
       validation.fold((f) => emit(AuthCodeSentFailed(f.message)), (s) => null);
@@ -58,7 +60,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final res = await _sendCode(CustomPhoneParam(
       phoneNumber: event.phoneNumber,
-      countryCode: event.countryCode,
     ));
 
     res.fold(
@@ -91,18 +92,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(const AuthloggingIn());
-    final validation = loginValidation(
-        event.countryCode, event.name, event.phoneNumber, event.image);
+    final validation =
+        loginValidation(event.name, event.phoneNumber, event.image);
     if (validation.isLeft()) {
       validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
       return;
     }
-    int phoneNumber = int.parse(event.phoneNumber);
     final res = await _loginUser(CustomUserParam(
-        countryCode: event.countryCode,
-        name: event.name,
-        phoneNumber: phoneNumber,
-        image: event.image));
+        name: event.name, phoneNumber: event.phoneNumber, image: event.image));
     res.fold((f) => emit(AuthloginFailed(f.message)),
         (s) => emit(AuthloggedIn(user: s)));
   }
@@ -110,16 +107,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onGetUser(GetUserEvent event, Emitter<AuthState> emit) async {
     emit(const AuthGettingUser());
 
-    final validation = sendCodeValidation(event.phoneNumber, event.countryCode);
+    final validation = sendCodeValidation(event.phoneNumber);
 
     if (validation.isLeft()) {
       validation.fold((f) => emit(AuthFailedToGetUser(f.message)), (s) => null);
       return;
     }
-    final phoneNumber = int.parse(event.phoneNumber);
 
     final res = await _getUser(CustomGetUserParam(
-        phoneNumber: phoneNumber, countryCode: event.countryCode));
+      phoneNumber: event.phoneNumber,
+    ));
 
     res.fold(
         (f) => emit(AuthFailedToGetUser(f.message)),

@@ -1,11 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 
-Either<ValidationFailure, bool> sendCodeValidation(
-    String phoneNumber, String countryCode) {
-  if (countryCode.isEmpty) {
-    return const Left(
-        ValidationFailure(message: "Country Code cannot be empty"));
+Either<ValidationFailure, bool> sendCodeValidation(String phoneNumber) {
+  if (!phoneNumber.startsWith("+")) {
+    return const Left(ValidationFailure(message: "Invalid phone number"));
   } else if (phoneNumber.length < 7) {
     return const Left(ValidationFailure(message: "Invalid phone number"));
   } else {
@@ -22,10 +20,9 @@ Either<ValidationFailure, bool> verifyOtpValidation(String otp) {
 }
 
 Either<ValidationFailure, bool> loginValidation(
-    String countryCode, String? name, String phoneNumber, String? image) {
-  if (countryCode.isEmpty) {
-    return const Left(
-        ValidationFailure(message: "Country Code cannot be empty"));
+    String? name, String phoneNumber, String? image) {
+  if (!phoneNumber.startsWith("+")) {
+    return const Left(ValidationFailure(message: "Invalid phone number"));
   } else if (phoneNumber.length < 7) {
     return const Left(ValidationFailure(message: "Invalid phone number"));
   } else {
