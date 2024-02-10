@@ -9,6 +9,8 @@ import 'package:wisp_wizz/features/auth/data/datasources/auth_remote_data_source
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
 
+import '../../../../app/temp_path.dart';
+
 class MDio extends Mock implements Dio {
   @override
   BaseOptions options;
@@ -19,10 +21,10 @@ void main() {
   late AuthRemoteDatasource remoteDatasource;
   late Dio dio;
   // MultipartFile? multipartFile;
-  const params = CustomUserParam(
+  final params = CustomUserParam(
       name: "whatever.name",
       phoneNumber: "+92123456789",
-      image: "whatever.image");
+      image: tempFile.readAsBytesSync());
 
   setUp(() {
     dio = MDio(options: BaseOptions(baseUrl: baseUrl));

@@ -2,13 +2,14 @@ import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class ChatsScreen extends StatelessWidget {
-  const ChatsScreen({super.key});
+  final UserModel user;
+  const ChatsScreen({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final UserModel user = UserModel.empty();
+    // final UserModel user = UserModel.empty();
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       extendBodyBehindAppBar: true,

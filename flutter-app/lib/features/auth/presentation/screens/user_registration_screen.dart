@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
@@ -12,21 +14,25 @@ class UserRegistrationScreen extends StatefulWidget {
 }
 
 class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
-  File? image;
+  // File? image;
+  Uint8List? image;
 
   TextEditingController nameController = TextEditingController();
   @override
   void initState() {
     final state = context.read<AuthBloc>().state;
     if (state is AuthUserFound) {
-      final path = state.user.image;
+      image = state.user.image;
       final name = state.user.name;
-      if (path != null) {
-        image = File(path);
-      }
+      // image = File.fromRawPath(userImage);
       nameController.text = name;
     }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -64,9 +70,8 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                       onPressed: () async {
                         XFile? file = await Utils.pickImage();
                         if (file != null) {
-                          setState(() {
-                            image = File(file.path);
-                          });
+                          image = await file.readAsBytes();
+                          setState(() {});
                         }
                       },
                       child: CircleAvatar(
@@ -74,7 +79,8 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                         backgroundColor: theme.primaryColor,
                         child: CircleAvatar(
                             radius: radius - 5,
-                            backgroundImage: Utils.getFileImage(image)),
+                            backgroundImage:
+                                Utils.getUserImageFromUint8List(image)),
                       ),
                     ),
                     SizedBox(
@@ -97,14 +103,14 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                           )
                         : PrimaryButton(
                             text: "Submit",
-                            onTap: () async {
-                              await FileManager.createMediaFolder();
-                              await FileManager.createProfilePictureFolder();
-                              String? path;
-                              if (image != null) {
-                                path = await FileManager.saveProfilePicture(
-                                    image!);
-                              }
+                            onTap: () {
+                              // await FileManager.createMediaFolder();
+                              // await FileManager.createProfilePictureFolder();
+                              // String? path;
+                              // if (image != null) {
+                              //   path = await FileManager.saveProfilePicture(
+                              //       image!);
+                              // }var img = image as ui.Image;
 
                               final phoneNumberBloc =
                                   // ignore: use_build_context_synchronously
@@ -117,7 +123,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                                   name: nameController.text.isEmpty
                                       ? null
                                       : nameController.text,
-                                  image: path));
+                                  image: image));
                             },
                           )
                   ],

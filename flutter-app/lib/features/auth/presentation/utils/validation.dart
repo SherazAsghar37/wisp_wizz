@@ -20,7 +20,9 @@ Either<ValidationFailure, bool> verifyOtpValidation(String otp) {
 }
 
 Either<ValidationFailure, bool> loginValidation(
-    String? name, String phoneNumber, String? image) {
+  String? name,
+  String phoneNumber,
+) {
   if (!phoneNumber.startsWith("+")) {
     return const Left(ValidationFailure(message: "Invalid phone number"));
   } else if (phoneNumber.length < 7) {

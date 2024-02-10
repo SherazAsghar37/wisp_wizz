@@ -7,9 +7,6 @@ import 'package:wisp_wizz/features/auth/data/datasources/auth_firebase_datasourc
 import 'package:wisp_wizz/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:wisp_wizz/features/auth/data/repositories/auth_repository.dart';
-import 'package:wisp_wizz/features/auth/domain/datasources/i_auth_firebase_datasource.dart';
-import 'package:wisp_wizz/features/auth/domain/datasources/i_auth_remote_data.dart';
-import 'package:wisp_wizz/features/auth/domain/datasources/i_local_datasource.dart';
 import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_user_usecase.dart';
@@ -51,11 +48,11 @@ Future<void> init() async {
         firebaseAuthentication: sl(),
         localDataSource: sl()))
     //data sources
-    ..registerLazySingleton<IAuthRemoteDatasource>(
+    ..registerLazySingleton<AuthRemoteDatasource>(
         () => AuthRemoteDatasource(dio: sl()))
-    ..registerLazySingleton<IAuthFirebaseDatasource>(() =>
+    ..registerLazySingleton<AuthFirebaseDatasource>(() =>
         AuthFirebaseDatasource(auth: sl(), phoneAuthProviderWrapper: sl()))
-    ..registerLazySingleton<IAuthLocalDatasource>(
+    ..registerLazySingleton<AuthLocalDatasource>(
         () => AuthLocalDatasource(sharedPreferences: sl()))
     //external dependency
     ..registerLazySingleton<Dio>(() => Dio(BaseOptions(

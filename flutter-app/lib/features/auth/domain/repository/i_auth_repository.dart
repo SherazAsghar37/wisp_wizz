@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
@@ -9,7 +11,7 @@ abstract class IAuthRepository {
   ResultFuture<PhoneAuthCredential> verifyOTP(
       {required String verificationId, required String otp});
   FutureUser loginUser(
-      {required String? name, required String phoneNumber, String? image});
+      {required String? name, required String phoneNumber, Uint8List? image});
   FutureNullabeleUser getUser({
     required String phoneNumber,
   });

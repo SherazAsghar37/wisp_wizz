@@ -11,7 +11,7 @@ const port = Number.parseInt(process.env.PORT as string) || 8000;
 console.log(process.env.TWILIO_SID);
 //config
 const app = appConfig();
-app.listen(port, "192.168.1.106", () => {
+app.listen(port, "192.168.1.104", () => {
   console.log(`Server is listening on ${port}`.yellow.bold);
 });
 app.use((req, res, next) => {

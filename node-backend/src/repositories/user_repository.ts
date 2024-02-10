@@ -10,13 +10,14 @@ export default class UserRepository {
 
       const newUser = await userModel.create({
         name: data.name,
-        phoneNumber: data.phoneNumber as number,
-        image: data.image,
+        phoneNumber: data.phoneNumber,
+        image: {
+          data: data.image.data,
+          contentType: data.image.contentType,
+        },
         status: data.status,
         lastSeen: data.lastSeen,
       });
-
-      console.log("After creating user...");
 
       if (newUser) {
         return newUser as User;
@@ -40,8 +41,11 @@ export default class UserRepository {
         },
         {
           name: data.name,
-          phoneNumber: data.phoneNumber as number,
-          image: data.image,
+          phoneNumber: data.phoneNumber,
+          image: {
+            data: data.image.data,
+            contentType: data.image.contentType,
+          },
           status: data.status,
           lastSeen: data.lastSeen,
         }
@@ -61,7 +65,7 @@ export default class UserRepository {
     }
   };
   public findByPhoneNumber = async (
-    phoneNumber: number
+    phoneNumber: string
   ): Promise<User | null> => {
     try {
       console.log("Before finding user...");

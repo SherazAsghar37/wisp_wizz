@@ -13,6 +13,7 @@ import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
 
+import '../../../../app/temp_path.dart';
 import '../../global/phone_auth_cradentials.mock.dart';
 
 class MRemoteDatasource extends Mock implements AuthRemoteDatasource {}
@@ -39,10 +40,10 @@ void main() {
     phoneAuthCredential = MPhoneAuthCradential();
   });
 
-  const params = CustomUserParam(
+  final params = CustomUserParam(
       name: "whatever.name",
       phoneNumber: "+92123456789",
-      image: "whatever.image");
+      image: tempFile.readAsBytesSync());
 
   const otpParams = CustomVerificationParam(
     otp: "123456",

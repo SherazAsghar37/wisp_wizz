@@ -1,6 +1,6 @@
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
-import 'package:wisp_wizz/features/app/utils/utils.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
@@ -22,10 +22,12 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   TextEditingController searchController = TextEditingController();
   final String notifications = "5";
-  final List<Widget> tabScreens = const [
-    ChatsScreen(),
-    GroupsScreen(),
-    CallsScreen(),
+  late List<Widget> tabScreens = [
+    ChatsScreen(
+      user: widget.user,
+    ),
+    const GroupsScreen(),
+    const CallsScreen(),
   ];
 
   final List<IconData> tabIcons = [
@@ -104,8 +106,12 @@ class _HomeScreenState extends State<HomeScreen>
                                 TextButton(
                                   onPressed: () async {
                                     Navigator.pushNamed(
-                                        context, SettingScreen.routeName,
-                                        arguments: widget.user);
+                                            context, SettingScreen.routeName,
+                                            arguments: state is AuthloggedIn
+                                                ? state.user
+                                                : widget.user)
+                                        .then((value) =>
+                                            DebugHelper.printWarning("back"));
                                   },
                                   child: CircleAvatar(
                                     radius: radius,
@@ -114,8 +120,10 @@ class _HomeScreenState extends State<HomeScreen>
                                       backgroundColor:
                                           theme.colorScheme.background,
                                       radius: radius - 1,
-                                      backgroundImage:
-                                          Utils.getUserImage(widget.user),
+                                      backgroundImage: Utils.getUserImage(
+                                          state is AuthloggedIn
+                                              ? state.user
+                                              : widget.user),
                                     ),
                                   ),
                                 )

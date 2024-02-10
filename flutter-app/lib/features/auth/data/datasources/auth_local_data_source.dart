@@ -34,8 +34,11 @@ class AuthLocalDatasource implements IAuthLocalDatasource {
   UserModel? getCachedUserData() {
     try {
       String? userData = _sharedPreferences.getString(sUserDataKey);
+
       if (userData != null) {
-        return UserModel.fromJson(userData);
+        UserModel user = UserModel.fromJson(userData);
+
+        return user;
       } else {
         return null;
       }

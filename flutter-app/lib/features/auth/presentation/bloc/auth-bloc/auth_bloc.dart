@@ -1,6 +1,10 @@
 // ignore: depend_on_referenced_packages
+import 'dart:typed_data';
+
+// ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/get_cached_user.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -92,12 +96,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(const AuthloggingIn());
-    final validation =
-        loginValidation(event.name, event.phoneNumber, event.image);
+    final validation = loginValidation(
+      event.name,
+      event.phoneNumber,
+    );
     if (validation.isLeft()) {
       validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
       return;
     }
+
     final res = await _loginUser(CustomUserParam(
         name: event.name, phoneNumber: event.phoneNumber, image: event.image));
     res.fold((f) => emit(AuthloginFailed(f.message)),

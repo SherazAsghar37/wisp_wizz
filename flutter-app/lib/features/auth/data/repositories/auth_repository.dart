@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
@@ -25,7 +27,7 @@ class AuthRepository implements IAuthRepository {
   FutureUser loginUser(
       {required String? name,
       required String phoneNumber,
-      String? image}) async {
+      Uint8List? image}) async {
     try {
       final response = await _remoteDatasource.loginUser(
           name: name, phoneNumber: phoneNumber, image: image);

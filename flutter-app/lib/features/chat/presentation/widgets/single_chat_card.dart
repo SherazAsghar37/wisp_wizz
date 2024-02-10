@@ -61,8 +61,13 @@ class SingleChatCard extends StatelessWidget {
                       children: [
                         user.status
                             ? CircleAvatar(
-                                radius: radius,
+                                radius: Dimensions.height3,
                                 backgroundColor: greenColor,
+                              )
+                            : const SizedBox(),
+                        user.status
+                            ? SizedBox(
+                                width: Dimensions.width3,
                               )
                             : const SizedBox(),
                         SizedBox(

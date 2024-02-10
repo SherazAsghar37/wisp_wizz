@@ -5,6 +5,7 @@ import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
 import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
 
+import '../../../../app/temp_path.dart';
 import '../repository/i_auth_repository_test.dart';
 
 void main() {
@@ -16,10 +17,10 @@ void main() {
     loginUser = LoginUser(authRepository: authRepository);
   });
 
-  const params = CustomUserParam(
+  final params = CustomUserParam(
       name: "whatever.name",
       phoneNumber: "+92123456789",
-      image: "whatever.image");
+      image: tempFile.readAsBytesSync());
   final UserModel user = UserModel.empty();
 
   group("[Auth Repository] - ", () {

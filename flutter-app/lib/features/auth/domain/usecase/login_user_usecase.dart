@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/usecases/usecase.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
@@ -16,7 +18,7 @@ class LoginUser extends UsecaseWithParam<void, CustomUserParam> {
 class CustomUserParam extends Equatable {
   final String? name;
   final String phoneNumber;
-  final String? image;
+  final Uint8List? image;
 
   const CustomUserParam(
       {required this.name, required this.phoneNumber, required this.image});

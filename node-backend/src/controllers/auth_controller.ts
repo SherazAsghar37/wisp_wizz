@@ -15,16 +15,28 @@ export default class AuthController {
 
   public signUp = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, phoneNumber, image, status, lastSeen } = req.body;
-
-      const user: User = await this._userServices.signUpLocal(
+      var { name, phoneNumber, image, status, lastSeen } = req.body;
+      const bufferImage: Buffer = Buffer.from(image, "base64");
+      const user: any = await this._userServices.signUpLocal(
         name,
         phoneNumber,
-        image,
+        { data: bufferImage, contentType: "image/png" },
         status,
         lastSeen
       );
-      return res.status(HttpStatusCode.OK).json(JSON.stringify({ user: user }));
+      console.log(user);
+      return res.status(HttpStatusCode.OK).json(
+        JSON.stringify({
+          user: {
+            _id: user["_id"],
+            name: user.name,
+            phoneNumber: user.phoneNumber,
+            status: user.status,
+            lastSeen: user.lastSeen,
+            image: user.image.data.toString("base64"),
+          },
+        })
+      );
     } catch (error) {
       this._errorHandler.handleError(error, res);
     }

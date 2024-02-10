@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +14,7 @@ import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
 import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
+import '../../../../../app/temp_path.dart';
 import '../../../global/phone_auth_cradentials.mock.dart';
 
 class MSendCode extends Mock implements SendCode {}
@@ -39,15 +42,17 @@ void main() {
   const String verificationId = "123456890";
   const String otp = "123456";
   const String name = "whatever.name";
-  String? image = "whatever.image";
+  Uint8List image = tempFile.readAsBytesSync();
 
   const customPhoneParam = CustomPhoneParam(
     phoneNumber: phoneNumber,
   );
   const customVerificationParam =
       CustomVerificationParam(verificationId: verificationId, otp: otp);
-  final customUserParam =
-      CustomUserParam(name: name, phoneNumber: phoneNumber, image: image);
+  final customUserParam = CustomUserParam(
+      name: "whatever.name",
+      phoneNumber: "+92123456789",
+      image: tempFile.readAsBytesSync());
   const customPhoneResponse =
       CustomPhoneResoponse(verificationId: verificationId);
   const customGetUserParam = CustomGetUserParam(

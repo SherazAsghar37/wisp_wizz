@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:wisp_wizz/features/app/constants/app_constants.dart';
+import 'package:flutter/services.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
-import 'package:wisp_wizz/features/auth/domain/datasources/i_auth_remote_data.dart';
+import 'package:wisp_wizz/features/auth/domain/datasources/i_auth_remote_datasource.dart';
+import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
 
 class AuthRemoteDatasource implements IAuthRemoteDatasource {
   final Dio _dio;
@@ -15,11 +16,14 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
   Future<UserModel> loginUser(
       {required String? name,
       required String phoneNumber,
-      String? image}) async {
+      Uint8List? image}) async {
     try {
       final String url = _dio.options.baseUrl + loginUrl;
+      ByteData assetByteData = await rootBundle.load("images/profile.png");
+      Uint8List assetBytes = assetByteData.buffer.asUint8List();
+      image = image ?? assetBytes;
       final MapData data = {
-        'image': image,
+        'image': base64Encode(image),
         "name": name,
         "phoneNumber": phoneNumber,
       };
@@ -30,7 +34,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
-        DebugHelper.printWarning(userData.toString());
+        DebugHelper.printWarning(userData["user"].toString());
         return UserModel.fromMap(userData["user"]);
       } else {
         throw ApiException(

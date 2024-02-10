@@ -37,7 +37,7 @@ class GetUserEvent extends AuthEvent {
 class LoginEvent extends AuthEvent {
   final String? name;
   final String phoneNumber;
-  final String? image;
+  final Uint8List? image;
   const LoginEvent({
     required this.phoneNumber,
     required this.name,

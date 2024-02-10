@@ -12,10 +12,14 @@ export default class Validation {
     next: NextFunction
   ) => {
     const numberSchema = z.object({
-      countrphoneNumberyCode: z.string().startsWith("+"),
+      countryCode: z.string().startsWith("+"),
+      phoneNumber: z.string().min(7, "Invalid Phone number"),
     });
     try {
-      numberSchema.parse(req.body);
+      numberSchema.parse({
+        countryCode: req.body.phoneNumber,
+        phoneNumber: req.body.phoneNumber,
+      });
       console.log(req.body);
       return next();
     } catch (error) {
@@ -31,11 +35,8 @@ export default class Validation {
     next: NextFunction
   ) => {
     const userSchema = z.object({
-      name: z.string(),
-      phoneNumber: z.string().startsWith("+"),
-      image: z.string(),
-      status: z.boolean(),
-      lastSeen: z.string(),
+      countryCode: req.body.phoneNumber,
+      phoneNumber: req.body.phoneNumber,
     });
     try {
       const user = req.body;

@@ -49,13 +49,13 @@ dependencies:
   path_provider: ^2.1.2
   shared_preferences: ^2.2.2
   fluentui_system_icons: ^1.1.225
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   mocktail: ^1.0.2
   bloc_test: ^9.1.5
-  path: ^1.8.3
   flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the

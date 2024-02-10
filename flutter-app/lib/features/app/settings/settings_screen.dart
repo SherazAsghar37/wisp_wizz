@@ -1,19 +1,17 @@
-import 'dart:developer';
+import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wisp_wizz/features/app/constants/app_constants.dart';
-import 'dart:io';
-import 'package:wisp_wizz/features/app/constants/screen_constants.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/icon_text_button.dart';
-import 'package:wisp_wizz/features/app/shared/widgets/input_field.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/primary_icon.dart';
 import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
+import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
+// ignore: must_be_immutable
 class SettingScreen extends StatefulWidget {
   static const String routeName = settingScreen;
-  final UserModel user;
-  const SettingScreen({super.key, required this.user});
+  UserModel user;
+  SettingScreen({super.key, required this.user});
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -21,14 +19,11 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   TextEditingController nameController = TextEditingController();
-  File? image;
+  Uint8List? image;
   @override
   void initState() {
-    final path = widget.user.image;
+    image = widget.user.image;
     final name = widget.user.name;
-    if (path != null) {
-      image = File(path);
-    }
     nameController.text = name;
     super.initState();
   }
@@ -38,7 +33,6 @@ class _SettingScreenState extends State<SettingScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     double radius = Dimensions.width30 + Dimensions.height30;
-    log("print");
     return Scaffold(
         backgroundColor: colorScheme.background,
         extendBodyBehindAppBar: true,
@@ -85,10 +79,10 @@ class _SettingScreenState extends State<SettingScreen> {
                         TextButton(
                           onPressed: () async {
                             XFile? file = await Utils.pickImage();
+
                             if (file != null) {
-                              setState(() {
-                                image = File(file.path);
-                              });
+                              image = await file.readAsBytes();
+                              setState(() {});
                             }
                           },
                           child: CircleAvatar(
@@ -96,7 +90,8 @@ class _SettingScreenState extends State<SettingScreen> {
                             backgroundColor: theme.primaryColor,
                             child: CircleAvatar(
                                 radius: radius - 5,
-                                backgroundImage: Utils.getFileImage(image)),
+                                backgroundImage:
+                                    Utils.getUserImageFromUint8List(image)),
                           ),
                         ),
                         SizedBox(
@@ -170,13 +165,40 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
         ),
         floatingActionButton: nameController.text != widget.user.name ||
-                (image != null && image!.path != widget.user.image)
-            ? FloatingActionButton(
-                onPressed: () {},
-                child: Icon(
-                  checkmarkIcon,
-                  size: Dimensions.height25,
-                ),
+                (image != null && image != widget.user.image)
+            ? BlocConsumer<AuthBloc, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthloggedIn) {
+                    setState(() {
+                      widget.user = state.user;
+                    });
+                  }
+                },
+                builder: (context, state) {
+                  return FloatingActionButton(
+                    onPressed: () {
+                      final phoneNumberBloc =
+                          // ignore: use_build_context_synchronously
+                          context.read<PhoneNumberBloc>().state;
+                      // ignore: use_build_context_synchronously
+                      context.read<AuthBloc>().add(LoginEvent(
+                          phoneNumber: phoneNumberBloc.countryCode +
+                              phoneNumberBloc.textEditingController.text,
+                          name: nameController.text.isEmpty
+                              ? null
+                              : nameController.text,
+                          image: image));
+                    },
+                    child: state is AuthloggingIn
+                        ? CircularProgressIndicator(
+                            color: theme.colorScheme.background,
+                          )
+                        : Icon(
+                            checkmarkIcon,
+                            size: Dimensions.height25,
+                          ),
+                  );
+                },
               )
             : null);
   }
