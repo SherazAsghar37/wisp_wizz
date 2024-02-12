@@ -94,4 +94,41 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
           message: "Something went wrong", statusCode: 500);
     }
   }
+
+  @override
+  Future<UserModel> updateUser(
+      {required String? name, required String id, Uint8List? image}) async {
+    try {
+      final MapData data = {
+        'image': image != null ? base64Encode(image) : null,
+        "name": name,
+        "_id": id,
+      };
+      final String url = _dio.options.baseUrl + updateUserUrl;
+      final response = await _dio.put(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        MapData userData = MapData.from(json.decode(response.data));
+        DebugHelper.printWarning(userData["user"].toString());
+        return UserModel.fromMap(userData["user"]);
+      } else {
+        throw ApiException(
+          message: response.data["message"],
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on ApiException {
+      rethrow;
+    } on DioException catch (dioException) {
+      DebugHelper.printError(dioException.message.toString());
+      throw const ApiException(
+          message: "Internal server error", statusCode: 500);
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const ApiException(
+          message: "Something went wrong", statusCode: 500);
+    }
+  }
 }

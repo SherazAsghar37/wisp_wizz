@@ -41,4 +41,37 @@ export default class UserController {
       this._errorHandler.handleError(error, res);
     }
   };
+  public updateUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data = req.body;
+      const user: any | null = await this._userServices.updateUser(data);
+      console.log(data);
+      var newRec: Record<string, any> = {};
+      if (data.name) {
+        newRec.name = data.name;
+      }
+      if (data.image) {
+        const bufferImage: Buffer = Buffer.from(data.image, "base64");
+        newRec.image = { data: bufferImage, contentType: "image/png" };
+      }
+      return res.status(HttpStatusCode.OK).json(
+        JSON.stringify({
+          user: {
+            _id: user["_id"],
+            name: user.name,
+            phoneNumber: user.phoneNumber,
+            status: user.status,
+            lastSeen: user.lastSeen,
+            image: user.image.data.toString("base64"),
+          },
+        })
+      );
+    } catch (error) {
+      this._errorHandler.handleError(error, res);
+    }
+  };
 }

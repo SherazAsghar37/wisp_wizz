@@ -8,9 +8,9 @@ const userController = container.resolve(UserController);
 
 userRouter
   .route("/getUser")
-  .post(validation.phoneNumberValidator, userController.getUser)
-  .get((req, res) => {
-    res.end("hi");
-  });
+  .post(validation.phoneNumberValidator, userController.getUser);
+userRouter
+  .route("/updateUser")
+  .put(validation.userUpdateValidation, userController.updateUser);
 
 export default userRouter;

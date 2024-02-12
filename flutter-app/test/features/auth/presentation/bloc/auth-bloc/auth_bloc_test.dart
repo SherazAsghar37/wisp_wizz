@@ -6,11 +6,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/logout_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/update_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/verify_otp_usecase.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -29,6 +31,10 @@ class MGetCachedUser extends Mock implements GetCachedUser {}
 
 class MLogoutUser extends Mock implements LogoutUser {}
 
+class MUpdateUser extends Mock implements UpdateUser {}
+
+class MCacheUser extends Mock implements CacheUser {}
+
 void main() {
   late SendCode sendCode;
   late VerifyOTP verifyOTP;
@@ -37,6 +43,9 @@ void main() {
   late GetUser getUser;
   late GetCachedUser getCachedUser;
   late LogoutUser logoutUser;
+  late UpdateUser updateUser;
+  late CacheUser cacheUser;
+
   late PhoneAuthCredential phoneAuthCredential;
   const String phoneNumber = "+92123456890";
   const String verificationId = "123456890";
@@ -72,13 +81,18 @@ void main() {
     getUser = MGetUser();
     getCachedUser = MGetCachedUser();
     logoutUser = MLogoutUser();
+    updateUser = MUpdateUser();
+    cacheUser = MCacheUser();
+
     authBloc = AuthBloc(
         loginUser: loginUser,
         sendCode: sendCode,
         verifyOTP: verifyOTP,
         getUser: getUser,
         getCachedUser: getCachedUser,
-        logoutUser: logoutUser);
+        logoutUser: logoutUser,
+        updateUser: updateUser,
+        cacheUser: cacheUser);
     phoneAuthCredential = MPhoneAuthCradential();
 
     registerFallbackValue(customPhoneParam);

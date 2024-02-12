@@ -65,4 +65,19 @@ export default class UserService {
       }
     }
   };
+  public updateUser = async (
+    data: Record<string, any>
+  ): Promise<User | null> => {
+    try {
+      const user: User | null = await this._userRepository.updateUserData(data);
+      return user;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.log("!!!Criticial Error!!!", error);
+        throw new ThrowCriticalError(error);
+      }
+    }
+  };
 }

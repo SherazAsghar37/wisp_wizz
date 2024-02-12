@@ -53,8 +53,6 @@ class AuthRepository implements IAuthRepository {
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
-      // } catch (e) {
-      //   return Left(ApiFailure(message: e.toString(), statusCode: 500));
     }
   }
 
@@ -67,8 +65,6 @@ class AuthRepository implements IAuthRepository {
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
-      // } catch (e) {
-      //   return Left(ApiFailure(message: e.toString(), statusCode: 500));
     }
   }
 
@@ -103,6 +99,30 @@ class AuthRepository implements IAuthRepository {
     try {
       final response = await _localDataSource.removeCachedUser();
       return Right(response);
+    } on CacheException catch (e) {
+      return Left(CacheFailure.fromException(e));
+    }
+  }
+
+  @override
+  FutureUser updateUser(
+      {required String? name, required String id, Uint8List? image}) async {
+    try {
+      final response =
+          await _remoteDatasource.updateUser(name: name, id: id, image: image);
+      return Right(response);
+    } on ApiException catch (e) {
+      return Left(ApiFailure.fromException(e));
+    } on CacheException catch (e) {
+      return Left(CacheFailure.fromException(e));
+    }
+  }
+
+  @override
+  ResultFuture<void> cacheUser(UserModel user) async {
+    try {
+      await _localDataSource.cacheUserData(user);
+      return const Right(null);
     } on CacheException catch (e) {
       return Left(CacheFailure.fromException(e));
     }

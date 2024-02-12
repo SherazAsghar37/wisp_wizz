@@ -64,6 +64,32 @@ export default class UserRepository {
       throw new CustomError(`${error}`, HttpStatusCode.INTERNAL_SERVER_ERROR);
     }
   };
+  public updateUserData = async (data: Record<string, any>): Promise<User> => {
+    try {
+      console.log("Before updating user...");
+
+      const newUser = await userModel.findOneAndUpdate(
+        { _id: data._id },
+        {
+          $set: data,
+        },
+        { new: true }
+      );
+
+      console.log("After updating user...");
+
+      if (newUser) {
+        return newUser as User;
+      } else {
+        console.log("here");
+        throw new CustomError("Failed to update user", HttpStatusCode.CONFLICT);
+      }
+    } catch (error) {
+      console.log(error);
+      throw new CustomError(`${error}`, HttpStatusCode.INTERNAL_SERVER_ERROR);
+    }
+  };
+
   public findByPhoneNumber = async (
     phoneNumber: string
   ): Promise<User | null> => {

@@ -14,4 +14,6 @@ abstract class IAuthRemoteDatasource {
   Future<UserModel?> getUser({
     required String phoneNumber,
   });
+  Future<UserModel> updateUser(
+      {required String? name, required String id, Uint8List? image});
 }

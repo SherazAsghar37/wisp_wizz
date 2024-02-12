@@ -3,9 +3,10 @@ import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/usecases/usecase.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
+import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/repository/i_auth_repository.dart';
 
-class LoginUser extends UsecaseWithParam<void, CustomUserParam> {
+class LoginUser extends UsecaseWithParam<UserModel, CustomUserParam> {
   final IAuthRepository authRepository;
   const LoginUser({required this.authRepository});
   @override

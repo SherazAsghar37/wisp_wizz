@@ -31,3 +31,13 @@ Either<ValidationFailure, bool> loginValidation(
     return const Right(true);
   }
 }
+
+Either<ValidationFailure, bool> updateUserVaidation(
+  String id,
+) {
+  if (id.isEmpty) {
+    return const Left(ValidationFailure(message: "Invalid ID"));
+  } else {
+    return const Right(true);
+  }
+}

@@ -40,7 +40,7 @@ class LoginEvent extends AuthEvent {
   final Uint8List? image;
   const LoginEvent({
     required this.phoneNumber,
-    required this.name,
+    this.name,
     this.image,
   });
   @override
@@ -51,6 +51,19 @@ class LoginEvent extends AuthEvent {
 
 class LogoutEvent extends AuthEvent {
   const LogoutEvent();
+}
+
+class UpdateUserEvent extends AuthEvent {
+  final String? name;
+  final String id;
+  final Uint8List? image;
+  const UpdateUserEvent({
+    required this.id,
+    this.name,
+    this.image,
+  });
+  @override
+  List<Object> get props => [id];
 }
 
 class GetCachedUserEvent extends AuthEvent {

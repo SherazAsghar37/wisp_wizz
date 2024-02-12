@@ -5,12 +5,14 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/logout_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/update_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/verify_otp_usecase.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/validation.dart';
 
@@ -24,6 +26,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final GetUser _getUser;
   final GetCachedUser _getCachedUser;
   final LogoutUser _logoutUser;
+  final UpdateUser _updateUser;
+  final CacheUser _cacheUser;
   String _verificationId = "";
 
   AuthBloc(
@@ -32,13 +36,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       required VerifyOTP verifyOTP,
       required GetUser getUser,
       required GetCachedUser getCachedUser,
-      required LogoutUser logoutUser})
+      required LogoutUser logoutUser,
+      required UpdateUser updateUser,
+      required CacheUser cacheUser})
       : _loginUser = loginUser,
         _sendCode = sendCode,
         _verifyOTP = verifyOTP,
         _getUser = getUser,
         _getCachedUser = getCachedUser,
         _logoutUser = logoutUser,
+        _updateUser = updateUser,
+        _cacheUser = cacheUser,
         super(const AuthLoggedOut()) {
     on<SendCodeEvent>(_onSendCodeEvent);
     on<VerifyOTPEvent>(_onVerifyOTPEvent);
@@ -46,6 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetUserEvent>(_onGetUser);
     on<GetCachedUserEvent>(_onGetCachedUser);
     on<LogoutEvent>(_onLogout);
+    on<UpdateUserEvent>(_onUpdateUser);
   }
 
   Future<void> _onSendCodeEvent(
@@ -106,8 +115,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final res = await _loginUser(CustomUserParam(
         name: event.name, phoneNumber: event.phoneNumber, image: event.image));
-    res.fold((f) => emit(AuthloginFailed(f.message)),
-        (s) => emit(AuthloggedIn(user: s)));
+    res.fold((f) => emit(AuthloginFailed(f.message)), (s) async {
+      final response = await _cacheUser(s);
+      response.fold((failure) => AuthFailedToCacheUser(failure.message),
+          (sucess) => emit(AuthloggedIn(user: s)));
+    });
   }
 
   Future<void> _onGetUser(GetUserEvent event, Emitter<AuthState> emit) async {
@@ -156,5 +168,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     res.fold((f) => emit(AuthFailedToLogout(f.message)),
         (s) => emit(const AuthLoggedOut()));
+  }
+
+  Future<void> _onUpdateUser(
+      UpdateUserEvent event, Emitter<AuthState> emit) async {
+    emit(const AuthloggingIn());
+    final validation = updateUserVaidation(
+      event.id,
+    );
+    if (validation.isLeft()) {
+      validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
+      return;
+    }
+
+    final res = await _updateUser(
+        UpdateUserParam(name: event.name, id: event.id, image: event.image));
+    res.fold((f) => emit(AuthFailedToUpdateUser(f.message)), (s) async {
+      final response = await _cacheUser(s);
+      response.fold((failure) => AuthFailedToCacheUser(failure.message),
+          (sucess) => emit(AuthloggedIn(user: s)));
+    });
   }
 }

@@ -96,6 +96,31 @@ final class AuthloginFailed extends AuthState {
   List<Object> get props => [message];
 }
 
+final class AuthUpdatingUser extends AuthState {
+  const AuthUpdatingUser();
+}
+
+final class AuthUserUpdated extends AuthState {
+  final UserModel user;
+  const AuthUserUpdated({required this.user});
+  @override
+  List<Object> get props => [user];
+}
+
+final class AuthFailedToUpdateUser extends AuthState {
+  final String message;
+  const AuthFailedToUpdateUser(this.message);
+  @override
+  List<Object> get props => [message];
+}
+
+final class AuthFailedToCacheUser extends AuthState {
+  final String message;
+  const AuthFailedToCacheUser(this.message);
+  @override
+  List<Object> get props => [message];
+}
+
 final class AuthResponse extends AuthState {
   final String message;
   const AuthResponse(this.message);

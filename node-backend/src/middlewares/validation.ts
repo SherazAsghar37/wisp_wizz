@@ -29,6 +29,24 @@ export default class Validation {
         .json({ message: "some thing went wrong" });
     }
   };
+  public userUpdateValidation = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const userSchema = z.object({
+      _id: z.string(),
+    });
+    try {
+      userSchema.parse(req.body);
+      return next();
+    } catch (error) {
+      if (error instanceof ZodError) return zodErrorHandler(error, res);
+      return res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: "some thing went wrong" });
+    }
+  };
   public userSignUpValidator = (
     req: Request,
     res: Response,

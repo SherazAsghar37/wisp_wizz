@@ -8,11 +8,13 @@ import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.
 import 'package:wisp_wizz/features/user/data/datasources/auth_remote_data_source.dart';
 import 'package:wisp_wizz/features/user/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/repository/i_auth_repository.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/logout_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/update_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/verify_otp_usecase.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 
@@ -32,7 +34,9 @@ Future<void> init() async {
         verifyOTP: sl(),
         getUser: sl(),
         getCachedUser: sl(),
-        logoutUser: sl()))
+        logoutUser: sl(),
+        updateUser: sl(),
+        cacheUser: sl()))
     //usecases
     ..registerLazySingleton<SendCode>(() => SendCode(authRepository: sl()))
     ..registerLazySingleton<VerifyOTP>(() => VerifyOTP(authRepository: sl()))
@@ -41,6 +45,8 @@ Future<void> init() async {
     ..registerLazySingleton<GetCachedUser>(
         () => GetCachedUser(authRepository: sl()))
     ..registerLazySingleton<LogoutUser>(() => LogoutUser(authRepository: sl()))
+    ..registerLazySingleton<UpdateUser>(() => UpdateUser(authRepository: sl()))
+    ..registerLazySingleton<CacheUser>(() => CacheUser(authRepository: sl()))
 
     //repositories
     ..registerLazySingleton<IAuthRepository>(() => AuthRepository(

@@ -7,6 +7,7 @@ const String sendCodeUrl = "/auth/verification/sendOtp";
 const String verifyOTPUrl = "/auth/verification/verifyOtp";
 const String loginUrl = "/auth/login";
 const String getUserUrl = "/user/getUser";
+const String updateUserUrl = "/auth/updateUser";
 const String imageFileName = "profilePic";
 const dCountryCode = "+92";
 const dFlagCode = "PK";
