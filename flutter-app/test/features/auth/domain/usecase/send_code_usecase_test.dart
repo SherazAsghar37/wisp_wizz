@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:wisp_wizz/features/auth/domain/repository/i_auth_repository.dart';
-import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/repository/i_auth_repository.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
 import '../repository/i_auth_repository_test.dart';
 
 void main() {

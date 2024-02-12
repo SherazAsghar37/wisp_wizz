@@ -1,7 +1,7 @@
 import 'package:wisp_wizz/features/app/constants/screen_constants.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/contact_card.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/primary_icon.dart';
-import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class ContactsScreen extends StatefulWidget {

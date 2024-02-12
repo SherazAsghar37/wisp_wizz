@@ -5,9 +5,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
-import 'package:wisp_wizz/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:wisp_wizz/features/user/data/datasources/auth_remote_data_source.dart';
+import 'package:wisp_wizz/features/user/data/models/user_model.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 
 import '../../../../app/temp_path.dart';
 

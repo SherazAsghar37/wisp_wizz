@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
-import 'package:wisp_wizz/features/auth/data/datasources/auth_firebase_datasource.dart';
-import 'package:wisp_wizz/features/auth/domain/usecase/send_code_usecase.dart';
-import 'package:wisp_wizz/features/auth/domain/usecase/verify_otp_usecase.dart';
+import 'package:wisp_wizz/features/user/data/datasources/auth_firebase_datasource.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/verify_otp_usecase.dart';
 
 class MFirebaseAuth extends Mock implements FirebaseAuth {}
 

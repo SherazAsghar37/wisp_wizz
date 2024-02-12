@@ -1,10 +1,10 @@
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
-import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
-import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
-import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
-import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/user/data/models/user_model.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/screens/login_screen.dart';
+import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/calls/presentation/screens/calls_screen.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/chats_screen.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/groups_screen.dart';

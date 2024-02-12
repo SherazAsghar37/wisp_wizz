@@ -1,4 +1,3 @@
-import 'package:wisp_wizz/features/app/theme/colors.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class SingleChatCard extends StatelessWidget {

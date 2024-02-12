@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/icon_text_button.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/primary_icon.dart';
-import 'package:wisp_wizz/features/auth/presentation/bloc/auth-bloc/auth_bloc.dart';
-import 'package:wisp_wizz/features/auth/presentation/bloc/phone-number/phone_number_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/phone-number/phone_number_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 // ignore: must_be_immutable

@@ -1,4 +1,4 @@
-import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 // ignore: must_be_immutable
 class SwitchableIcon extends StatelessWidget {

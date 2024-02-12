@@ -21,6 +21,7 @@ export default class UserService {
       if (error instanceof CustomError) {
         throw error;
       } else {
+        console.log("!!!Criticial Error!!!", error);
         throw new ThrowCriticalError(error);
       }
     }
