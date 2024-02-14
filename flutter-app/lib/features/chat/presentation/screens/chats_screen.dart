@@ -1,5 +1,6 @@
 import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 
 class ChatsScreen extends StatelessWidget {
   final UserModel user;
@@ -61,8 +62,11 @@ class ChatsScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, ContactsScreen.routeName);
+        onPressed: () async {
+          if (await FlutterContacts.requestPermission()) {
+            // ignore: use_build_context_synchronously
+            Navigator.pushNamed(context, ContactsScreen.routeName);
+          }
         },
         child: Icon(
           chatIcon,
