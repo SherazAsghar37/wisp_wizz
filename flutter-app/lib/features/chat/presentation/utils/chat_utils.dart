@@ -1,4 +1,4 @@
-import '../../../auth/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class ChatUtils {
   static Widget getMessageStatusIcon(BuildContext context, String status) {

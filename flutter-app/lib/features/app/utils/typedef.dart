@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
-import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
+import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 
 typedef ResultFuture<T> = Future<Either<Failure, T>>;
 typedef Result<T> = Either<Failure, T>;

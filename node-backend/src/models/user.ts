@@ -1,14 +1,8 @@
-import { Timestamp } from "mongodb";
 import { Schema, model } from "mongoose";
 
 const userSchema = new Schema(
   {
     phoneNumber: {
-      type: Number,
-      required: true,
-      trim: true,
-    },
-    countryCode: {
       type: String,
       required: true,
       trim: true,
@@ -26,20 +20,17 @@ const userSchema = new Schema(
       default: Date.now,
     },
     image: {
-      type: String,
-      default: "profile.png",
-      required: true,
+      data: Buffer,
+      contentType: String,
     },
   },
   { timestamps: true }
 );
-userSchema.index({ phoneNumber: 1, countryCode: 1 }, { unique: true });
 
 userSchema.pre("save", function (next) {
   if (!this.name) {
-    this.name = `${this.countryCode}${this.phoneNumber}`;
+    this.name = `${this.phoneNumber}`;
   }
-
   next();
 });
 

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
-import 'package:wisp_wizz/features/auth/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class DioClient {
   static Dio? _dio;

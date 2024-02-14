@@ -1,11 +1,15 @@
 import { CountryCodes } from "../utils/enums";
+type BufferImage = {
+  data: Buffer;
+  contentType: string;
+};
+
 type User = {
   name: string;
-  image: string;
-  phoneNumber: number;
-  countryCode: string;
+  image: BufferImage;
+  phoneNumber: string;
   status: Boolean;
   lastSeen: Date;
 };
 
-export { User };
+export { User, BufferImage };

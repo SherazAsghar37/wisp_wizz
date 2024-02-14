@@ -12,12 +12,33 @@ export default class Validation {
     next: NextFunction
   ) => {
     const numberSchema = z.object({
-      phoneNumber: z.coerce.number().int().gte(9999999).lte(100000000000000),
       countryCode: z.string().startsWith("+"),
+      phoneNumber: z.string().min(7, "Invalid Phone number"),
     });
     try {
-      numberSchema.parse(req.body);
+      numberSchema.parse({
+        countryCode: req.body.phoneNumber,
+        phoneNumber: req.body.phoneNumber,
+      });
       console.log(req.body);
+      return next();
+    } catch (error) {
+      if (error instanceof ZodError) return zodErrorHandler(error, res);
+      return res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: "some thing went wrong" });
+    }
+  };
+  public userUpdateValidation = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const userSchema = z.object({
+      _id: z.string(),
+    });
+    try {
+      userSchema.parse(req.body);
       return next();
     } catch (error) {
       if (error instanceof ZodError) return zodErrorHandler(error, res);
@@ -32,12 +53,8 @@ export default class Validation {
     next: NextFunction
   ) => {
     const userSchema = z.object({
-      name: z.string(),
-      phoneNumber: z.coerce.number().int().gte(9999999).lte(100000000000000),
-      countryCode: z.string().startsWith("+"),
-      image: z.string(),
-      status: z.boolean(),
-      lastSeen: z.string(),
+      countryCode: req.body.phoneNumber,
+      phoneNumber: req.body.phoneNumber,
     });
     try {
       const user = req.body;

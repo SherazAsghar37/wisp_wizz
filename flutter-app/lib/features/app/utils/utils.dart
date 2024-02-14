@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/helper/dimensions.dart';
-import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
+import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 
 class Utils {
   static Future<XFile?> pickImage() async {
@@ -12,26 +14,28 @@ class Utils {
 
   static ImageProvider<Object> getUserImage(UserModel user) {
     try {
-      if (user.image != null) {
-        return Image.file(File(user.image!)).image;
-      } else {
-        return Image.asset("images/profile.png").image;
-      }
+      return Image.memory(user.image).image;
     } catch (e) {
+      DebugHelper.printError("Loading User Model Image Error : $e");
       return Image.asset("images/profile.png").image;
     }
   }
 
-  static ImageProvider<Object> getFileImage(File? image) {
-    return image == null
-        ? Image.asset(
-            "images/profile.png",
-            fit: BoxFit.cover,
-          ).image
-        : Image.file(
-            image,
-            fit: BoxFit.cover,
-          ).image;
+  static ImageProvider<Object> getUserImageFromUint8List(Uint8List? image) {
+    try {
+      return image == null
+          ? Image.asset(
+              "images/profile.png",
+              fit: BoxFit.cover,
+            ).image
+          : Image.memory(
+              image,
+              fit: BoxFit.cover,
+            ).image;
+    } catch (e) {
+      DebugHelper.printError("Loading Uint8List Image Error : $e");
+      return Image.asset("images/profile.png").image;
+    }
   }
 
   static Future<void> showAlertDialogue(BuildContext context, String content,

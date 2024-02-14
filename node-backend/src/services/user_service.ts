@@ -2,7 +2,7 @@ import { singleton, inject } from "tsyringe";
 import { ThrowCriticalError } from "../exceptions/critical_error";
 import UserRepository from "../repositories/user_repository";
 import CustomError from "../exceptions/custom_error";
-import { User } from "../@types/user";
+import { User, BufferImage } from "../@types/user";
 
 @singleton()
 export default class UserService {
@@ -11,43 +11,36 @@ export default class UserService {
     private readonly _userRepository: UserRepository
   ) {}
 
-  public getUser = async (
-    phoneNumber: number,
-    countryCode: string
-  ): Promise<User | null> => {
+  public getUser = async (phoneNumber: string): Promise<User | null> => {
     try {
-      console.log(countryCode);
       const user: User | null = await this._userRepository.findByPhoneNumber(
-        phoneNumber,
-        countryCode
+        phoneNumber
       );
       return user;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       } else {
+        console.log("!!!Criticial Error!!!", error);
         throw new ThrowCriticalError(error);
       }
     }
   };
   public signUpLocal = async (
     name: string,
-    phoneNumber: number,
-    countryCode: string,
-    image: string,
+    phoneNumber: string,
+    image: BufferImage,
     status: boolean,
     lastSeen: Date
   ): Promise<User> => {
     try {
       var user: User | null = await this._userRepository.findByPhoneNumber(
-        phoneNumber,
-        countryCode
+        phoneNumber
       );
       if (!user) {
         user = await this._userRepository.createByLocal({
           name,
           phoneNumber,
-          countryCode,
           image,
           status,
           lastSeen,
@@ -56,13 +49,27 @@ export default class UserService {
         user = user = await this._userRepository.updateUser({
           name,
           phoneNumber,
-          countryCode,
           image,
           status,
           lastSeen,
         });
       }
 
+      return user;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.log("!!!Criticial Error!!!", error);
+        throw new ThrowCriticalError(error);
+      }
+    }
+  };
+  public updateUser = async (
+    data: Record<string, any>
+  ): Promise<User | null> => {
+    try {
+      const user: User | null = await this._userRepository.updateUserData(data);
       return user;
     } catch (error) {
       if (error instanceof CustomError) {

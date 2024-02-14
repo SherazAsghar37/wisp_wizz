@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/features/app/home/contacts_screen.dart';
+import 'package:wisp_wizz/features/contacts/domain/repository/presentation/screens/contacts_screen.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
-import 'package:wisp_wizz/features/auth/data/models/user_model.dart';
-import 'package:wisp_wizz/features/auth/presentation/screens/login_screen.dart';
-import 'package:wisp_wizz/features/auth/presentation/screens/user_registration_screen.dart';
-import 'package:wisp_wizz/features/auth/presentation/screens/verification_screen.dart';
+import 'package:wisp_wizz/features/user/data/models/user_model.dart';
+import 'package:wisp_wizz/features/user/presentation/screens/login_screen.dart';
+import 'package:wisp_wizz/features/user/presentation/screens/user_registration_screen.dart';
+import 'package:wisp_wizz/features/user/presentation/screens/verification_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/slide_page_transition.dart';
 import 'package:wisp_wizz/features/app/home/home_screen.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';

@@ -1,4 +1,3 @@
-import 'package:wisp_wizz/features/app/theme/colors.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class SingleChatCard extends StatelessWidget {
@@ -14,38 +13,40 @@ class SingleChatCard extends StatelessWidget {
     required this.color,
   });
 
-  final double radius = Dimensions.height12 + Dimensions.width12;
+  final double radius = Dimensions.height10 + Dimensions.width10;
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
     return MaterialButton(
       padding: EdgeInsets.zero,
       onPressed: onPressed,
       child: Container(
-        color: color,
-        height: Dimensions.height60,
+        height: Dimensions.height70,
         width: Dimensions.screenWidth,
-        padding: EdgeInsets.fromLTRB(Dimensions.width10, Dimensions.height5,
-            Dimensions.width10, Dimensions.height5),
+        padding: EdgeInsets.fromLTRB(Dimensions.width5, Dimensions.height5,
+            Dimensions.width5, Dimensions.height5),
+        decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(borderRadius),
+                bottomRight: Radius.circular(borderRadius))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
+                IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(arrowBack)),
                 CircleAvatar(
                   radius: radius,
-                  backgroundColor: colorScheme.primary,
-                  child: CircleAvatar(
-                    radius: radius - 2,
-                    backgroundImage: Utils.getUserImage(user),
-                  ),
+                  backgroundImage: Utils.getUserImage(user),
                 ),
                 SizedBox(
                   width: Dimensions.width10,
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -59,8 +60,13 @@ class SingleChatCard extends StatelessWidget {
                       children: [
                         user.status
                             ? CircleAvatar(
-                                radius: radius,
+                                radius: Dimensions.height3,
                                 backgroundColor: greenColor,
+                              )
+                            : const SizedBox(),
+                        user.status
+                            ? SizedBox(
+                                width: Dimensions.width3,
                               )
                             : const SizedBox(),
                         SizedBox(
@@ -71,8 +77,8 @@ class SingleChatCard extends StatelessWidget {
                                   : user.lastSeen.toString().substring(2, 10),
                               maxLines: 1,
                               softWrap: false,
-                              style: theme.textTheme.bodySmall!
-                                  .copyWith(fontSize: Dimensions.height14)),
+                              style: theme.textTheme.bodySmall!.copyWith(
+                                  color: user.status ? greenColor : null)),
                         ),
                       ],
                     ),
