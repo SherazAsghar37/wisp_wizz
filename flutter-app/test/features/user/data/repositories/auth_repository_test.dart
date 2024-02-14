@@ -11,6 +11,7 @@ import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/update_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/verify_otp_usecase.dart';
 
 import '../../../../app/temp_path.dart';
@@ -29,6 +30,8 @@ void main() {
   late PhoneAuthCredential phoneAuthCredential;
   late AuthLocalDatasource localDatasource;
 
+  final UserModel user = UserModel.empty();
+
   setUp(() {
     remoteDatasource = MRemoteDatasource();
     firebaseAuthentication = MFirebaseAuthentication();
@@ -38,6 +41,7 @@ void main() {
         firebaseAuthentication: firebaseAuthentication,
         localDataSource: localDatasource);
     phoneAuthCredential = MPhoneAuthCradential();
+    registerFallbackValue(user);
   });
 
   final params = CustomUserParam(
@@ -53,13 +57,19 @@ void main() {
   const phoneParams = CustomPhoneParam(
     phoneNumber: "123456789",
   );
+
+  final updateUserParam = UpdateUserParam(
+      name: "whatever.name",
+      id: "asf+asf921234asf5678asf9",
+      image: tempFile.readAsBytesSync());
+
   const String verificationId = "1234";
   const customPhoneResoponse =
       CustomPhoneResoponse(verificationId: verificationId);
 
   const String message = 'whatever.message';
   const int statusCode = 500;
-  final UserModel user = UserModel.empty();
+
   group("[Auth reposiotry Implementation] - ", () {
     group("[Login User] - ", () {
       test(
@@ -406,6 +416,104 @@ void main() {
         verify(
           () => localDatasource.removeCachedUser(),
         ).called(1);
+        verifyNoMoreInteractions(localDatasource);
+      });
+    });
+    group("[Update User] - ", () {
+      test(
+          "It should call remoteDataSource.updateUser and return userModel by calling only once",
+          () async {
+        //Arrange
+        when(() => remoteDatasource.updateUser(
+            name: any(named: "name"),
+            id: any(named: "id"),
+            image: any(named: "image"))).thenAnswer((invocation) async => user);
+
+        //Act
+        final response = await authRepository.updateUser(
+            name: updateUserParam.name,
+            id: updateUserParam.id,
+            image: updateUserParam.image);
+        //Assert
+        expect(response, Right<dynamic, UserModel>(user));
+        verify(
+          () => remoteDatasource.updateUser(
+              name: updateUserParam.name,
+              id: updateUserParam.id,
+              image: updateUserParam.image),
+        ).called(1);
+
+        verifyNoMoreInteractions(remoteDatasource);
+      });
+
+      test(
+          "It should call remoteDataSource.updateUser and throw api exception by calling only once",
+          () async {
+        //Arrange
+        when(() => remoteDatasource.updateUser(
+                name: any(named: "name"),
+                id: any(named: "id"),
+                image: any(named: "image")))
+            .thenThrow(
+                const ApiException(message: message, statusCode: statusCode));
+        //Act
+        final response = await authRepository.updateUser(
+            name: updateUserParam.name,
+            id: updateUserParam.id,
+            image: updateUserParam.image);
+        //Assert
+        expect(
+            response,
+            const Left<ApiFailure, dynamic>(
+                ApiFailure(message: message, statusCode: statusCode)));
+        verify(
+          () => remoteDatasource.updateUser(
+              name: updateUserParam.name,
+              id: updateUserParam.id,
+              image: updateUserParam.image),
+        ).called(1);
+        verifyNoMoreInteractions(remoteDatasource);
+      });
+    });
+    group("[Cached User] - ", () {
+      test(
+          "It should call localDatasource.cacheUserData(user) and return userModel by calling only once",
+          () async {
+        //Arrange
+
+        when(() => localDatasource.cacheUserData(any()))
+            .thenAnswer((invocation) async => Future.value());
+        //Act
+        final response = await authRepository.cacheUser(user);
+        //Assert
+        expect(response, const Right<dynamic, void>(null));
+
+        verify(
+          () => localDatasource.cacheUserData(user),
+        ).called(1);
+
+        verifyNoMoreInteractions(localDatasource);
+      });
+
+      test(
+          "It should call localDatasource.cacheUserData(user) throw cache exception by calling only once",
+          () async {
+        //Arrange
+
+        when(() => localDatasource.cacheUserData(any())).thenThrow(
+            const CacheException(message: "Failed to cache user data"));
+        //Act
+        final response = await authRepository.cacheUser(user);
+        //Assert
+        expect(
+            response,
+            const Left<CacheFailure, dynamic>(
+                CacheFailure(message: "Failed to cache user data")));
+
+        verify(
+          () => localDatasource.cacheUserData(user),
+        ).called(1);
+
         verifyNoMoreInteractions(localDatasource);
       });
     });

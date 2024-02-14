@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/icon_text_button.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/primary_icon.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
@@ -10,8 +11,8 @@ import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 // ignore: must_be_immutable
 class SettingScreen extends StatefulWidget {
   static const String routeName = settingScreen;
-  UserModel user;
-  SettingScreen({super.key, required this.user});
+  final UserModel user;
+  const SettingScreen({super.key, required this.user});
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -20,11 +21,13 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   TextEditingController nameController = TextEditingController();
   Uint8List? image;
+  late UserModel currUser;
   @override
   void initState() {
     image = widget.user.image;
     final name = widget.user.name;
     nameController.text = name;
+    currUser = widget.user;
     super.initState();
   }
 
@@ -164,32 +167,52 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
           ),
         ),
-        floatingActionButton: nameController.text != widget.user.name ||
-                (image != null && image != widget.user.image)
-            ? BlocConsumer<AuthBloc, AuthState>(
+        floatingActionButton: nameController.text.trim() == currUser.name &&
+                (image == currUser.image)
+            ? null
+            : BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthloggedIn) {
                     setState(() {
-                      widget.user = state.user;
+                      currUser = state.user;
+                      image = state.user.image;
+                      nameController.text = state.user.name;
                     });
+                  }
+                  if (state is AuthloginFailed) {
+                    BotToast.showText(
+                        text: state.message,
+                        contentColor: theme.primaryColorLight,
+                        textStyle: theme.textTheme.bodyMedium!);
                   }
                 },
                 builder: (context, state) {
                   return FloatingActionButton(
                     onPressed: () {
-                      final phoneNumberBloc =
-                          // ignore: use_build_context_synchronously
-                          context.read<PhoneNumberBloc>().state;
-                      // ignore: use_build_context_synchronously
-                      context.read<AuthBloc>().add(LoginEvent(
-                          phoneNumber: phoneNumberBloc.countryCode +
-                              phoneNumberBloc.textEditingController.text,
-                          name: nameController.text.isEmpty
-                              ? null
-                              : nameController.text,
-                          image: image));
+                      final String? name = nameController.text.isEmpty ||
+                              nameController.text.trim() == currUser.name
+                          ? null
+                          : nameController.text.trim();
+                      DebugHelper.printWarning(name.toString());
+                      if (state is AuthloggedIn || state is AuthloginFailed) {
+                        context.read<AuthBloc>().add(UpdateUserEvent(
+                            id: widget.user.id,
+                            name: name,
+                            image: image == widget.user.image ? null : image));
+                      } else {
+                        DebugHelper.printWarning("there");
+                        final phoneNumberBloc =
+                            // ignore: use_build_context_synchronously
+                            context.read<PhoneNumberBloc>().state;
+                        // ignore: use_build_context_synchronously
+                        context.read<AuthBloc>().add(LoginEvent(
+                            phoneNumber: phoneNumberBloc.countryCode +
+                                phoneNumberBloc.textEditingController.text,
+                            name: name,
+                            image: image));
+                      }
                     },
-                    child: state is AuthloggingIn
+                    child: state is AuthloggingIn || state is AuthUpdatingUser
                         ? CircularProgressIndicator(
                             color: theme.colorScheme.background,
                           )
@@ -199,7 +222,6 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                   );
                 },
-              )
-            : null);
+              ));
   }
 }

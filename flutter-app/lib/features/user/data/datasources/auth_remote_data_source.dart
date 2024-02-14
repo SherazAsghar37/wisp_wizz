@@ -34,7 +34,6 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
-        DebugHelper.printWarning(userData["user"].toString());
         return UserModel.fromMap(userData["user"]);
       } else {
         throw ApiException(
@@ -45,11 +44,11 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
     } on ApiException {
       rethrow;
     } on DioException catch (dioException) {
-      DebugHelper.printError(dioException.message.toString());
+      DebugHelper.printError("Dio Exception : ${dioException.message}");
       throw const ApiException(
           message: "Internal server error", statusCode: 500);
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("Exception: $e");
       throw const ApiException(
           message: "Something went wrong", statusCode: 500);
     }
@@ -69,7 +68,6 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
         url,
         data: data,
       );
-      DebugHelper.printError(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
         if (userData["user"] == null) {
@@ -111,7 +109,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
-        DebugHelper.printWarning(userData["user"].toString());
+        // log(userData["user"].toString());
         return UserModel.fromMap(userData["user"]);
       } else {
         throw ApiException(
@@ -122,11 +120,11 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
     } on ApiException {
       rethrow;
     } on DioException catch (dioException) {
-      DebugHelper.printError(dioException.message.toString());
+      DebugHelper.printError("Dio Exception : ${dioException.message}");
       throw const ApiException(
           message: "Internal server error", statusCode: 500);
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("Exception: $e");
       throw const ApiException(
           message: "Something went wrong", statusCode: 500);
     }

@@ -22,4 +22,9 @@ class AuthController extends ChangeNotifier {
       },
     );
   }
+
+  void cancelTimer() {
+    _secondsRemaining = 0;
+    timer?.cancel();
+  }
 }

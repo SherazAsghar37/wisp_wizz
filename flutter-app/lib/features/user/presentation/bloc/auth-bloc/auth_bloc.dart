@@ -4,6 +4,7 @@ import 'dart:typed_data';
 // ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
@@ -112,14 +113,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
       return;
     }
-
     final res = await _loginUser(CustomUserParam(
         name: event.name, phoneNumber: event.phoneNumber, image: event.image));
-    res.fold((f) => emit(AuthloginFailed(f.message)), (s) async {
-      final response = await _cacheUser(s);
-      response.fold((failure) => AuthFailedToCacheUser(failure.message),
-          (sucess) => emit(AuthloggedIn(user: s)));
-    });
+    if (res.isRight()) {
+      final UserModel user = res.asRight();
+      final response = await _cacheUser(user);
+      response.fold((failure) => emit(AuthloginFailed(failure.message)),
+          (sucess) => emit(AuthloggedIn(user: user)));
+    } else {
+      emit(AuthloginFailed(res.asLeft().message));
+    }
   }
 
   Future<void> _onGetUser(GetUserEvent event, Emitter<AuthState> emit) async {
@@ -172,7 +175,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onUpdateUser(
       UpdateUserEvent event, Emitter<AuthState> emit) async {
-    emit(const AuthloggingIn());
+    emit(const AuthUpdatingUser());
     final validation = updateUserVaidation(
       event.id,
     );
@@ -183,10 +186,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final res = await _updateUser(
         UpdateUserParam(name: event.name, id: event.id, image: event.image));
-    res.fold((f) => emit(AuthFailedToUpdateUser(f.message)), (s) async {
-      final response = await _cacheUser(s);
-      response.fold((failure) => AuthFailedToCacheUser(failure.message),
-          (sucess) => emit(AuthloggedIn(user: s)));
-    });
+    if (res.isRight()) {
+      final UserModel user = res.asRight();
+      final response = await _cacheUser(user);
+      response.fold((failure) => emit(AuthloginFailed(failure.message)),
+          (sucess) => emit(AuthloggedIn(user: user)));
+    } else {
+      emit(AuthloginFailed(res.asLeft().message));
+    }
   }
 }

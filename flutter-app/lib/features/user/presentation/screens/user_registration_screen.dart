@@ -91,7 +91,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                     SizedBox(
                       height: Dimensions.height20,
                     ),
-                    state is AuthloggingIn
+                    state is AuthloggingIn || state is AuthUpdatingUser
                         ? PrimaryButton(
                             onTap: () {},
                             widget: SizedBox(
@@ -104,28 +104,28 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                         : PrimaryButton(
                             text: "Submit",
                             onTap: () {
-                              // await FileManager.createMediaFolder();
-                              // await FileManager.createProfilePictureFolder();
-                              // String? path;
-                              // if (image != null) {
-                              //   path = await FileManager.saveProfilePicture(
-                              //       image!);
-                              // }var img = image as ui.Image;
-
-                              final phoneNumberBloc =
-                                  // ignore: use_build_context_synchronously
-                                  context.read<PhoneNumberBloc>().state;
-                              // ignore: use_build_context_synchronously
-                              context.read<AuthBloc>().add(LoginEvent(
-                                  phoneNumber: phoneNumberBloc.countryCode +
-                                      phoneNumberBloc
-                                          .textEditingController.text,
-                                  name: nameController.text.isEmpty
-                                      ? null
-                                      : nameController.text,
-                                  image: image));
-                            },
-                          )
+                              if (state is AuthUserFound) {
+                                context.read<AuthBloc>().add(UpdateUserEvent(
+                                    id: state.user.id,
+                                    name: nameController.text.isEmpty
+                                        ? null
+                                        : nameController.text,
+                                    image: image));
+                              } else {
+                                final phoneNumberBloc =
+                                    // ignore: use_build_context_synchronously
+                                    context.read<PhoneNumberBloc>().state;
+                                // ignore: use_build_context_synchronously
+                                context.read<AuthBloc>().add(LoginEvent(
+                                    phoneNumber: phoneNumberBloc.countryCode +
+                                        phoneNumberBloc
+                                            .textEditingController.text,
+                                    name: nameController.text.isEmpty
+                                        ? null
+                                        : nameController.text,
+                                    image: image));
+                              }
+                            })
                   ],
                 );
               },
@@ -134,6 +134,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                   Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                       arguments: state.user);
                 }
+
                 if (state is AuthloginFailed) {
                   BotToast.showText(
                       text: state.message,

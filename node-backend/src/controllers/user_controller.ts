@@ -48,9 +48,8 @@ export default class UserController {
   ) => {
     try {
       const data = req.body;
-      const user: any | null = await this._userServices.updateUser(data);
-      console.log(data);
       var newRec: Record<string, any> = {};
+      newRec._id = data._id;
       if (data.name) {
         newRec.name = data.name;
       }
@@ -58,6 +57,10 @@ export default class UserController {
         const bufferImage: Buffer = Buffer.from(data.image, "base64");
         newRec.image = { data: bufferImage, contentType: "image/png" };
       }
+      console.log(newRec);
+      const user: any | null = await this._userServices.updateUser(newRec);
+      console.log(user);
+
       return res.status(HttpStatusCode.OK).json(
         JSON.stringify({
           user: {

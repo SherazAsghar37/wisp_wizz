@@ -81,7 +81,7 @@ export default class UserRepository {
       if (newUser) {
         return newUser as User;
       } else {
-        console.log("here");
+        console.log(newUser);
         throw new CustomError("Failed to update user", HttpStatusCode.CONFLICT);
       }
     } catch (error) {

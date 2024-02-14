@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
@@ -18,6 +19,7 @@ class MDio extends Mock implements Dio {
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   late AuthRemoteDatasource remoteDatasource;
   late Dio dio;
   // MultipartFile? multipartFile;
@@ -55,15 +57,15 @@ void main() {
                 data: jsonEncode({"user": userMap})));
         //Act
         final response = await remoteDatasource.loginUser(
-            name: params.name,
-            phoneNumber: params.phoneNumber,
-            image: params.image);
+            name: userModel.name,
+            phoneNumber: userModel.phoneNumber,
+            image: userModel.image);
         //Assert
         expect(response, equals(UserModel.fromMap(userMap)));
         verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
-              "image": params.image,
-              "name": params.name,
-              "phoneNumber": params.phoneNumber,
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "phoneNumber": userModel.phoneNumber,
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -79,18 +81,18 @@ void main() {
                 requestOptions: RequestOptions(), message: errorMessage));
         //Act
         final response = remoteDatasource.loginUser(
-            name: params.name,
-            phoneNumber: params.phoneNumber,
-            image: params.image);
+            name: userModel.name,
+            phoneNumber: userModel.phoneNumber,
+            image: userModel.image);
         //Assert
-        expect(
+        await expectLater(
             response,
             throwsA(const ApiException(
                 message: "Internal server error", statusCode: statusCode)));
         verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
-              "image": params.image,
-              "name": params.name,
-              "phoneNumber": params.phoneNumber,
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "phoneNumber": userModel.phoneNumber,
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -110,19 +112,18 @@ void main() {
         //Assert
         await expectLater(
           remoteDatasource.loginUser(
-            name: params.name,
-            phoneNumber: params.phoneNumber,
-            image: params.image,
-          ),
+              name: userModel.name,
+              phoneNumber: userModel.phoneNumber,
+              image: userModel.image),
           throwsA(const ApiException(
             message: errorMessage,
             statusCode: statusCode,
           )),
         );
         verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
-              "image": params.image,
-              "name": params.name,
-              "phoneNumber": params.phoneNumber,
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "phoneNumber": userModel.phoneNumber,
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -221,6 +222,86 @@ void main() {
         );
         verify(() => dio.post(dio.options.baseUrl + getUserUrl, data: {
               "phoneNumber": params.phoneNumber,
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+    });
+    group("[Update User] - ", () {
+      test(
+          "It should post updateUser and return userModel by calling only once",
+          () async {
+        //Arrange
+        when(() => dio.put(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenAnswer((invocation) async => Response(
+                requestOptions: RequestOptions(),
+                statusCode: 201,
+                data: jsonEncode({"user": userMap})));
+        //Act
+        final response = await remoteDatasource.updateUser(
+            name: userModel.name, id: userModel.id, image: userModel.image);
+        //Assert
+        expect(response, equals(UserModel.fromMap(userMap)));
+        verify(() => dio.put(dio.options.baseUrl + updateUserUrl, data: {
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "_id": userModel.id,
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+      test(
+          "It should call remoteDataSource.loginUser and throw api exception when dio Exception occurs calling only once",
+          () async {
+        //Arrange
+        when(() => dio.put(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenThrow(DioException(
+                requestOptions: RequestOptions(), message: errorMessage));
+        //Act
+        final response = remoteDatasource.updateUser(
+            name: userModel.name, id: userModel.id, image: userModel.image);
+        //Assert
+        await expectLater(
+            response,
+            throwsA(const ApiException(
+                message: "Internal server error", statusCode: statusCode)));
+        verify(() => dio.put(dio.options.baseUrl + updateUserUrl, data: {
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "_id": userModel.id,
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+
+      test(
+          "It should call remoteDataSource.loginUser and throw api exception by calling only once",
+          () async {
+        //Arrange
+        when(() => dio.put(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenAnswer((invocation) async => Response(
+                requestOptions: RequestOptions(),
+                statusCode: statusCode,
+                data: {"message": errorMessage}));
+        //Assert
+        await expectLater(
+          remoteDatasource.updateUser(
+              name: userModel.name, id: userModel.id, image: userModel.image),
+          throwsA(const ApiException(
+            message: errorMessage,
+            statusCode: statusCode,
+          )),
+        );
+        verify(() => dio.put(dio.options.baseUrl + updateUserUrl, data: {
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "_id": userModel.id,
             })).called(1);
         verifyNoMoreInteractions(dio);
       });

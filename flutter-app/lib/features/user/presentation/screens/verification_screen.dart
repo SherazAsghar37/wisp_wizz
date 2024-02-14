@@ -159,6 +159,7 @@ class VerificationScreen extends StatelessWidget {
                             ));
                       } else if (state is auth_bloc.AuthUserFound ||
                           state is auth_bloc.AuthUserNotFound) {
+                        context.read<AuthController>().cancelTimer();
                         Navigator.pushReplacementNamed(
                             context, UserRegistrationScreen.routeName);
                       } else if (state is auth_bloc.AuthOTPVerificationFailed) {

@@ -45,8 +45,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double radius = Dimensions.height8 + Dimensions.width8;
-
+    final double radius = Dimensions.height9 + Dimensions.width9;
+    DebugHelper.printWarning("Building");
     return Scaffold(
         backgroundColor: theme.colorScheme.background,
         body: SafeArea(
@@ -59,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen>
                       Navigator.pushNamedAndRemoveUntil(
                           context, LoginScreen.routeName, (route) => false);
                     }
+
                     if (state is AuthFailedToLogout) {
                       BotToast.showText(
                           text: state.message,
@@ -110,21 +111,20 @@ class _HomeScreenState extends State<HomeScreen>
                                             arguments: state is AuthloggedIn
                                                 ? state.user
                                                 : widget.user)
-                                        .then((value) =>
-                                            DebugHelper.printWarning("back"));
+                                        .then((value) {
+                                      setState(() {
+                                        DebugHelper.printWarning("back");
+                                      });
+                                    });
                                   },
                                   child: CircleAvatar(
+                                    backgroundColor:
+                                        theme.colorScheme.background,
                                     radius: radius,
-                                    backgroundColor: theme.primaryColorDark,
-                                    child: CircleAvatar(
-                                      backgroundColor:
-                                          theme.colorScheme.background,
-                                      radius: radius - 1,
-                                      backgroundImage: Utils.getUserImage(
-                                          state is AuthloggedIn
-                                              ? state.user
-                                              : widget.user),
-                                    ),
+                                    backgroundImage: Utils.getUserImage(
+                                        state is AuthloggedIn
+                                            ? state.user
+                                            : widget.user),
                                   ),
                                 )
                               ],

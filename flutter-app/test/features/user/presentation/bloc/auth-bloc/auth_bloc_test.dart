@@ -49,6 +49,7 @@ void main() {
   late PhoneAuthCredential phoneAuthCredential;
   const String phoneNumber = "+92123456890";
   const String verificationId = "123456890";
+  const String id = "asdfa+9123asf2123assf456890";
   const String otp = "123456";
   const String name = "whatever.name";
   Uint8List image = tempFile.readAsBytesSync();
@@ -72,6 +73,12 @@ void main() {
   const CacheFailure cacheFailure = CacheFailure(
     message: "whatever.message",
   );
+
+  final updateUserParam = UpdateUserParam(
+      name: "whatever.name",
+      id: "+sdg9sdg21234sdg5sdg6789",
+      image: tempFile.readAsBytesSync());
+
   UserModel userModel = UserModel.empty();
 
   setUp(() {
@@ -99,6 +106,8 @@ void main() {
     registerFallbackValue(customVerificationParam);
     registerFallbackValue(customUserParam);
     registerFallbackValue(customGetUserParam);
+    registerFallbackValue(userModel);
+    registerFallbackValue(updateUserParam);
   });
   tearDown(() => authBloc.close());
 
@@ -295,6 +304,8 @@ void main() {
           build: () {
             when(() => loginUser(any()))
                 .thenAnswer((invocation) async => Right(userModel));
+            when(() => cacheUser(any()))
+                .thenAnswer((invocation) async => const Right(null));
             return authBloc;
           },
           act: (bloc) => bloc.add(
@@ -304,6 +315,7 @@ void main() {
           verify: (bloc) {
             verify(() => loginUser(CustomUserParam(
                 phoneNumber: phoneNumber, name: name, image: image))).called(1);
+            verify(() => cacheUser(userModel)).called(1);
             verifyNoMoreInteractions(loginUser);
           });
 
@@ -343,6 +355,27 @@ void main() {
           verify: (bloc) {
             verify(() => loginUser(CustomUserParam(
                 phoneNumber: phoneNumber, name: name, image: image))).called(1);
+            verifyNoMoreInteractions(loginUser);
+          });
+      blocTest<AuthBloc, AuthState>(
+          'emits [const AuthloggingIn(), AuthloginFailed(cacheFailure.message)] when LoginEvent is added.',
+          build: () {
+            when(() => loginUser(any()))
+                .thenAnswer((invocation) async => Right(userModel));
+            when(() => cacheUser(any()))
+                .thenAnswer((invocation) async => const Left(cacheFailure));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(
+              LoginEvent(phoneNumber: phoneNumber, name: name, image: image)),
+          expect: () => <AuthState>[
+                const AuthloggingIn(),
+                AuthloginFailed(cacheFailure.message)
+              ],
+          verify: (bloc) {
+            verify(() => loginUser(CustomUserParam(
+                phoneNumber: phoneNumber, name: name, image: image))).called(1);
+            verify(() => cacheUser(userModel)).called(1);
             verifyNoMoreInteractions(loginUser);
           });
     });
@@ -425,6 +458,80 @@ void main() {
           verify: (bloc) {
             verify(() => logoutUser()).called(1);
             verifyNoMoreInteractions(logoutUser);
+          });
+    });
+    group("[Update User] - ", () {
+      blocTest<AuthBloc, AuthState>(
+          'emits [const AuthUpdatingUser(),AuthUserUpdated(user: userModel)], when updateUser is added.',
+          build: () {
+            when(() => updateUser(any()))
+                .thenAnswer((invocation) async => Right(userModel));
+            when(() => cacheUser(any()))
+                .thenAnswer((invocation) async => const Right(null));
+            return authBloc;
+          },
+          act: (bloc) =>
+              bloc.add(UpdateUserEvent(id: id, name: name, image: image)),
+          expect: () => <AuthState>[
+                const AuthUpdatingUser(),
+                AuthloggedIn(user: userModel)
+              ],
+          verify: (bloc) {
+            verify(() => updateUser(
+                UpdateUserParam(id: id, name: name, image: image))).called(1);
+            verify(() => cacheUser(userModel)).called(1);
+            verifyNoMoreInteractions(updateUser);
+          });
+
+      blocTest<AuthBloc, AuthState>(
+        'emits[const AuthUpdatingUser(), const AuthloginFailed("Invalid ID") ], when id is empty',
+        build: () => authBloc,
+        act: (bloc) =>
+            bloc.add(UpdateUserEvent(id: "", name: name, image: image)),
+        expect: () => <AuthState>[
+          const AuthUpdatingUser(),
+          const AuthloginFailed("Invalid ID")
+        ],
+      );
+
+      blocTest<AuthBloc, AuthState>(
+          'emits [const AuthUpdatingUser(), AuthloginFailed(apiFailure.message)], when UpdateUserEvent is added.',
+          build: () {
+            when(() => updateUser(any()))
+                .thenAnswer((invocation) async => const Left(apiFailure));
+            return authBloc;
+          },
+          act: (bloc) =>
+              bloc.add(UpdateUserEvent(id: id, name: name, image: image)),
+          expect: () => <AuthState>[
+                const AuthUpdatingUser(),
+                AuthloginFailed(apiFailure.message)
+              ],
+          verify: (bloc) {
+            verify(() => updateUser(
+                UpdateUserParam(id: id, name: name, image: image))).called(1);
+            verifyNoMoreInteractions(updateUser);
+          });
+      blocTest<AuthBloc, AuthState>(
+          'emits [  const AuthloggingIn(), AuthloginFailed(cacheFailure.message)], when UpdateUserEvent is added.',
+          build: () {
+            when(() => updateUser(any()))
+                .thenAnswer((invocation) async => Right(userModel));
+            when(() => cacheUser(any()))
+                .thenAnswer((invocation) async => const Left(cacheFailure));
+            return authBloc;
+          },
+          act: (bloc) =>
+              bloc.add(UpdateUserEvent(id: id, name: name, image: image)),
+          expect: () => <AuthState>[
+                const AuthUpdatingUser(),
+                AuthloginFailed(cacheFailure.message)
+              ],
+          verify: (bloc) {
+            verify(() => updateUser(
+                UpdateUserParam(id: id, name: name, image: image))).called(1);
+            verify(() => cacheUser(userModel)).called(1);
+            verifyNoMoreInteractions(updateUser);
           });
     });
   });

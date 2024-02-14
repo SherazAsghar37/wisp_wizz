@@ -3,7 +3,6 @@ import { inject, singleton } from "tsyringe";
 import UserService from "../services/user_service";
 import HttpStatusCode from "../utils/http_status_codes";
 import { ErrorHandler } from "../exceptions/error_handler";
-import { User } from "../@types/user";
 
 @singleton()
 export default class AuthController {
