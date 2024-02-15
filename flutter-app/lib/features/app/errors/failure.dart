@@ -53,3 +53,17 @@ class CacheFailure extends Failure {
   @override
   List<Object?> get props => [message];
 }
+
+class ContactFailure extends Failure {
+  const ContactFailure({
+    required super.message,
+  });
+
+  ContactFailure.fromException(ContactException e)
+      : this(
+          message: e.message,
+        );
+
+  @override
+  List<Object?> get props => [message];
+}

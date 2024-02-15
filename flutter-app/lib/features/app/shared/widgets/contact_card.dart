@@ -1,16 +1,16 @@
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/contacts/data/models/contact_model.dart';
 
 class ContactCard extends StatelessWidget {
-  final UserModel user;
+  final ContactModel contact;
   ContactCard({
     super.key,
-    required this.user,
+    required this.contact,
   });
 
   final double radius = Dimensions.height13 + Dimensions.width13;
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
     return SizedBox(
       // color: Colors.blue,
@@ -23,20 +23,29 @@ class ContactCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: radius,
-                backgroundColor: colorScheme.primary,
-                child: CircleAvatar(
-                  radius: radius - 2,
-                  backgroundImage: Utils.getUserImage(user),
-                ),
+                backgroundImage: Utils.getUserImageFromUint8List(contact.image),
               ),
               SizedBox(
                 width: Dimensions.width10,
               ),
-              Text(
-                user.name,
-                style: theme.textTheme.bodyLarge!.copyWith(
-                    color: theme.primaryColorDark,
-                    fontSize: Dimensions.height18),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    contact.name,
+                    style: theme.textTheme.bodyLarge!.copyWith(
+                        color: theme.primaryColorDark,
+                        fontSize: Dimensions.height18),
+                  ),
+                  Text(
+                    contact.phoneNumber.isNotEmpty
+                        ? contact.phoneNumber[0]
+                        : "",
+                    style: theme.textTheme.bodyMedium!
+                        .copyWith(fontSize: Dimensions.height13),
+                  ),
+                ],
               ),
             ],
           ),

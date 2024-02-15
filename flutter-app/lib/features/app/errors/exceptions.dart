@@ -22,3 +22,9 @@ class CacheException extends CustomExceptions {
   @override
   List<Object?> get props => [message];
 }
+
+class ContactException extends CustomExceptions {
+  const ContactException({required super.message});
+  @override
+  List<Object?> get props => [message];
+}
