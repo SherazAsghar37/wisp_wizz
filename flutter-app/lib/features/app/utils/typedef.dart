@@ -4,6 +4,8 @@ import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 
 typedef ResultFuture<T> = Future<Either<Failure, T>>;
 typedef Result<T> = Either<Failure, T>;
+typedef StreamList<T> = Stream<List<T>>;
+typedef ResultStreamList<T> = Result<StreamList<T>>;
 typedef FutureVoid = ResultFuture<void>;
 typedef FutureUser = ResultFuture<UserModel>;
 typedef FutureNullabeleUser = ResultFuture<UserModel?>;
