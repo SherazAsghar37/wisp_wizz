@@ -11,6 +11,7 @@ import socketIoConfig from "./src/config/socket_io_config";
 colors;
 dotenv.config();
 const port = Number.parseInt(process.env.PORT as string) || 8000;
+const ip = process.env.IP as string;
 
 //config
 const app = appConfig();
@@ -18,8 +19,8 @@ const server: http.Server = http.createServer(app);
 socketIoConfig(server);
 
 //server
-app.listen(port, "192.168.1.104", () => {
-  console.log(`Server is listening on ${port}`.yellow.bold);
+app.listen(port, ip, () => {
+  console.log(`Server is listening on ${ip}:${port}`.yellow.bold);
 });
 
 //routes
@@ -27,4 +28,4 @@ app.use("/auth", authRouter);
 app.use("/user", userRouter);
 
 //mongooose config
-mongooseConfig();
+// mongooseConfig();

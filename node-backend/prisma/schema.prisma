@@ -9,6 +9,48 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                String      @id @default(uuid())
+  name              String
+  phoneNumber       String      @unique @db.VarChar(16) 
+  status            Boolean     @default(true)
+  lastSeen          DateTime    @default(now())
+  image             Bytes?
+  chats             Chat[]      
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now())
+  } 
+
+model Chat{
+  id                String      @id @default(uuid())
+  recipientId       String      
+  recipient         User?       @relation(fields: [recipientId], references: [id])
+  unreadMessages    Int         @default(0)
+  Messages          Message[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now())
+}
+enum MessageStatus{
+  Read
+  Sent
+  Unread
+  Seen
+}
+
+model Message {
+  id               String   @id @default(uuid())
+  chatID           String   
+  chat             Chat?    @relation(fields: [chatID], references: [id])
+  message         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
+  messageStatus   MessageStatus @default(Sent)
+  repliedTo       Message?  @relation("Replies",fields: [repliedToId], references: [id])
+  repliedToId     String?   @map("repliedToId")
+  replies        Message[]  @relation(name: "Replies")
+}
+

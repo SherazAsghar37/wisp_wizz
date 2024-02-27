@@ -29,9 +29,7 @@ export default class UserService {
   public signUpLocal = async (
     name: string,
     phoneNumber: string,
-    image: BufferImage,
-    status: boolean,
-    lastSeen: Date
+    image: Buffer
   ): Promise<User> => {
     try {
       var user: User | null = await this._userRepository.findByPhoneNumber(
@@ -42,16 +40,12 @@ export default class UserService {
           name,
           phoneNumber,
           image,
-          status,
-          lastSeen,
         });
       } else {
         user = user = await this._userRepository.updateUser({
           name,
           phoneNumber,
           image,
-          status,
-          lastSeen,
         });
       }
 

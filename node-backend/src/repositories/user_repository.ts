@@ -1,22 +1,22 @@
 import { User } from "../@types/user";
 import CustomError from "../exceptions/custom_error";
 import userModel from "../models/user";
+import db from "../utils/db.server";
 import HttpStatusCode from "../utils/http_status_codes";
 
 export default class UserRepository {
-  public createByLocal = async (data: User): Promise<User> => {
+  public createByLocal = async (
+    data: Pick<User, "name" | "phoneNumber" | "image">
+  ): Promise<User> => {
     try {
       console.log("Before creating user...");
 
-      const newUser = await userModel.create({
-        name: data.name,
-        phoneNumber: data.phoneNumber,
-        image: {
-          data: data.image.data,
-          contentType: data.image.contentType,
+      const newUser = await db.user.create({
+        data: {
+          name: data.name,
+          phoneNumber: data.phoneNumber,
+          image: data.image == undefined ? null : data.image,
         },
-        status: data.status,
-        lastSeen: data.lastSeen,
       });
 
       if (newUser) {
@@ -31,25 +31,21 @@ export default class UserRepository {
     }
   };
 
-  public updateUser = async (data: User): Promise<User> => {
+  public updateUser = async (
+    data: Pick<User, "name" | "phoneNumber" | "image">
+  ): Promise<User> => {
     try {
-      console.log("Before updating user...");
-
-      const newUser = await userModel.findOneAndUpdate(
-        {
+      console.log(`Before updating user... ${data}`);
+      const newUser = await db.user.update({
+        where: {
           phoneNumber: data.phoneNumber,
         },
-        {
+        data: {
           name: data.name,
           phoneNumber: data.phoneNumber,
-          image: {
-            data: data.image.data,
-            contentType: data.image.contentType,
-          },
-          status: data.status,
-          lastSeen: data.lastSeen,
-        }
-      );
+          image: data.image,
+        },
+      });
 
       console.log("After updating user...");
 
@@ -66,15 +62,12 @@ export default class UserRepository {
   };
   public updateUserData = async (data: Record<string, any>): Promise<User> => {
     try {
-      console.log("Before updating user...");
+      console.log(`Before updating user... ${data}`);
 
-      const newUser = await userModel.findOneAndUpdate(
-        { _id: data._id },
-        {
-          $set: data,
-        },
-        { new: true }
-      );
+      const newUser = await db.user.update({
+        where: { id: data.id },
+        data: data,
+      });
 
       console.log("After updating user...");
 
@@ -96,8 +89,8 @@ export default class UserRepository {
     try {
       console.log("Before finding user...");
 
-      const newUser = await userModel.findOne({
-        phoneNumber: phoneNumber,
+      const newUser = await db.user.findUnique({
+        where: { phoneNumber },
       });
 
       if (newUser) {

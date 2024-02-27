@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_firebase_datasource.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.dart';
@@ -52,6 +53,7 @@ class AuthRepository implements IAuthRepository {
       );
       return Right(response);
     } on ApiException catch (e) {
+      DebugHelper.printWarning("exception");
       return Left(ApiFailure.fromException(e));
     }
   }

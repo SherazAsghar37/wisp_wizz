@@ -40,7 +40,7 @@ class ContactModel extends ContactEntity {
     return <String, dynamic>{
       'phoneNumber': phoneNumber,
       'name': name,
-      '_id': _id,
+      'id': _id,
       'image': base64Encode(image),
     };
   }
@@ -49,7 +49,7 @@ class ContactModel extends ContactEntity {
       : this(
           phoneNumber: map['phoneNumber'],
           name: map['name'],
-          id: map['_id'],
+          id: map['id'],
           image: base64Decode(map['image']),
         );
 

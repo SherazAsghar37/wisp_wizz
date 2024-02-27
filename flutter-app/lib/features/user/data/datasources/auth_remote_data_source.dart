@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
@@ -34,6 +35,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
+        log(userData.toString());
         return UserModel.fromMap(userData["user"]);
       } else {
         throw ApiException(
@@ -100,7 +102,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       final MapData data = {
         'image': image != null ? base64Encode(image) : null,
         "name": name,
-        "_id": id,
+        "id": id,
       };
       final String url = _dio.options.baseUrl + updateUserUrl;
       final response = await _dio.put(
