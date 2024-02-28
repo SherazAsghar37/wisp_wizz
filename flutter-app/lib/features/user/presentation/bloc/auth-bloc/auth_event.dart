@@ -69,3 +69,7 @@ class UpdateUserEvent extends AuthEvent {
 class GetCachedUserEvent extends AuthEvent {
   const GetCachedUserEvent();
 }
+
+class AppStartEvent extends AuthEvent {
+  const AppStartEvent();
+}

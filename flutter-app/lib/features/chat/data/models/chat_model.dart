@@ -61,7 +61,7 @@ class ChatModel extends ChatEntity {
       'senderProfile': senderProfile,
       'recipientProfile': recipientProfile,
       'totalUnReadMessages': totalUnReadMessages,
-      '_id': chatId,
+      'id': chatId,
     };
   }
 
@@ -77,7 +77,7 @@ class ChatModel extends ChatEntity {
           senderProfile: map['senderProfile'],
           recipientProfile: map['recipientProfile'],
           totalUnReadMessages: map['totalUnReadMessages'],
-          chatId: map['_id'],
+          chatId: map['id'],
         );
 
   String toJson() => json.encode(toMap());

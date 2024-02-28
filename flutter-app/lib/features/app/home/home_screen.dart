@@ -1,3 +1,4 @@
+import 'package:wisp_wizz/controller/main_controller.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
@@ -81,11 +82,18 @@ class _HomeScreenState extends State<HomeScreen>
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              appName,
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                  color: theme.primaryColor,
-                                  fontWeight: FontWeight.bold),
+                            GestureDetector(
+                              onTap: () async {
+                                await context
+                                    .read<MainController>()
+                                    .connectSocket();
+                              },
+                              child: Text(
+                                appName,
+                                style: theme.textTheme.bodyMedium!.copyWith(
+                                    color: theme.primaryColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
