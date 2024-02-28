@@ -35,7 +35,7 @@ export default class Validation {
     next: NextFunction
   ) => {
     const userSchema = z.object({
-      _id: z.string(),
+      id: z.string(),
     });
     try {
       userSchema.parse(req.body);

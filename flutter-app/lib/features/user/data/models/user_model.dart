@@ -56,7 +56,7 @@ class UserModel extends UserEnitity {
     return <String, dynamic>{
       'name': name,
       'phoneNumber': phoneNumber,
-      '_id': id,
+      'id': id,
       'status': status,
       'lastSeen': lastSeen.toIso8601String(),
       'image': base64Encode(image),
@@ -67,7 +67,7 @@ class UserModel extends UserEnitity {
       : this(
           name: map['name'],
           phoneNumber: map['phoneNumber'],
-          id: map['_id'],
+          id: map['id'],
           status: map['status'],
           lastSeen: DateTime.parse(map['lastSeen']),
           image: base64Decode(map["image"]),

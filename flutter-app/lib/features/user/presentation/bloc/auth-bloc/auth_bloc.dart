@@ -153,7 +153,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthGettingUser());
 
     final res = _getCachedUser();
-
     res.fold(
         (f) => emit(AuthFailedToGetUser(f.message)),
         (s) => {

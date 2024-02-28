@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wisp_wizz/features/contacts/domain/repository/presentation/screens/contacts_screen.dart';
+import 'package:wisp_wizz/features/contacts/presentation/screens/contacts_screen.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/presentation/screens/login_screen.dart';

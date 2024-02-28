@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/app/constants/status_codes.dart';
@@ -37,11 +38,7 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
           ));
         },
         verificationFailed: (FirebaseAuthException e) {
-          DebugHelper.printError("FirebaseAuthException: ${e.toString()}");
-          throw const ApiException(
-            message: "Failed to send code, please try again later",
-            statusCode: StatusCode.FORBIDDEN,
-          );
+          completer.completeError(e);
         },
         codeSent: (String verificationId, int? resendToken) {
           if (!completer.isCompleted) {
@@ -62,9 +59,20 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
           }
         },
       );
-
+      try {
+        completer.future.onError((error, stackTrace) {
+          log("error");
+          throw const ApiException(
+            message: "Failed to send code, please try again later",
+            statusCode: StatusCode.FORBIDDEN,
+          );
+        });
+      } on ApiException {
+        rethrow;
+      }
       return completer.future;
     } on ApiException {
+      log("Got api exception");
       rethrow;
     } catch (e) {
       DebugHelper.printError("Exception: ${e.toString()}");

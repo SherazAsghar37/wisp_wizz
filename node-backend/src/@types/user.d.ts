@@ -6,9 +6,9 @@ type BufferImage = {
 
 type User = {
   name: string;
-  image: BufferImage;
+  image: Buffer;
   phoneNumber: string;
-  status: Boolean;
+  status: boolean;
   lastSeen: Date;
 };
 

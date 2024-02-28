@@ -189,6 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             .read<otp_bloc.OtpBloc>()
                             .add(const otp_bloc.ClearEvent()));
                       } else if (state is AuthCodeSentFailed) {
+                        context.read<AuthController>().cancelTimer();
                         BotToast.showText(
                             text: state.message,
                             contentColor: theme.primaryColorLight,

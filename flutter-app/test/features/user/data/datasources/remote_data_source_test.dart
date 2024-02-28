@@ -247,7 +247,7 @@ void main() {
         verify(() => dio.put(dio.options.baseUrl + updateUserUrl, data: {
               "image": base64Encode(userModel.image),
               "name": userModel.name,
-              "_id": userModel.id,
+              "id": userModel.id,
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -272,7 +272,7 @@ void main() {
         verify(() => dio.put(dio.options.baseUrl + updateUserUrl, data: {
               "image": base64Encode(userModel.image),
               "name": userModel.name,
-              "_id": userModel.id,
+              "id": userModel.id,
             })).called(1);
         verifyNoMoreInteractions(dio);
       });
@@ -301,7 +301,7 @@ void main() {
         verify(() => dio.put(dio.options.baseUrl + updateUserUrl, data: {
               "image": base64Encode(userModel.image),
               "name": userModel.name,
-              "_id": userModel.id,
+              "id": userModel.id,
             })).called(1);
         verifyNoMoreInteractions(dio);
       });

@@ -3,6 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
+import 'package:wisp_wizz/features/contacts/data/datasources/contacts_data_source.dart';
+import 'package:wisp_wizz/features/contacts/data/datasources/flutter_contacts_wraper.dart';
+import 'package:wisp_wizz/features/contacts/data/repositories/contact_repository.dart';
+import 'package:wisp_wizz/features/contacts/domain/repository/i_contacts_repository.dart';
+import 'package:wisp_wizz/features/contacts/domain/usecases/fetch_contacts.dart';
+import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_firebase_datasource.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_remote_data_source.dart';
@@ -67,4 +73,19 @@ Future<void> init() async {
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
     ..registerLazySingleton<PhoneAuthProviderWrapper>(
         () => PhoneAuthProviderWrapper());
+
+  sl
+    ..registerFactory(() => ContactBloc(fetchContacts: sl()))
+    //usecases
+    ..registerLazySingleton<FetchContacts>(
+        () => FetchContacts(contactReposiotry: sl()))
+    //repositories
+    ..registerLazySingleton<IContactReposiotry>(
+        () => ContactReposiotry(contactDatasource: sl()))
+    //data sources
+    ..registerLazySingleton<ContactDatasource>(
+        () => ContactDatasource(flutterContactsWrapper: sl()))
+    //external dependency
+    ..registerLazySingleton<FlutterContactsWrapper>(
+        () => FlutterContactsWrapper());
 }
