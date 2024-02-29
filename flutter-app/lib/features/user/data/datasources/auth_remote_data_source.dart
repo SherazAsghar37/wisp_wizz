@@ -5,13 +5,19 @@ import 'package:flutter/services.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
+import 'package:wisp_wizz/features/user/data/datasources/socket_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/datasources/i_auth_remote_datasource.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class AuthRemoteDatasource implements IAuthRemoteDatasource {
   final Dio _dio;
-  AuthRemoteDatasource({required Dio dio}) : _dio = dio;
+  final WebSocketManagerWrapper _webSocketManagerWrapper;
+  AuthRemoteDatasource({
+    required Dio dio,
+    required WebSocketManagerWrapper webSocketManagerWrapper,
+  })  : _dio = dio,
+        _webSocketManagerWrapper = webSocketManagerWrapper;
 
   @override
   Future<UserModel> loginUser(
@@ -129,6 +135,16 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       DebugHelper.printError("Exception: $e");
       throw const ApiException(
           message: "Something went wrong", statusCode: 500);
+    }
+  }
+
+  @override
+  Future<bool> connectSocket() {
+    try {
+      return _webSocketManagerWrapper.initSocket();
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const WebSocketException("unable to connect to the server");
     }
   }
 }

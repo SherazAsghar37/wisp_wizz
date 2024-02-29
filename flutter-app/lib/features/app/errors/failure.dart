@@ -67,3 +67,17 @@ class ContactFailure extends Failure {
   @override
   List<Object?> get props => [message];
 }
+
+class WebSocketFailure extends Failure {
+  const WebSocketFailure({
+    required super.message,
+  });
+
+  WebSocketFailure.fromException(WebSocketException e)
+      : this(
+          message: e.message,
+        );
+
+  @override
+  List<Object?> get props => [message];
+}

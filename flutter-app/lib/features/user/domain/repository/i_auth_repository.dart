@@ -21,6 +21,7 @@ abstract class IAuthRepository {
   FutureUser updateUser(
       {required String? name, required String id, Uint8List? image});
   ResultFuture<void> cacheUser(UserModel user);
+  ResultFuture<void> initApplication();
 }
 
 abstract class ICustomPhoneResponse {

@@ -28,3 +28,10 @@ class ContactException extends CustomExceptions {
   @override
   List<Object?> get props => [message];
 }
+
+class WebSocketException extends CustomExceptions {
+  final String message;
+  const WebSocketException(this.message) : super(message: message);
+  @override
+  List<Object?> get props => [message];
+}

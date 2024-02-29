@@ -129,4 +129,15 @@ class AuthRepository implements IAuthRepository {
       return Left(CacheFailure.fromException(e));
     }
   }
+
+  @override
+  ResultFuture<void> initApplication() async {
+    try {
+      await _remoteDatasource.connectSocket();
+      _localDataSource.getCachedUserData();
+      return const Right(null);
+    } on WebSocketException catch (e) {
+      return Left(WebSocketFailure.fromException(e));
+    }
+  }
 }

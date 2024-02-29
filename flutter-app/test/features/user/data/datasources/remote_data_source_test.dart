@@ -7,6 +7,7 @@ import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_remote_data_source.dart';
+import 'package:wisp_wizz/features/user/data/datasources/socket_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 
@@ -18,10 +19,14 @@ class MDio extends Mock implements Dio {
   MDio({required this.options});
 }
 
+class MWebSocketManagerWrapper extends Mock
+    implements WebSocketManagerWrapper {}
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   late AuthRemoteDatasource remoteDatasource;
   late Dio dio;
+  late WebSocketManagerWrapper webSocketManagerWrapper;
   // MultipartFile? multipartFile;
   final params = CustomUserParam(
       name: "whatever.name",
@@ -30,7 +35,9 @@ void main() {
 
   setUp(() {
     dio = MDio(options: BaseOptions(baseUrl: baseUrl));
-    remoteDatasource = AuthRemoteDatasource(dio: dio);
+    webSocketManagerWrapper = MWebSocketManagerWrapper();
+    remoteDatasource = AuthRemoteDatasource(
+        dio: dio, webSocketManagerWrapper: webSocketManagerWrapper);
     // multipartFile = params.image != null
     //     ? await MultipartFile.fromFile(params.image!.path,
     //         filename: imageFileName)
@@ -302,6 +309,91 @@ void main() {
               "image": base64Encode(userModel.image),
               "name": userModel.name,
               "id": userModel.id,
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+    });
+    group("[Connect web socket ] - ", () {
+      test("It should post loginUser and return userModel by calling only once",
+          () async {
+        //Arrange
+        when(() => dio.post(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenAnswer((invocation) async => Response(
+                requestOptions: RequestOptions(),
+                statusCode: 201,
+                data: jsonEncode({"user": userMap})));
+        //Act
+        final response = await remoteDatasource.loginUser(
+            name: userModel.name,
+            phoneNumber: userModel.phoneNumber,
+            image: userModel.image);
+        //Assert
+        expect(response, equals(UserModel.fromMap(userMap)));
+        verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "phoneNumber": userModel.phoneNumber,
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+      test(
+          "It should call remoteDataSource.loginUser and throw api exception when dio Exception occurs calling only once",
+          () async {
+        //Arrange
+        when(() => dio.post(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenThrow(DioException(
+                requestOptions: RequestOptions(), message: errorMessage));
+        //Act
+        final response = remoteDatasource.loginUser(
+            name: userModel.name,
+            phoneNumber: userModel.phoneNumber,
+            image: userModel.image);
+        //Assert
+        await expectLater(
+            response,
+            throwsA(const ApiException(
+                message: "Internal server error", statusCode: statusCode)));
+        verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "phoneNumber": userModel.phoneNumber,
+            })).called(1);
+        verifyNoMoreInteractions(dio);
+      });
+
+      test(
+          "It should call remoteDataSource.loginUser and throw api exception by calling only once",
+          () async {
+        //Arrange
+        when(() => dio.post(
+                  any(),
+                  data: any(named: "data"),
+                ))
+            .thenAnswer((invocation) async => Response(
+                requestOptions: RequestOptions(),
+                statusCode: statusCode,
+                data: {"message": errorMessage}));
+        //Assert
+        await expectLater(
+          remoteDatasource.loginUser(
+              name: userModel.name,
+              phoneNumber: userModel.phoneNumber,
+              image: userModel.image),
+          throwsA(const ApiException(
+            message: errorMessage,
+            statusCode: statusCode,
+          )),
+        );
+        verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
+              "image": base64Encode(userModel.image),
+              "name": userModel.name,
+              "phoneNumber": userModel.phoneNumber,
             })).called(1);
         verifyNoMoreInteractions(dio);
       });

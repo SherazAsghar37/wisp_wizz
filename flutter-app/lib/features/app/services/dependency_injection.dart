@@ -12,6 +12,7 @@ import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart'
 import 'package:wisp_wizz/features/user/data/datasources/auth_firebase_datasource.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_remote_data_source.dart';
+import 'package:wisp_wizz/features/user/data/datasources/socket_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
@@ -61,7 +62,7 @@ Future<void> init() async {
         localDataSource: sl()))
     //data sources
     ..registerLazySingleton<AuthRemoteDatasource>(
-        () => AuthRemoteDatasource(dio: sl()))
+        () => AuthRemoteDatasource(dio: sl(), webSocketManagerWrapper: sl()))
     ..registerLazySingleton<AuthFirebaseDatasource>(() =>
         AuthFirebaseDatasource(auth: sl(), phoneAuthProviderWrapper: sl()))
     ..registerLazySingleton<AuthLocalDatasource>(
@@ -70,6 +71,8 @@ Future<void> init() async {
     ..registerLazySingleton<Dio>(() => Dio(BaseOptions(
           baseUrl: baseUrl,
         )))
+    ..registerLazySingleton<WebSocketManagerWrapper>(
+        () => WebSocketManagerWrapper())
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
     ..registerLazySingleton<PhoneAuthProviderWrapper>(
         () => PhoneAuthProviderWrapper());

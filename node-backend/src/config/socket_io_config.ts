@@ -6,8 +6,8 @@ export default function socketIoConfig(server: http.Server) {
   io.on("connection", (socket) => {
     console.log("connected");
 
-    socket.on("user-message", (message) => {
-      io.emit("message", message);
+    socket.on("message", (message) => {
+      console.log(`message recieved and data : ${message}`.blue);
     });
   });
 }
