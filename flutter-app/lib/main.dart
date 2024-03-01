@@ -9,7 +9,6 @@ import 'package:wisp_wizz/features/app/services/dependency_injection.dart'
     as dep;
 import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
-import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/otp/otp_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/phone-number/phone_number_bloc.dart';
@@ -59,28 +58,33 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Dimensions.screenHeight = MediaQuery.of(context).size.height;
     Dimensions.screenWidth = MediaQuery.of(context).size.width;
+    final theme = context.watch<MainController>().themeData;
     return MaterialApp(
-        title: appName,
-        onGenerateRoute: (settings) => routesGenerator(settings),
-        theme: context.watch<MainController>().themeData,
-        builder: BotToastInit(), //1. call BotToastInit
-        navigatorObservers: [BotToastNavigatorObserver()],
-        home: HomeScreen(user: UserModel.empty())
-        //     BlocConsumer<AuthBloc, AuthState>(
-        //   builder: (context, state) {
-        //     return const SplashScreen();
-        //   },
-        //   listener: (context, state) {
-        //     if (state is AuthloggedIn) {
-        //       Navigator.pushNamedAndRemoveUntil(
-        //           context, HomeScreen.routeName, (route) => false,
-        //           arguments: state.user);
-        //     } else if (state is AuthLoggedOut) {
-        //       Navigator.pushNamedAndRemoveUntil(
-        //           context, LoginScreen.routeName, (route) => false);
-        //     }
-        //   },
-        // ),
-        );
+      title: appName,
+      onGenerateRoute: (settings) => routesGenerator(settings),
+      theme: theme,
+      builder: BotToastInit(), //1. call BotToastInit
+      navigatorObservers: [BotToastNavigatorObserver()],
+      home: BlocConsumer<AuthBloc, AuthState>(
+        builder: (context, state) {
+          return const SplashScreen();
+        },
+        listener: (context, state) {
+          if (state is AuthloggedIn) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, HomeScreen.routeName, (route) => false,
+                arguments: state.user);
+          } else if (state is AuthLoggedOut) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, LoginScreen.routeName, (route) => false);
+          } else if (state is AuthInitializationFailed) {
+            BotToast.showText(
+                text: state.message,
+                contentColor: theme.primaryColorLight,
+                textStyle: theme.textTheme.bodyMedium!);
+          }
+        },
+      ),
+    );
   }
 }

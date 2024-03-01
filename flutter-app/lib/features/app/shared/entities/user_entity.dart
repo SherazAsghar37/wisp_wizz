@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
 
-abstract class UserEnitity extends Equatable {
+abstract class UserEntity extends Equatable {
   final String? _id;
   final String? name;
   final String? phoneNumber;
@@ -10,7 +10,7 @@ abstract class UserEnitity extends Equatable {
   final DateTime? lastSeen;
   final Uint8List image;
 
-  const UserEnitity({
+  const UserEntity({
     required this.name,
     required this.phoneNumber,
     required String id,

@@ -517,5 +517,66 @@ void main() {
         verifyNoMoreInteractions(localDatasource);
       });
     });
+    group("[Init Application] - ", () {
+      test(
+          "It should call remoteDatasource.connectSocket, localDatasource.getCachedUserData and return userModel by calling only once",
+          () async {
+        //Arrange
+
+        when(() => remoteDatasource.connectSocket())
+            .thenAnswer((invocation) async => true);
+        when(() => localDatasource.getCachedUserData())
+            .thenAnswer((invocation) => user);
+        //Act
+        final response = await authRepository.initApplication();
+        //Assert
+        expect(response, const Right<dynamic, void>(null));
+
+        verify(() => remoteDatasource.connectSocket()).called(1);
+        verify(() => localDatasource.getCachedUserData()).called(1);
+
+        verifyNoMoreInteractions(remoteDatasource);
+        verifyNoMoreInteractions(localDatasource);
+      });
+
+      test(
+          "It should call localDatasource.getCachedUserData throw cache exception by calling only once",
+          () async {
+        //Arrange
+        when(() => remoteDatasource.connectSocket())
+            .thenAnswer((invocation) async => true);
+        when(() => localDatasource.getCachedUserData()).thenThrow(
+            const CacheException(message: "Failed to get user data"));
+        //Act
+        final response = await authRepository.initApplication();
+        //Assert
+        expect(
+            response,
+            const Left<CacheFailure, dynamic>(
+                CacheFailure(message: "Failed to get user data")));
+
+        verify(() => remoteDatasource.connectSocket()).called(1);
+        verify(() => localDatasource.getCachedUserData()).called(1);
+
+        verifyNoMoreInteractions(remoteDatasource);
+        verifyNoMoreInteractions(localDatasource);
+      });
+      test(
+          "It should call remoteDatasource.connectSocket throw WebSocketExceptionby calling only once",
+          () async {
+        //Arrange
+        when(() => remoteDatasource.connectSocket())
+            .thenThrow(const WebSocketException(message));
+        when(() => localDatasource.getCachedUserData())
+            .thenAnswer((invocation) => user);
+        //Act
+        final response = await authRepository.initApplication();
+        //Assert
+        expect(
+            response,
+            const Left<WebSocketFailure, dynamic>(
+                WebSocketFailure(message: message)));
+      });
+    });
   });
 }

@@ -1,15 +1,11 @@
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class SentMessageCard extends StatelessWidget {
-  final List<String> messages;
-  final String time;
-  final String status;
-  const SentMessageCard({
-    super.key,
-    required this.messages,
-    required this.time,
-    required this.status,
-  });
+  final MessageModel message;
+  final bool isLast;
+  const SentMessageCard(
+      {super.key, required this.message, required this.isLast});
 
   @override
   Widget build(BuildContext context) {
@@ -18,58 +14,58 @@ class SentMessageCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: Dimensions.height20),
+          padding: EdgeInsets.only(bottom: Dimensions.height5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              ...List.generate(
-                messages.length,
-                (index) => Column(
-                  children: [
-                    Container(
-                      constraints: BoxConstraints(
-                          maxWidth: Dimensions.screenWidth * 0.7),
-                      padding: EdgeInsets.symmetric(
-                        vertical: Dimensions.height10,
-                        horizontal: Dimensions.width10,
-                      ),
-                      decoration: BoxDecoration(
-                          color: theme.colorScheme.background.withOpacity(0.7),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(borderRadius),
-                            bottomRight: index == messages.length - 1
-                                ? Radius.circular(borderRadius - 5)
-                                : Radius.circular(borderRadius),
-                            topLeft: Radius.circular(borderRadius),
-                            topRight: Radius.circular(borderRadius),
-                          )),
-                      child: Text(messages[index],
-                          softWrap: true,
-                          style: theme.textTheme.bodySmall!
-                              .copyWith(color: theme.shadowColor)),
-                    ),
-                    SizedBox(
-                      height: Dimensions.height2,
-                    ),
-                  ],
+              Container(
+                constraints:
+                    BoxConstraints(maxWidth: Dimensions.screenWidth * 0.7),
+                padding: EdgeInsets.symmetric(
+                  vertical: Dimensions.height10,
+                  horizontal: Dimensions.width10,
                 ),
+                decoration: BoxDecoration(
+                    color: theme.colorScheme.background.withOpacity(0.7),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(borderRadius),
+                      bottomRight: isLast
+                          ? Radius.circular(borderRadius - 5)
+                          : Radius.circular(borderRadius),
+                      topLeft: Radius.circular(borderRadius),
+                      topRight: Radius.circular(borderRadius),
+                    )),
+                child: Text(message.message,
+                    softWrap: true,
+                    style: theme.textTheme.bodySmall!
+                        .copyWith(color: theme.shadowColor)),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ChatUtils.getMessageStatusIcon(context, status),
-                  SizedBox(
-                    width: Dimensions.width2,
-                  ),
-                  Text(time,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: theme.textTheme.bodySmall),
-                  SizedBox(
-                    width: Dimensions.width5,
-                  ),
-                ],
-              ),
+              isLast
+                  ? Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ChatUtils.getMessageStatusIcon(
+                                context, message.messageStatus),
+                            SizedBox(
+                              width: Dimensions.width2,
+                            ),
+                            Text(message.createdAt.timeFormat(),
+                                maxLines: 1,
+                                softWrap: false,
+                                style: theme.textTheme.bodySmall),
+                            SizedBox(
+                              width: Dimensions.width5,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: Dimensions.height10,
+                        )
+                      ],
+                    )
+                  : const SizedBox(),
             ],
           ),
         ),

@@ -131,13 +131,15 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  ResultFuture<void> initApplication() async {
+  ResultFuture<UserModel?> initApplication() async {
     try {
       await _remoteDatasource.connectSocket();
-      _localDataSource.getCachedUserData();
-      return const Right(null);
+      final user = _localDataSource.getCachedUserData();
+      return Right(user);
     } on WebSocketException catch (e) {
       return Left(WebSocketFailure.fromException(e));
+    } on CacheException catch (e) {
+      return Left(CacheFailure.fromException(e));
     }
   }
 }

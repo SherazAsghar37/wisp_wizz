@@ -30,6 +30,8 @@ class ContactException extends CustomExceptions {
 }
 
 class WebSocketException extends CustomExceptions {
+  @override
+  // ignore: overridden_fields
   final String message;
   const WebSocketException(this.message) : super(message: message);
   @override

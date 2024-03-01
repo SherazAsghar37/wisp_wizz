@@ -11,7 +11,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    context.read<AuthBloc>().add(const GetCachedUserEvent());
+    context.read<AuthBloc>().add(const InitApplicationEvent());
     super.initState();
   }
 

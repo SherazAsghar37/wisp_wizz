@@ -106,3 +106,14 @@ final class AuthResponse extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+final class AuthInitializingApplication extends AuthState {
+  const AuthInitializingApplication();
+}
+
+final class AuthInitializationFailed extends AuthState {
+  final String message;
+  const AuthInitializationFailed(this.message);
+  @override
+  List<Object> get props => [message];
+}

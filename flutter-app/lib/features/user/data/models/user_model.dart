@@ -3,9 +3,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
-import 'package:wisp_wizz/features/user/domain/entities/user_entity.dart';
+import 'package:wisp_wizz/features/app/shared/entities/user_entity.dart';
 
-class UserModel extends UserEnitity {
+class UserModel extends UserEntity {
   @override
   final String name;
   @override
@@ -85,7 +85,7 @@ class UserModel extends UserEnitity {
 
   UserModel.empty()
       : this(
-            id: "0",
+            id: "xyz",
             lastSeen: DateTime.now(),
             name: "empty.name",
             phoneNumber: "+920000000000",

@@ -162,7 +162,12 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                       : Align(
                           alignment: FractionalOffset(micAlignment, 0),
                           child: IconButton(
-                              onPressed: () {}, icon: const Icon(sendIcon)),
+                              onPressed: () {
+                                setState(() {
+                                  messageController.clear();
+                                });
+                              },
+                              icon: const Icon(sendIcon)),
                         )
                 ],
               ),

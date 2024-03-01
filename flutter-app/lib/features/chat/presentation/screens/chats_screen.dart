@@ -55,7 +55,7 @@ class ChatsScreen extends StatelessWidget {
                       notifications: "1000000000000",
                       onPressed: () {
                         Navigator.pushNamed(context, SingleChatScreen.routeName,
-                            arguments: user);
+                            arguments: ChatModel.empty());
                       },
                     ),
                   );

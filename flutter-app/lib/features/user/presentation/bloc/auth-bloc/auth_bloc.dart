@@ -10,6 +10,7 @@ import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/init_application_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/logout_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
@@ -29,6 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LogoutUser _logoutUser;
   final UpdateUser _updateUser;
   final CacheUser _cacheUser;
+  final InitApplication _initApplication;
   String _verificationId = "";
 
   AuthBloc(
@@ -39,7 +41,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       required GetCachedUser getCachedUser,
       required LogoutUser logoutUser,
       required UpdateUser updateUser,
-      required CacheUser cacheUser})
+      required CacheUser cacheUser,
+      required InitApplication initApplication})
       : _loginUser = loginUser,
         _sendCode = sendCode,
         _verifyOTP = verifyOTP,
@@ -48,6 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _logoutUser = logoutUser,
         _updateUser = updateUser,
         _cacheUser = cacheUser,
+        _initApplication = initApplication,
         super(const AuthLoggedOut()) {
     on<SendCodeEvent>(_onSendCodeEvent);
     on<VerifyOTPEvent>(_onVerifyOTPEvent);
@@ -56,6 +60,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetCachedUserEvent>(_onGetCachedUser);
     on<LogoutEvent>(_onLogout);
     on<UpdateUserEvent>(_onUpdateUser);
+    on<InitApplicationEvent>(_onInitApplication);
   }
 
   Future<void> _onSendCodeEvent(
@@ -193,5 +198,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       emit(AuthloginFailed(res.asLeft().message));
     }
+  }
+
+  void _onInitApplication(
+      InitApplicationEvent event, Emitter<AuthState> emit) async {
+    emit(const AuthInitializingApplication());
+
+    final res = await _initApplication();
+    res.fold(
+        (f) => emit(AuthInitializationFailed(f.message)),
+        (s) => {
+              if (s != null)
+                {emit(AuthloggedIn(user: s as UserModel))}
+              else
+                {emit(const AuthLoggedOut())}
+            });
   }
 }

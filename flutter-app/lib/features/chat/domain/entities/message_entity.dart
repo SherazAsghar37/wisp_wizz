@@ -8,7 +8,7 @@ class MessageEntity extends Equatable {
   final String? messageType;
   final String? message;
   final DateTime? createdAt;
-  final bool? isSeen;
+  final String? messageStatus;
   final String? repliedTo;
   final String? repliedMessage;
   final String? repliedMessageType;
@@ -24,7 +24,7 @@ class MessageEntity extends Equatable {
     this.messageType,
     this.message,
     this.createdAt,
-    this.isSeen,
+    this.messageStatus,
     this.repliedTo,
     this.repliedMessage,
     this.repliedMessageType,
@@ -42,7 +42,7 @@ class MessageEntity extends Equatable {
         messageType,
         message,
         createdAt,
-        isSeen,
+        messageStatus,
         repliedTo,
         repliedMessage,
         repliedMessageType,

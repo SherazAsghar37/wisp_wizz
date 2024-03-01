@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/contacts/presentation/screens/contacts_screen.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
@@ -39,7 +40,7 @@ Route<dynamic> routesGenerator(RouteSettings routeSettings) {
     case SingleChatScreen.routeName:
       return SlidePageRoute(
           widget: SingleChatScreen(
-        user: routeSettings.arguments as UserModel,
+        chat: routeSettings.arguments as ChatModel,
       ));
 
     default:

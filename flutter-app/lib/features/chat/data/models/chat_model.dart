@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:wisp_wizz/features/chat/domain/entities/chat_entity.dart';
+import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 
 class ChatModel extends ChatEntity {
   @override
@@ -26,6 +27,8 @@ class ChatModel extends ChatEntity {
   final int? totalUnReadMessages;
   @override
   final String chatId;
+  @override
+  final UserModel recipient;
 
   const ChatModel(
       {this.senderId,
@@ -37,7 +40,8 @@ class ChatModel extends ChatEntity {
       this.senderProfile,
       this.recipientProfile,
       this.totalUnReadMessages,
-      required this.chatId})
+      required this.chatId,
+      required this.recipient})
       : super(
             senderId: senderId,
             recipientId: recipientId,
@@ -48,7 +52,8 @@ class ChatModel extends ChatEntity {
             recentTextMessage: recentTextMessage,
             createdAt: createdAt,
             totalUnReadMessages: totalUnReadMessages,
-            chatId: chatId);
+            chatId: chatId,
+            recipient: recipient);
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -62,6 +67,7 @@ class ChatModel extends ChatEntity {
       'recipientProfile': recipientProfile,
       'totalUnReadMessages': totalUnReadMessages,
       'id': chatId,
+      "recipient": recipient.toMap()
     };
   }
 
@@ -78,10 +84,54 @@ class ChatModel extends ChatEntity {
           recipientProfile: map['recipientProfile'],
           totalUnReadMessages: map['totalUnReadMessages'],
           chatId: map['id'],
+          recipient: UserModel.fromMap(map['recipient']),
         );
 
   String toJson() => json.encode(toMap());
 
   factory ChatModel.fromJson(String source) =>
       ChatModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  ChatModel.empty()
+      : this(
+          senderId: "abc",
+          recipientId: "xyz",
+          senderName: "sheraz",
+          recipientName: "user",
+          recentTextMessage: "hi testing message",
+          createdAt: DateTime.now(),
+          senderProfile: "as",
+          recipientProfile: "Asd",
+          totalUnReadMessages: 4,
+          chatId: "12ab",
+          recipient: UserModel.empty(),
+        );
+
+  ChatModel copyWith({
+    String? senderId,
+    String? recipientId,
+    String? senderName,
+    String? recipientName,
+    String? recentTextMessage,
+    DateTime? createdAt,
+    String? senderProfile,
+    String? recipientProfile,
+    int? totalUnReadMessages,
+    String? chatId,
+    UserModel? sender,
+  }) {
+    return ChatModel(
+      senderId: senderId ?? this.senderId,
+      recipientId: recipientId ?? this.recipientId,
+      senderName: senderName ?? this.senderName,
+      recipientName: recipientName ?? this.recipientName,
+      recentTextMessage: recentTextMessage ?? this.recentTextMessage,
+      createdAt: createdAt ?? this.createdAt,
+      senderProfile: senderProfile ?? this.senderProfile,
+      recipientProfile: recipientProfile ?? this.recipientProfile,
+      totalUnReadMessages: totalUnReadMessages ?? this.totalUnReadMessages,
+      chatId: chatId ?? this.chatId,
+      recipient: recipient,
+    );
+  }
 }

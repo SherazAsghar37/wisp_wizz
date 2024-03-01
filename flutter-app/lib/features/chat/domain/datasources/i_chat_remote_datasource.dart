@@ -1,11 +1,11 @@
-import 'package:wisp_wizz/features/chat/domain/entities/chat_entity.dart';
-import 'package:wisp_wizz/features/chat/domain/entities/message_entity.dart';
+import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
+import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 
 abstract class IChatRemoteDatasource {
-  Future<void> sendMessage(ChatEntity chat, MessageEntity message);
-  Stream<List<ChatEntity>> getMyChat(ChatEntity chat);
-  Stream<List<MessageEntity>> getMessages(MessageEntity message);
-  Future<void> deleteMessage(MessageEntity message);
-  Future<void> updateMessage(MessageEntity message);
-  Future<void> deleteChat(ChatEntity chat);
+  void sendMessage(MessageModel message);
+  Stream<List<ChatModel>> getMyChats(String userId);
+  Stream<List<MessageModel>> getMessages(String chatId);
+  Future<void> deleteMessage(String messageId);
+  Future<void> updateMessage(MessageModel message);
+  Future<void> deleteChat(String chatId);
 }

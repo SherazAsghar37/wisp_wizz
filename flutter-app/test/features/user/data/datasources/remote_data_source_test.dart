@@ -314,88 +314,33 @@ void main() {
       });
     });
     group("[Connect web socket ] - ", () {
-      test("It should post loginUser and return userModel by calling only once",
+      test("It should call initSocket and return true by calling only once",
           () async {
         //Arrange
-        when(() => dio.post(
-                  any(),
-                  data: any(named: "data"),
-                ))
-            .thenAnswer((invocation) async => Response(
-                requestOptions: RequestOptions(),
-                statusCode: 201,
-                data: jsonEncode({"user": userMap})));
+        when(() => webSocketManagerWrapper.initSocket())
+            .thenAnswer((invocation) async => true);
         //Act
-        final response = await remoteDatasource.loginUser(
-            name: userModel.name,
-            phoneNumber: userModel.phoneNumber,
-            image: userModel.image);
+        final response = await remoteDatasource.connectSocket();
         //Assert
-        expect(response, equals(UserModel.fromMap(userMap)));
-        verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
-              "image": base64Encode(userModel.image),
-              "name": userModel.name,
-              "phoneNumber": userModel.phoneNumber,
-            })).called(1);
-        verifyNoMoreInteractions(dio);
+        expect(response, equals(true));
+        verify(() => webSocketManagerWrapper.initSocket()).called(1);
+        verifyNoMoreInteractions(webSocketManagerWrapper);
       });
       test(
           "It should call remoteDataSource.loginUser and throw api exception when dio Exception occurs calling only once",
-          () async {
-        //Arrange
-        when(() => dio.post(
-                  any(),
-                  data: any(named: "data"),
-                ))
-            .thenThrow(DioException(
-                requestOptions: RequestOptions(), message: errorMessage));
-        //Act
-        final response = remoteDatasource.loginUser(
-            name: userModel.name,
-            phoneNumber: userModel.phoneNumber,
-            image: userModel.image);
-        //Assert
-        await expectLater(
-            response,
-            throwsA(const ApiException(
-                message: "Internal server error", statusCode: statusCode)));
-        verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
-              "image": base64Encode(userModel.image),
-              "name": userModel.name,
-              "phoneNumber": userModel.phoneNumber,
-            })).called(1);
-        verifyNoMoreInteractions(dio);
-      });
+          () {
+        // Arrange
+        when(() => webSocketManagerWrapper.initSocket())
+            .thenThrow(const WebSocketException(errorMessage));
 
-      test(
-          "It should call remoteDataSource.loginUser and throw api exception by calling only once",
-          () async {
-        //Arrange
-        when(() => dio.post(
-                  any(),
-                  data: any(named: "data"),
-                ))
-            .thenAnswer((invocation) async => Response(
-                requestOptions: RequestOptions(),
-                statusCode: statusCode,
-                data: {"message": errorMessage}));
-        //Assert
-        await expectLater(
-          remoteDatasource.loginUser(
-              name: userModel.name,
-              phoneNumber: userModel.phoneNumber,
-              image: userModel.image),
-          throwsA(const ApiException(
-            message: errorMessage,
-            statusCode: statusCode,
-          )),
-        );
-        verify(() => dio.post(dio.options.baseUrl + loginUrl, data: {
-              "image": base64Encode(userModel.image),
-              "name": userModel.name,
-              "phoneNumber": userModel.phoneNumber,
-            })).called(1);
-        verifyNoMoreInteractions(dio);
+        // Act & Assert
+        expect(
+            () => remoteDatasource.connectSocket(),
+            throwsA(
+                const WebSocketException("unable to connect to the server")));
+
+        verify(() => webSocketManagerWrapper.initSocket()).called(1);
+        verifyNoMoreInteractions(webSocketManagerWrapper);
       });
     });
   });

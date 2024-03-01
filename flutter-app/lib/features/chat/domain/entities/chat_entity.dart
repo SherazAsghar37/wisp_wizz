@@ -1,6 +1,7 @@
 // ignore_for_file: unused_field
 
 import 'package:equatable/equatable.dart';
+import 'package:wisp_wizz/features/app/shared/entities/user_entity.dart';
 
 class ChatEntity extends Equatable {
   final String? senderId;
@@ -13,6 +14,7 @@ class ChatEntity extends Equatable {
   final String? recipientProfile;
   final int? totalUnReadMessages;
   final String? chatId;
+  final UserEntity? recipient;
   const ChatEntity(
       {this.senderId,
       this.recipientId,
@@ -23,7 +25,8 @@ class ChatEntity extends Equatable {
       this.senderProfile,
       this.recipientProfile,
       this.totalUnReadMessages,
-      this.chatId});
+      this.chatId,
+      this.recipient});
 
   @override
   List<Object?> get props => [
@@ -37,5 +40,6 @@ class ChatEntity extends Equatable {
         recipientProfile,
         totalUnReadMessages,
         chatId,
+        recipient
       ];
 }
