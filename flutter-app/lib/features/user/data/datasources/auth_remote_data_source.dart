@@ -76,6 +76,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
         url,
         data: data,
       );
+      DebugHelper.printError(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
         if (userData["user"] == null) {

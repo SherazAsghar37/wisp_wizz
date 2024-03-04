@@ -99,6 +99,39 @@ export default class UserRepository {
         return null;
       }
     } catch (error) {
+      console.log(`${error}`.red);
+      throw new CustomError(
+        `Error : ${error}`,
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
+    }
+  };
+
+  public findManyByPhoneNumbers = async (
+    contacts: Array<string>
+  ): Promise<Array<User>> => {
+    try {
+      console.log("Before finding user...");
+
+      const newUser = await db.user.findMany({
+        where: {
+          phoneNumber: {
+            in: contacts,
+          },
+        },
+      });
+
+      if (newUser) {
+        return newUser as Array<User>;
+      } else {
+        console.log(newUser);
+        throw new CustomError(
+          "Failed to fetch contacts",
+          HttpStatusCode.CONFLICT
+        );
+      }
+    } catch (error) {
+      console.log(`${error}`.red);
       throw new CustomError(
         `Error : ${error}`,
         HttpStatusCode.INTERNAL_SERVER_ERROR

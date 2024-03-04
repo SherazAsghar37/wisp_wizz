@@ -83,4 +83,33 @@ export default class UserController {
       this._errorHandler.handleError(error, res);
     }
   };
+  public getContacts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { contacts } = req.body;
+
+      const users: Array<any> = await this._userServices.fetchContacts(
+        contacts
+      );
+      console.log(users);
+
+      return res.status(HttpStatusCode.OK).json(
+        JSON.stringify({
+          users: users.map((e) => {
+            return {
+              id: e.id,
+              name: e.name,
+              phoneNumber: e.phoneNumber,
+              image: e.image.toString("base64"),
+            };
+          }),
+        })
+      );
+    } catch (error) {
+      this._errorHandler.handleError(error, res);
+    }
+  };
 }

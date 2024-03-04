@@ -3,6 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
+import 'package:wisp_wizz/features/app/socket/socket_manager.dart';
+import 'package:wisp_wizz/features/chat/data/datasources/chat_remote_datasource.dart';
+import 'package:wisp_wizz/features/chat/data/repositories/chat_repository.dart';
+import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_data_source.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/flutter_contacts_wraper.dart';
 import 'package:wisp_wizz/features/contacts/data/repositories/contact_repository.dart';
@@ -25,6 +31,8 @@ import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/update_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/verify_otp_usecase.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 final sl = GetIt.instance;
 
@@ -33,6 +41,11 @@ Future<void> init() async {
     () async => await SharedPreferences.getInstance(),
   );
   await sl.getAsync<SharedPreferences>();
+  if (!sl.isRegistered<Dio>()) {
+    sl.registerFactory<Dio>(() => Dio(BaseOptions(
+          baseUrl: baseUrl,
+        )));
+  }
 
   //state management
   sl
@@ -72,9 +85,9 @@ Future<void> init() async {
     ..registerLazySingleton<AuthLocalDatasource>(
         () => AuthLocalDatasource(sharedPreferences: sl()))
     //external dependency
-    ..registerLazySingleton<Dio>(() => Dio(BaseOptions(
-          baseUrl: baseUrl,
-        )))
+    // ..registerLazySingleton<Dio>(() => Dio(BaseOptions(
+    //       baseUrl: baseUrl,
+    //     )))
     ..registerLazySingleton<WebSocketManagerWrapper>(
         () => WebSocketManagerWrapper())
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
@@ -91,8 +104,22 @@ Future<void> init() async {
         () => ContactReposiotry(contactDatasource: sl()))
     //data sources
     ..registerLazySingleton<ContactDatasource>(
-        () => ContactDatasource(flutterContactsWrapper: sl()))
+        () => ContactDatasource(flutterContactsWrapper: sl(), dio: sl()))
+
     //external dependency
     ..registerLazySingleton<FlutterContactsWrapper>(
         () => FlutterContactsWrapper());
+
+  sl
+    ..registerFactory(() => MessageBloc(sendMessageUseCase: sl()))
+    //usecases
+    ..registerLazySingleton<SendMessageUseCase>(
+        () => SendMessageUseCase(repository: sl()))
+    //repositories
+    ..registerLazySingleton<IChatRepository>(() => ChatRepository(sl()))
+    //data sources
+    ..registerLazySingleton<ChatRemoteDatasource>(
+        () => ChatRemoteDatasource(socket: sl()))
+    //external dependency
+    ..registerLazySingleton<IO.Socket>(() => WebSocketManager.socket);
 }

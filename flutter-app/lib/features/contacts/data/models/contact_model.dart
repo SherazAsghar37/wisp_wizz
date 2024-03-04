@@ -9,7 +9,7 @@ class ContactModel extends ContactEntity {
   // ignore: unused_field
   final String _id;
   @override
-  final List<String> phoneNumber;
+  final String phoneNumber;
   @override
   final String name;
   @override
@@ -23,7 +23,7 @@ class ContactModel extends ContactEntity {
         super(id: id, phoneNumber: phoneNumber, image: image, name: name);
 
   ContactModel copyWith({
-    List<String>? phoneNumber,
+    String? phoneNumber,
     String? name,
     String? id,
     Uint8List? image,

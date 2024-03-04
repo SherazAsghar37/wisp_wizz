@@ -74,4 +74,21 @@ export default class UserService {
       }
     }
   };
+
+  public fetchContacts = async (
+    contacts: Array<string>
+  ): Promise<Array<User>> => {
+    try {
+      const users: Array<User> =
+        await this._userRepository.findManyByPhoneNumbers(contacts);
+      return users;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.log("!!!Criticial Error!!!", error);
+        throw new ThrowCriticalError(error);
+      }
+    }
+  };
 }

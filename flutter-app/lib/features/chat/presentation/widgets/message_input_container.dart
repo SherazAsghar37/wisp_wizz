@@ -1,7 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/switchable_icons.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/chat/presentation/widgets/attachment_button.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart'
+    as auth;
 
 class MessageInputContainer extends StatefulWidget {
   const MessageInputContainer({
@@ -163,6 +167,17 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                           alignment: FractionalOffset(micAlignment, 0),
                           child: IconButton(
                               onPressed: () {
+                                final authbloc = context
+                                    .read<auth.AuthBloc>()
+                                    .state as auth.AuthloggedIn;
+                                context
+                                    .read<MessageBloc>()
+                                    .add(SendMessageEvent(
+                                      senderId: authbloc.user.id,
+                                      recipientId: "as",
+                                      message: messageController.text,
+                                      chatId: "123",
+                                    ));
                                 setState(() {
                                   messageController.clear();
                                 });

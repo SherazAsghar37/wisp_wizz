@@ -12,16 +12,6 @@ class ChatRepository implements IChatRepository {
   const ChatRepository(this._remoteDatasource);
 
   @override
-  ResultVoid sendMessage(MessageModel message) {
-    try {
-      final response = _remoteDatasource.sendMessage(message);
-      return Right(response);
-    } on ApiException catch (e) {
-      return Left(ApiFailure.fromException(e));
-    }
-  }
-
-  @override
   FutureVoid deleteChat(String chatId) async {
     try {
       final response = await _remoteDatasource.deleteChat(chatId);
@@ -65,6 +55,26 @@ class ChatRepository implements IChatRepository {
   FutureVoid updateMessage(MessageModel message) async {
     try {
       final response = await _remoteDatasource.updateMessage(message);
+      return Right(response);
+    } on ApiException catch (e) {
+      return Left(ApiFailure.fromException(e));
+    }
+  }
+
+  @override
+  ResultVoid sendMessage(
+      {required String message,
+      required String senderId,
+      required String recipientId,
+      required String chatId,
+      String? repliedToId}) {
+    try {
+      final response = _remoteDatasource.sendMessage(
+          chatId: chatId,
+          message: message,
+          recipientId: recipientId,
+          senderId: senderId,
+          repliedToId: repliedToId);
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));

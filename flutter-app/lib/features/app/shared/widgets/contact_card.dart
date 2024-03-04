@@ -39,9 +39,7 @@ class ContactCard extends StatelessWidget {
                         fontSize: Dimensions.height18),
                   ),
                   Text(
-                    contact.phoneNumber.isNotEmpty
-                        ? contact.phoneNumber[0]
-                        : "",
+                    contact.phoneNumber,
                     style: theme.textTheme.bodyMedium!
                         .copyWith(fontSize: Dimensions.height13),
                   ),

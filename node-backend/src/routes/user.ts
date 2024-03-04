@@ -12,5 +12,8 @@ userRouter
 userRouter
   .route("/updateUser")
   .put(validation.userUpdateValidation, userController.updateUser);
+userRouter
+  .route("/getContacts")
+  .post(validation.getContactsValidation, userController.getContacts);
 
 export default userRouter;

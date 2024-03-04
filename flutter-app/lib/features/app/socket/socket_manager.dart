@@ -17,9 +17,13 @@ class WebSocketManager {
     });
     _socket.onConnect((_) {
       DebugHelper.printWarning('connect');
-      completer.complete(true);
+      if (!completer.isCompleted) {
+        completer.complete(true);
+      }
     });
-    _socket.onDisconnect((_) => DebugHelper.printWarning('disconnected'));
+    _socket.onDisconnect((_) {
+      DebugHelper.printWarning('disconnected');
+    });
     _socket.onerror((error) {
       DebugHelper.printError(error);
       throw SocketException(error);
@@ -37,19 +41,19 @@ class WebSocketManager {
     return completer.future;
   }
 
-  static Future<void> connect() async {
-    Completer completer = Completer<void>();
-    _socket = IO.io(baseUrl, <String, dynamic>{
-      "transports": ["websocket"],
-      "autoConnect": true
-    });
-    _socket.onConnect((_) {
-      DebugHelper.printWarning('connect');
-      completer.complete();
-    });
-    _socket.onDisconnect((_) => DebugHelper.printWarning('disconnected'));
-    _socket.connect().onError((data) => print(data));
-    DebugHelper.printWarning("here");
-    return completer.future;
-  }
+  // static Future<void> connect() async {
+  //   Completer completer = Completer<void>();
+  //   _socket = IO.io(baseUrl, <String, dynamic>{
+  //     "transports": ["websocket"],
+  //     "autoConnect": true
+  //   });
+  //   _socket.onConnect((_) {
+  //     DebugHelper.printWarning('connect');
+  //     completer.complete();
+  //   });
+  //   _socket.onDisconnect((_) => DebugHelper.printWarning('disconnected'));
+  //   _socket.connect().onError((data) => print(data));
+  //   DebugHelper.printWarning("here");
+  //   return completer.future;
+  // }
 }

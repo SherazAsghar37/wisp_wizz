@@ -8,9 +8,20 @@ class ChatRemoteDatasource implements IChatRemoteDatasource {
   final io.Socket _socket;
   const ChatRemoteDatasource({required io.Socket socket}) : _socket = socket;
   @override
-  void sendMessage(MessageModel message) {
+  void sendMessage(
+      {required String message,
+      required String senderId,
+      required String recipientId,
+      required String chatId,
+      String? repliedToId}) {
     try {
-      return _socket.emit("message", message.toMap());
+      return _socket.emit("message", {
+        "message": message,
+        "senderId": senderId,
+        "recipientId": recipientId,
+        "chatId": chatId,
+        "repliedToId": repliedToId
+      });
     } catch (e) {
       throw const WebSocketException(
           "Something went wrong, Unable to send message");
