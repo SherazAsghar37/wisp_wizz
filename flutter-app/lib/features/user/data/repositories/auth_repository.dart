@@ -134,6 +134,8 @@ class AuthRepository implements IAuthRepository {
   ResultFuture<UserModel?> initApplication() async {
     try {
       await _remoteDatasource.connectSocket();
+      await _localDataSource.initLocalDB();
+      _localDataSource.getCachedUserData();
       final user = _localDataSource.getCachedUserData();
       return Right(user);
     } on WebSocketException catch (e) {

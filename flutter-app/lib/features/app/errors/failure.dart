@@ -81,3 +81,17 @@ class WebSocketFailure extends Failure {
   @override
   List<Object?> get props => [message];
 }
+
+class SqfliteDBFailure extends Failure {
+  const SqfliteDBFailure({
+    required super.message,
+  });
+
+  SqfliteDBFailure.fromException(SqfliteDBException e)
+      : this(
+          message: e.message,
+        );
+
+  @override
+  List<Object?> get props => [message];
+}

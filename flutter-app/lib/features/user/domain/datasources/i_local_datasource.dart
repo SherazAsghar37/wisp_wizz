@@ -11,4 +11,5 @@ abstract class IAuthLocalDatasource {
 
   UserModel? getCachedUserData();
   Future<void> removeCachedUser();
+  Future<void> initLocalDB();
 }

@@ -8,21 +8,11 @@ import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 
 class ChatModel extends ChatEntity {
   @override
-  final String? senderId;
-  @override
-  final String? recipientId;
-  @override
-  final String? senderName;
-  @override
-  final String? recipientName;
+  final UserModel sender;
   @override
   final String? recentTextMessage;
   @override
   final DateTime? createdAt;
-  @override
-  final String? senderProfile;
-  @override
-  final String? recipientProfile;
   @override
   final int? totalUnReadMessages;
   @override
@@ -31,24 +21,13 @@ class ChatModel extends ChatEntity {
   final UserModel recipient;
 
   const ChatModel(
-      {this.senderId,
-      this.recipientId,
-      this.senderName,
-      this.recipientName,
+      {required this.sender,
       this.recentTextMessage,
       this.createdAt,
-      this.senderProfile,
-      this.recipientProfile,
       this.totalUnReadMessages,
       required this.chatId,
       required this.recipient})
       : super(
-            senderId: senderId,
-            recipientId: recipientId,
-            senderName: senderName,
-            recipientName: recipientName,
-            senderProfile: senderProfile,
-            recipientProfile: recipientProfile,
             recentTextMessage: recentTextMessage,
             createdAt: createdAt,
             totalUnReadMessages: totalUnReadMessages,
@@ -57,14 +36,9 @@ class ChatModel extends ChatEntity {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'senderId': senderId,
-      'recipientId': recipientId,
-      'senderName': senderName,
-      'recipientName': recipientName,
+      'sender': sender.toMap(),
       'recentTextMessage': recentTextMessage,
       'createdAt': createdAt?.millisecondsSinceEpoch,
-      'senderProfile': senderProfile,
-      'recipientProfile': recipientProfile,
       'totalUnReadMessages': totalUnReadMessages,
       'id': chatId,
       "recipient": recipient.toMap()
@@ -73,15 +47,10 @@ class ChatModel extends ChatEntity {
 
   ChatModel.fromMap(Map<String, dynamic> map)
       : this(
-          senderId: map['senderId'],
-          recipientId: map['recipientId'],
-          senderName: map['senderName'],
-          recipientName: map['recipientName'],
+          sender: UserModel.fromMap(map['sender']),
           recentTextMessage: map['recentTextMessage'],
           createdAt:
               DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
-          senderProfile: map['senderProfile'],
-          recipientProfile: map['recipientProfile'],
           totalUnReadMessages: map['totalUnReadMessages'],
           chatId: map['id'],
           recipient: UserModel.fromMap(map['recipient']),
@@ -94,14 +63,9 @@ class ChatModel extends ChatEntity {
 
   ChatModel.empty()
       : this(
-          senderId: "abc",
-          recipientId: "xyz",
-          senderName: "sheraz",
-          recipientName: "user",
+          sender: UserModel.empty(),
           recentTextMessage: "hi testing message",
           createdAt: DateTime.now(),
-          senderProfile: "as",
-          recipientProfile: "Asd",
           totalUnReadMessages: 4,
           chatId: "12ab",
           recipient: UserModel.empty(),
@@ -121,14 +85,9 @@ class ChatModel extends ChatEntity {
     UserModel? sender,
   }) {
     return ChatModel(
-      senderId: senderId ?? this.senderId,
-      recipientId: recipientId ?? this.recipientId,
-      senderName: senderName ?? this.senderName,
-      recipientName: recipientName ?? this.recipientName,
+      sender: this.sender,
       recentTextMessage: recentTextMessage ?? this.recentTextMessage,
       createdAt: createdAt ?? this.createdAt,
-      senderProfile: senderProfile ?? this.senderProfile,
-      recipientProfile: recipientProfile ?? this.recipientProfile,
       totalUnReadMessages: totalUnReadMessages ?? this.totalUnReadMessages,
       chatId: chatId ?? this.chatId,
       recipient: recipient,

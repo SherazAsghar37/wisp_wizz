@@ -1,5 +1,9 @@
 import 'package:wisp_wizz/features/app/shared/widgets/contact_card.dart';
+import 'package:wisp_wizz/features/calls/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
+import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
 import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class ContactsScreen extends StatefulWidget {
@@ -69,19 +73,49 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   ),
                   Expanded(
                       child: state is ContactsFetched
-                          ? ListView.builder(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: Dimensions.height5),
-                              itemCount: state.contacts.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: Dimensions.height2),
-                                  child: ContactCard(
-                                    contact: state.contacts[index],
-                                  ),
-                                );
+                          ? RefreshIndicator(
+                              onRefresh: () async {
+                                context
+                                    .read<ContactBloc>()
+                                    .add(const ContactFetchEvent());
                               },
+                              child: ListView.builder(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: Dimensions.height5),
+                                itemCount: state.contacts.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      AuthloggedIn senderState = context
+                                          .read<AuthBloc>()
+                                          .state as AuthloggedIn;
+                                      Navigator.pushNamed(
+                                          context, SingleChatScreen.routeName,
+                                          arguments: ChatModel(
+                                              sender: senderState.user,
+                                              chatId: "chatId",
+                                              recipient: UserModel(
+                                                  name: state
+                                                      .contacts[index].name,
+                                                  phoneNumber: state
+                                                      .contacts[index]
+                                                      .phoneNumber,
+                                                  id: state.contacts[index].id,
+                                                  status: false,
+                                                  lastSeen: DateTime.now(),
+                                                  image: state
+                                                      .contacts[index].image)));
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: Dimensions.height2),
+                                      child: ContactCard(
+                                        contact: state.contacts[index],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             )
                           : Center(
                               child: CircularProgressIndicator(

@@ -96,6 +96,8 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: const MessageInputContainer());
+        floatingActionButton: MessageInputContainer(
+          chat: widget.chat,
+        ));
   }
 }

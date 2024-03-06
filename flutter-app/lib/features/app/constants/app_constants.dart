@@ -1,8 +1,9 @@
 import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 
 const String appName = 'Wisp Wiz';
+const String dbName = 'wispwiz';
 // const String baseUrl = "http://127.0.0.1:8000";
-const String baseUrl = "http://192.168.1.105:8000";
+const String baseUrl = "http://192.168.1.104:8000";
 const String sendCodeUrl = "/auth/verification/sendOtp";
 const String verifyOTPUrl = "/auth/verification/verifyOtp";
 const String loginUrl = "/auth/login";

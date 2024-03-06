@@ -75,7 +75,7 @@ class SingleChatCard extends StatelessWidget {
                           child: Text(
                               user.status
                                   ? "Online"
-                                  : user.lastSeen.dateFormat(),
+                                  : user.lastSeen.timeFormat(),
                               maxLines: 1,
                               softWrap: false,
                               style: theme.textTheme.bodySmall!.copyWith(

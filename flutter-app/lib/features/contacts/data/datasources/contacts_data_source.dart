@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
@@ -37,24 +35,7 @@ class ContactDatasource extends IContactDatasource {
           return ContactModel.fromMap(e);
         }).toList();
       }
-// ContactModel(
-//                 id: e["id"],
-//                 phoneNumber: e["phoneNumber"],
-//                 image: base64Decode(e["image"]),
-//                 name: e["name"])
-      // final modeledContacts = List<ContactModel>.from(contacts.map((e) {
-      //   // return e.phones.map((ele) {
-      //   //   !ele.number.startsWith("+92")
-      //   //       ? "+92${ele.number.substring(1)}"
-      //   //       : ele.number;
-      //   // });
-      //   return ContactModel(
-      //       id: "0",
-      //       phoneNumber: List<String>.from(e.phones.map((ele) => ele.number)),
-      //       image: base64Decode(appDefaultPic),
-      //       name: e.displayName);
-      // }));
-      // return modeledContacts;
+
       return data;
     } catch (e) {
       DebugHelper.printError("Contacts Exception : $e");

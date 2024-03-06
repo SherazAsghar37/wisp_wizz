@@ -19,6 +19,7 @@ import 'package:wisp_wizz/features/user/data/datasources/auth_firebase_datasourc
 import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_remote_data_source.dart';
 import 'package:wisp_wizz/features/user/data/datasources/socket_manager_wrapper.dart';
+import 'package:wisp_wizz/features/user/data/datasources/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
@@ -82,8 +83,8 @@ Future<void> init() async {
         () => AuthRemoteDatasource(dio: sl(), webSocketManagerWrapper: sl()))
     ..registerLazySingleton<AuthFirebaseDatasource>(() =>
         AuthFirebaseDatasource(auth: sl(), phoneAuthProviderWrapper: sl()))
-    ..registerLazySingleton<AuthLocalDatasource>(
-        () => AuthLocalDatasource(sharedPreferences: sl()))
+    ..registerLazySingleton<AuthLocalDatasource>(() => AuthLocalDatasource(
+        sharedPreferences: sl(), sqfliteManagerWrapper: sl()))
     //external dependency
     // ..registerLazySingleton<Dio>(() => Dio(BaseOptions(
     //       baseUrl: baseUrl,
@@ -92,7 +93,9 @@ Future<void> init() async {
         () => WebSocketManagerWrapper())
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
     ..registerLazySingleton<PhoneAuthProviderWrapper>(
-        () => PhoneAuthProviderWrapper());
+        () => PhoneAuthProviderWrapper())
+    ..registerLazySingleton<SqfliteManagerWrapper>(
+        () => const SqfliteManagerWrapper());
 
   sl
     ..registerFactory(() => ContactBloc(fetchContacts: sl()))

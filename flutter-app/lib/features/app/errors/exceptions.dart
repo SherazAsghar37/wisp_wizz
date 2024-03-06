@@ -37,3 +37,12 @@ class WebSocketException extends CustomExceptions {
   @override
   List<Object?> get props => [message];
 }
+
+class SqfliteDBException extends CustomExceptions {
+  @override
+  // ignore: overridden_fields
+  final String message;
+  const SqfliteDBException(this.message) : super(message: message);
+  @override
+  List<Object?> get props => [message];
+}

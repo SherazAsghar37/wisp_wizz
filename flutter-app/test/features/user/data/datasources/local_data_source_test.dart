@@ -6,17 +6,24 @@ import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.dart';
+import 'package:wisp_wizz/features/user/data/datasources/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 
 class MSharedPreferences extends Mock implements SharedPreferences {}
 
+class MSqfliteManagerWrapper extends Mock implements SqfliteManagerWrapper {}
+
 void main() {
   late AuthLocalDatasource localDatasource;
   late SharedPreferences sharedPreferences;
+  late SqfliteManagerWrapper sqfliteManagerWrapper;
 
   setUp(() {
     sharedPreferences = MSharedPreferences();
-    localDatasource = AuthLocalDatasource(sharedPreferences: sharedPreferences);
+    sqfliteManagerWrapper = MSqfliteManagerWrapper();
+    localDatasource = AuthLocalDatasource(
+        sharedPreferences: sharedPreferences,
+        sqfliteManagerWrapper: sqfliteManagerWrapper);
   });
 
   UserModel userModel = UserModel.empty();

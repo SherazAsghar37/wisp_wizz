@@ -21,6 +21,7 @@ class ContactModel extends ContactEntity {
       required this.name})
       : _id = id,
         super(id: id, phoneNumber: phoneNumber, image: image, name: name);
+  String get id => _id;
 
   ContactModel copyWith({
     String? phoneNumber,
