@@ -4,12 +4,14 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/socket/socket_manager.dart';
+import 'package:wisp_wizz/features/chat/data/datasources/chat_local_datasource.dart';
 import 'package:wisp_wizz/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:wisp_wizz/features/chat/data/repositories/chat_repository.dart';
 import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_data_source.dart';
+import 'package:wisp_wizz/features/contacts/data/datasources/contacts_local_dataource.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/flutter_contacts_wraper.dart';
 import 'package:wisp_wizz/features/contacts/data/repositories/contact_repository.dart';
 import 'package:wisp_wizz/features/contacts/domain/repository/i_contacts_repository.dart';
@@ -19,7 +21,7 @@ import 'package:wisp_wizz/features/user/data/datasources/auth_firebase_datasourc
 import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_remote_data_source.dart';
 import 'package:wisp_wizz/features/user/data/datasources/socket_manager_wrapper.dart';
-import 'package:wisp_wizz/features/user/data/datasources/sqflite_manager_wrapper.dart';
+import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
@@ -47,6 +49,8 @@ Future<void> init() async {
           baseUrl: baseUrl,
         )));
   }
+  sl.registerLazySingleton<SqfliteManagerWrapper>(
+      () => const SqfliteManagerWrapper());
 
   //state management
   sl
@@ -93,9 +97,7 @@ Future<void> init() async {
         () => WebSocketManagerWrapper())
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
     ..registerLazySingleton<PhoneAuthProviderWrapper>(
-        () => PhoneAuthProviderWrapper())
-    ..registerLazySingleton<SqfliteManagerWrapper>(
-        () => const SqfliteManagerWrapper());
+        () => PhoneAuthProviderWrapper());
 
   sl
     ..registerFactory(() => ContactBloc(fetchContacts: sl()))
@@ -103,11 +105,15 @@ Future<void> init() async {
     ..registerLazySingleton<FetchContacts>(
         () => FetchContacts(contactReposiotry: sl()))
     //repositories
-    ..registerLazySingleton<IContactReposiotry>(
-        () => ContactReposiotry(contactDatasource: sl()))
+    ..registerLazySingleton<IContactReposiotry>(() => ContactReposiotry(
+        contactDatasource: sl(), contactLocalDatasource: sl()))
     //data sources
     ..registerLazySingleton<ContactDatasource>(
         () => ContactDatasource(flutterContactsWrapper: sl(), dio: sl()))
+    ..registerLazySingleton<ContactLocalDatasource>(
+        () => ContactLocalDatasource(
+              sqfliteManagerWrapper: sl(),
+            ))
 
     //external dependency
     ..registerLazySingleton<FlutterContactsWrapper>(
@@ -119,10 +125,14 @@ Future<void> init() async {
     ..registerLazySingleton<SendMessageUseCase>(
         () => SendMessageUseCase(repository: sl()))
     //repositories
-    ..registerLazySingleton<IChatRepository>(() => ChatRepository(sl()))
+    ..registerLazySingleton<IChatRepository>(() => ChatRepository(sl(), sl()))
     //data sources
-    ..registerLazySingleton<ChatRemoteDatasource>(
-        () => ChatRemoteDatasource(socket: sl()))
+    ..registerLazySingleton<ChatRemoteDatasource>(() => ChatRemoteDatasource(
+          socket: sl(),
+        ))
+    ..registerLazySingleton<ChatLocalDatasource>(() => ChatLocalDatasource(
+          sqfliteManagerWrapper: sl(),
+        ))
     //external dependency
     ..registerLazySingleton<IO.Socket>(() => WebSocketManager.socket);
 }

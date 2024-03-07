@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/contacts/domain/entities/contact_entity.dart';
 
 class ContactModel extends ContactEntity {
@@ -58,4 +59,12 @@ class ContactModel extends ContactEntity {
 
   factory ContactModel.fromJson(String source) =>
       ContactModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  ContactModel.empty()
+      : this(
+          phoneNumber: "empty.phoneNumber",
+          name: "empty.name",
+          id: "empty.id",
+          image: base64Decode(appDefaultPic),
+        );
 }

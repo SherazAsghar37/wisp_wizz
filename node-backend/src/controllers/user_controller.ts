@@ -5,6 +5,8 @@ import HttpStatusCode from "../utils/http_status_codes";
 import { ErrorHandler } from "../exceptions/error_handler";
 import { User } from "../@types/user";
 import { AnyMxRecord } from "dns";
+import { Readable } from "stream";
+import { stdout } from "process";
 
 @singleton()
 export default class UserController {
@@ -31,11 +33,6 @@ export default class UserController {
             },
           })
         );
-        // return res.status(HttpStatusCode.OK).json(
-        //   JSON.stringify({
-        //     user,
-        //   })
-        // );
       } else {
         return res.status(HttpStatusCode.OK).json(
           JSON.stringify({
@@ -95,8 +92,7 @@ export default class UserController {
         contacts
       );
       console.log(users);
-
-      return res.status(HttpStatusCode.OK).json(
+      return await res.status(HttpStatusCode.OK).json(
         JSON.stringify({
           users: users.map((e) => {
             return {
@@ -112,4 +108,36 @@ export default class UserController {
       this._errorHandler.handleError(error, res);
     }
   };
+  // public getContacts = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) => {
+  //   try {
+  //     const { contacts } = req.body;
+
+  //     const users: Readable = await this._userServices.fetchContacts(contacts);
+  //     // res.writeHead(200, { "Content-Type": "application/json" });
+  //     users.on("data", (user) => {
+  //       const e = JSON.parse(user);
+  //       res.send(
+  //         JSON.stringify({
+  //           id: e.id,
+  //           name: e.name,
+  //           phoneNumber: e.phoneNumber,
+  //           image: e.image.toString("base64"),
+  //         })
+  //       );
+  //     });
+  //     users.on("end", () => {
+  //       console.log("end");
+  //       return res.end();
+  //     });
+  //     users.on("error", () => {
+  //       this._errorHandler.handleError("something went wrong", res);
+  //     });
+  //   } catch (error) {
+  //     this._errorHandler.handleError(error, res);
+  //   }
+  // };
 }

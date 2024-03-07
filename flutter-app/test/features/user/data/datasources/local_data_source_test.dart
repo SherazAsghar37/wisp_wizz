@@ -6,7 +6,7 @@ import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.dart';
-import 'package:wisp_wizz/features/user/data/datasources/sqflite_manager_wrapper.dart';
+import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 
 class MSharedPreferences extends Mock implements SharedPreferences {}

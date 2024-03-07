@@ -16,3 +16,10 @@ final class Chat extends ChatState {
   @override
   List<Object> get props => [messages, chat];
 }
+
+// final class ChatFetchedState extends ChatState {
+//   final String chatId;
+//   const Chat({required this.chat, required this.messages});
+//   @override
+//   List<Object> get props => [messages, chat];
+// }

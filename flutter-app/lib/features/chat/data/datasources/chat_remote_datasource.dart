@@ -6,7 +6,11 @@ import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class ChatRemoteDatasource implements IChatRemoteDatasource {
   final io.Socket _socket;
-  const ChatRemoteDatasource({required io.Socket socket}) : _socket = socket;
+
+  const ChatRemoteDatasource({
+    required io.Socket socket,
+  }) : _socket = socket;
+
   @override
   void sendMessage(
       {required String message,

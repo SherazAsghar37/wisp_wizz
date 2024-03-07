@@ -1,7 +1,7 @@
+import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
-import 'package:wisp_wizz/features/app/socket/socket_manager.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/screens/login_screen.dart';
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                await WebSocketManager.socketInit();
+                                await SqfliteManager.dropdb();
                               },
                               child: Text(
                                 appName,

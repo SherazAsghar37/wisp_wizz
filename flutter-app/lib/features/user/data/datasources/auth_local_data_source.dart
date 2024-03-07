@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
-import 'package:wisp_wizz/features/user/data/datasources/sqflite_manager_wrapper.dart';
+import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/datasources/i_local_datasource.dart';
 
@@ -33,7 +33,9 @@ class AuthLocalDatasource implements IAuthLocalDatasource {
       rethrow;
     } on SqfliteDBException catch (e) {
       DebugHelper.printError(e.toString());
-      DebugHelper.printError("Something went wrong");
+      throw const SqfliteDBException(
+        "Something went wrong",
+      );
     } catch (e) {
       DebugHelper.printError(e.toString());
       throw const CacheException(

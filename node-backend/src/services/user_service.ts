@@ -3,6 +3,7 @@ import { ThrowCriticalError } from "../exceptions/critical_error";
 import UserRepository from "../repositories/user_repository";
 import CustomError from "../exceptions/custom_error";
 import { User, BufferImage } from "../@types/user";
+import { Readable } from "stream";
 
 @singleton()
 export default class UserService {
@@ -91,4 +92,19 @@ export default class UserService {
       }
     }
   };
+  // public fetchContacts = async (contacts: Array<string>): Promise<Readable> => {
+  //   try {
+  //     const users: Readable = await this._userRepository.findManyByPhoneNumbers(
+  //       contacts
+  //     );
+  //     return users;
+  //   } catch (error) {
+  //     if (error instanceof CustomError) {
+  //       throw error;
+  //     } else {
+  //       console.log("!!!Criticial Error!!!", error);
+  //       throw new ThrowCriticalError(error);
+  //     }
+  //   }
+  // };
 }

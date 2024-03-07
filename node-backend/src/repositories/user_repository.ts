@@ -1,3 +1,4 @@
+import { Readable } from "stream";
 import { User } from "../@types/user";
 import CustomError from "../exceptions/custom_error";
 import userModel from "../models/user";
@@ -112,7 +113,6 @@ export default class UserRepository {
   ): Promise<Array<User>> => {
     try {
       console.log("Before finding user...");
-
       const newUser = await db.user.findMany({
         where: {
           phoneNumber: {
@@ -138,4 +138,46 @@ export default class UserRepository {
       );
     }
   };
+  // public findManyByPhoneNumbers = async (
+  //   contacts: Array<string>
+  // ): Promise<Readable> => {
+  //   console.log("Before finding user...");
+  //   const batchSize = 10;
+  //   var cursorId: string | undefined = undefined;
+
+  //   return new Readable({
+  //     objectMode: true,
+  //     highWaterMark: batchSize,
+  //     async read() {
+  //       try {
+  //         const items = await db.user.findMany({
+  //           take: batchSize,
+  //           skip: cursorId ? 1 : 0,
+  //           cursor: cursorId ? { id: cursorId } : undefined,
+
+  //           where: {
+  //             phoneNumber: {
+  //               in: contacts,
+  //             },
+  //           },
+  //         });
+  //         if (items.length === 0) {
+  //           this.push(null);
+  //         } else {
+  //           for (const item of items) {
+  //             this.push(JSON.stringify(item));
+  //           }
+  //           cursorId = items[items.length - 1].id;
+  //         }
+  //       } catch (error) {
+  //         this.destroy(error as Error);
+  //         console.log(`${error}`.red);
+  //         throw new CustomError(
+  //           `Error : ${error}`,
+  //           HttpStatusCode.INTERNAL_SERVER_ERROR
+  //         );
+  //       }
+  //     },
+  //   });
+  // };
 }

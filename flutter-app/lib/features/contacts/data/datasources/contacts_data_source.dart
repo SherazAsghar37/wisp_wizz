@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -13,6 +14,8 @@ class ContactDatasource extends IContactDatasource {
   final FlutterContactsWrapper flutterContactsWrapper;
   final Dio dio;
   ContactDatasource({required this.flutterContactsWrapper, required this.dio});
+  // final StreamController<ContactModel> _streamController =
+  //     StreamController<ContactModel>();
 
   @override
   Future<List<ContactModel>> readContacts() async {
@@ -28,6 +31,7 @@ class ContactDatasource extends IContactDatasource {
       }).toList();
       final response =
           await dio.post(getContactsUrl, data: {"contacts": formattedContacts});
+
       if (response.statusCode == 200) {
         final List<MapData> dbContacts =
             List<MapData>.from(jsonDecode(response.data)["users"]);
@@ -42,4 +46,32 @@ class ContactDatasource extends IContactDatasource {
       throw const ContactException(message: "Failed to Load Contacts");
     }
   }
+
+  // @override
+  // Future<Stream<ContactModel>> readContacts() async {
+  //   try {
+  //     StreamController<ContactModel> contactStreamController =
+  //         StreamController<ContactModel>();
+  //     // List<ContactModel> data = [];
+  //     List<Contact> contacts = await flutterContactsWrapper.getContacts();
+  //     final formattedContacts = contacts.expand((contact) {
+  //       return contact.phones.map((phone) {
+  //         return phone.number.startsWith("+92")
+  //             ? phone.number.replaceAll(" ", "")
+  //             : "+92${phone.number.substring(1)}".replaceAll(" ", "");
+  //       });
+  //     }).toList();
+  //     final response =
+  //         await dio.post(getContactsUrl, data: {"contacts": formattedContacts});
+  //     // myStreamController.add(ContactModel.fromJson(response.data));
+
+  //     contactStreamController.close();
+  //     return _streamController.sink
+  //         .addStream(contactStreamController.stream)
+  //         .asStream() as Stream<ContactModel>;
+  //   } catch (e) {
+  //     DebugHelper.printError("Contacts Exception : $e");
+  //     throw const ContactException(message: "Failed to Load Contacts");
+  //   }
+  // }
 }

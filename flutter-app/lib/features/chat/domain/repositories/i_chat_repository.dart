@@ -9,6 +9,8 @@ abstract class IChatRepository {
       required String recipientId,
       required String chatId,
       String? repliedToId});
+  ResultFuture<String> getSingleChat(
+      {required String recipientId, required String senderId});
   ResultStreamList<ChatModel> getMyChats(String userId);
   ResultStreamList<MessageModel> getMessages(String chatId);
   FutureVoid deleteMessage(String messageId);

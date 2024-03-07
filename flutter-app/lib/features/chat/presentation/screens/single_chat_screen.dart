@@ -10,7 +10,7 @@ class SingleChatScreen extends StatefulWidget {
 }
 
 MessageModel message = MessageModel.empty();
-const String senderId = "abc";
+const String senderId = "ca2de2e9-fff8-443d-8862-076bfa294c36";
 const String recipientId = "xyz";
 
 class _SingleChatScreenState extends State<SingleChatScreen> {

@@ -40,6 +40,8 @@ class AuthRepository implements IAuthRepository {
       //   return Left(ApiFailure(message: e.toString(), statusCode: 500));
     } on CacheException catch (e) {
       return Left(CacheFailure.fromException(e));
+    } on SqfliteDBException catch (e) {
+      return Left(SqfliteDBFailure.fromException(e));
     }
   }
 
@@ -140,6 +142,8 @@ class AuthRepository implements IAuthRepository {
       return Right(user);
     } on WebSocketException catch (e) {
       return Left(WebSocketFailure.fromException(e));
+    } on SqfliteDBException catch (e) {
+      return Left(SqfliteDBFailure.fromException(e));
     } on CacheException catch (e) {
       return Left(CacheFailure.fromException(e));
     }
