@@ -1,3 +1,4 @@
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class SingleChatCard extends StatelessWidget {
@@ -74,7 +75,7 @@ class SingleChatCard extends StatelessWidget {
                           child: Text(
                               user.status
                                   ? "Online"
-                                  : user.lastSeen.toString().substring(2, 10),
+                                  : user.lastSeen.timeFormat(),
                               maxLines: 1,
                               softWrap: false,
                               style: theme.textTheme.bodySmall!.copyWith(

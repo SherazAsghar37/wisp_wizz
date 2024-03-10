@@ -1,5 +1,8 @@
 import 'package:wisp_wizz/features/app/shared/widgets/contact_card.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
 import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class ContactsScreen extends StatefulWidget {
@@ -69,19 +72,63 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   ),
                   Expanded(
                       child: state is ContactsFetched
-                          ? ListView.builder(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: Dimensions.height5),
-                              itemCount: state.contacts.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: Dimensions.height2),
-                                  child: ContactCard(
-                                    contact: state.contacts[index],
-                                  ),
-                                );
+                          ? RefreshIndicator(
+                              onRefresh: () async {
+                                context
+                                    .read<ContactBloc>()
+                                    .add(const ContactFetchEvent());
                               },
+                              child: ListView.builder(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: Dimensions.height5),
+                                itemCount: state.contacts.length,
+                                itemBuilder: (context, index) {
+                                  return BlocConsumer<ChatBloc, ChatState>(
+                                    builder: (context, chatState) {
+                                      return chatState is ChatFetching
+                                          ? ContactCard(
+                                              contact: state.contacts[index],
+                                              isLoading:
+                                                  index == chatState.index,
+                                            )
+                                          : GestureDetector(
+                                              onTap: () {
+                                                AuthloggedIn senderState =
+                                                    context
+                                                        .read<AuthBloc>()
+                                                        .state as AuthloggedIn;
+                                                context.read<ChatBloc>().add(
+                                                    ChatFetchEvent(
+                                                        recipientId: state
+                                                            .contacts[index].id,
+                                                        senderId:
+                                                            senderState.user.id,
+                                                        index: index));
+                                              },
+                                              child: ContactCard(
+                                                contact: state.contacts[index],
+                                                isLoading: false,
+                                              ),
+                                            );
+                                    },
+                                    listener: (context, chatState) {
+                                      if (chatState is ChatFetched &&
+                                          index == 0) {
+                                        Navigator.pushNamed(
+                                            context, SingleChatScreen.routeName,
+                                            arguments: chatState.chat);
+                                      } else if (chatState is ChatFetchFailed) {
+                                        BotToast.showText(
+                                            text: chatState.message,
+                                            contentColor:
+                                                theme.primaryColorLight,
+                                            textStyle:
+                                                theme.textTheme.bodyMedium!);
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
                             )
                           : Center(
                               child: CircularProgressIndicator(

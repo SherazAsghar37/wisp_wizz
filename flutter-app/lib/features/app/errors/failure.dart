@@ -67,3 +67,31 @@ class ContactFailure extends Failure {
   @override
   List<Object?> get props => [message];
 }
+
+class WebSocketFailure extends Failure {
+  const WebSocketFailure({
+    required super.message,
+  });
+
+  WebSocketFailure.fromException(WebSocketException e)
+      : this(
+          message: e.message,
+        );
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class SqfliteDBFailure extends Failure {
+  const SqfliteDBFailure({
+    required super.message,
+  });
+
+  SqfliteDBFailure.fromException(SqfliteDBException e)
+      : this(
+          message: e.message,
+        );
+
+  @override
+  List<Object?> get props => [message];
+}

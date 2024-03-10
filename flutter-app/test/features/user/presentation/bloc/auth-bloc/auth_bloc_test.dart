@@ -9,6 +9,7 @@ import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/init_application_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/logout_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
@@ -35,6 +36,8 @@ class MUpdateUser extends Mock implements UpdateUser {}
 
 class MCacheUser extends Mock implements CacheUser {}
 
+class MInitApplication extends Mock implements InitApplication {}
+
 void main() {
   late SendCode sendCode;
   late VerifyOTP verifyOTP;
@@ -45,6 +48,7 @@ void main() {
   late LogoutUser logoutUser;
   late UpdateUser updateUser;
   late CacheUser cacheUser;
+  late InitApplication initApplication;
 
   late PhoneAuthCredential phoneAuthCredential;
   const String phoneNumber = "+92123456890";
@@ -73,6 +77,9 @@ void main() {
   const CacheFailure cacheFailure = CacheFailure(
     message: "whatever.message",
   );
+  const WebSocketFailure webSocketFailure = WebSocketFailure(
+    message: "whatever.message",
+  );
 
   final updateUserParam = UpdateUserParam(
       name: "whatever.name",
@@ -90,6 +97,7 @@ void main() {
     logoutUser = MLogoutUser();
     updateUser = MUpdateUser();
     cacheUser = MCacheUser();
+    initApplication = MInitApplication();
 
     authBloc = AuthBloc(
         loginUser: loginUser,
@@ -99,7 +107,8 @@ void main() {
         getCachedUser: getCachedUser,
         logoutUser: logoutUser,
         updateUser: updateUser,
-        cacheUser: cacheUser);
+        cacheUser: cacheUser,
+        initApplication: initApplication);
     phoneAuthCredential = MPhoneAuthCradential();
 
     registerFallbackValue(customPhoneParam);
@@ -532,6 +541,74 @@ void main() {
                 UpdateUserParam(id: id, name: name, image: image))).called(1);
             verify(() => cacheUser(userModel)).called(1);
             verifyNoMoreInteractions(updateUser);
+          });
+    });
+
+    group("[Init Application Bloc] - ", () {
+      blocTest<AuthBloc, AuthState>(
+          'emits <AuthState>[const AuthInitializingApplication(),AuthloggedIn(user: userModel)], when initApplication is added.',
+          build: () {
+            when(() => initApplication())
+                .thenAnswer((invocation) async => Right(userModel));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const InitApplicationEvent()),
+          expect: () => <AuthState>[
+                const AuthInitializingApplication(),
+                AuthloggedIn(user: userModel)
+              ],
+          verify: (bloc) {
+            verify(() => initApplication()).called(1);
+            verifyNoMoreInteractions(initApplication);
+          });
+      blocTest<AuthBloc, AuthState>(
+          'emits <AuthState>[const AuthInitializingApplication(),const AuthLoggedOut()], when initApplication is added.',
+          build: () {
+            when(() => initApplication())
+                .thenAnswer((invocation) async => const Right(null));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const InitApplicationEvent()),
+          expect: () => <AuthState>[
+                const AuthInitializingApplication(),
+                const AuthLoggedOut()
+              ],
+          verify: (bloc) {
+            verify(() => initApplication()).called(1);
+            verifyNoMoreInteractions(initApplication);
+          });
+
+      blocTest<AuthBloc, AuthState>(
+          'emits <AuthState>[const AuthInitializingApplication(),AuthInitializationFailed(cacheFailure.message)], when GetCachedUserEvent is added.',
+          build: () {
+            when(() => initApplication())
+                .thenAnswer((invocation) async => const Left(cacheFailure));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const InitApplicationEvent()),
+          expect: () => <AuthState>[
+                const AuthInitializingApplication(),
+                AuthInitializationFailed(cacheFailure.message)
+              ],
+          verify: (bloc) {
+            verify(() => initApplication()).called(1);
+            verifyNoMoreInteractions(initApplication);
+          });
+      blocTest<AuthBloc, AuthState>(
+          'emits <AuthState>[const AuthInitializingApplication(),AuthInitializationFailed(webSocketFailure.message)], when GetCachedUserEvent is added.',
+          build: () {
+            when(() => initApplication())
+                .thenAnswer((invocation) async => const Left(webSocketFailure));
+            return authBloc;
+          },
+          act: (bloc) => bloc.add(const InitApplicationEvent()),
+          expect: () => <AuthState>[
+                const AuthInitializingApplication(),
+                AuthInitializationFailed(webSocketFailure.message)
+              ],
+          verify: (bloc) {
+            verify(() => initApplication()).called(1);
+            verifyNoMoreInteractions(initApplication);
           });
     });
   });

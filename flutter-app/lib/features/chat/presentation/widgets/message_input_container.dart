@@ -1,11 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/switchable_icons.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/chat/presentation/widgets/attachment_button.dart';
+// import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart'
+//     as auth;
 
 class MessageInputContainer extends StatefulWidget {
+  final ChatModel chat;
   const MessageInputContainer({
     Key? key,
+    required this.chat,
   }) : super(key: key);
 
   @override
@@ -162,7 +168,24 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                       : Align(
                           alignment: FractionalOffset(micAlignment, 0),
                           child: IconButton(
-                              onPressed: () {}, icon: const Icon(sendIcon)),
+                              onPressed: () {
+                                // final authbloc = context
+                                //     .read<auth.AuthBloc>()
+                                //     .state as auth.AuthloggedIn;
+                                final chat = widget.chat;
+                                context
+                                    .read<MessageBloc>()
+                                    .add(SendMessageEvent(
+                                      senderId: chat.senderId,
+                                      recipientId: chat.recipient.id,
+                                      message: messageController.text,
+                                      chatId: chat.chatId,
+                                    ));
+                                setState(() {
+                                  messageController.clear();
+                                });
+                              },
+                              icon: const Icon(sendIcon)),
                         )
                 ],
               ),

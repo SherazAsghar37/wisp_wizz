@@ -1,17 +1,22 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
+import 'package:wisp_wizz/features/user/data/datasources/socket_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/datasources/i_auth_remote_datasource.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class AuthRemoteDatasource implements IAuthRemoteDatasource {
   final Dio _dio;
-  AuthRemoteDatasource({required Dio dio}) : _dio = dio;
+  final WebSocketManagerWrapper _webSocketManagerWrapper;
+  AuthRemoteDatasource({
+    required Dio dio,
+    required WebSocketManagerWrapper webSocketManagerWrapper,
+  })  : _dio = dio,
+        _webSocketManagerWrapper = webSocketManagerWrapper;
 
   @override
   Future<UserModel> loginUser(
@@ -35,7 +40,6 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
-        log(userData.toString());
         return UserModel.fromMap(userData["user"]);
       } else {
         throw ApiException(
@@ -70,6 +74,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
         url,
         data: data,
       );
+      DebugHelper.printError(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
         if (userData["user"] == null) {
@@ -111,7 +116,6 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         MapData userData = MapData.from(json.decode(response.data));
-        // log(userData["user"].toString());
         return UserModel.fromMap(userData["user"]);
       } else {
         throw ApiException(
@@ -129,6 +133,16 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       DebugHelper.printError("Exception: $e");
       throw const ApiException(
           message: "Something went wrong", statusCode: 500);
+    }
+  }
+
+  @override
+  Future<bool> connectSocket() {
+    try {
+      return _webSocketManagerWrapper.initSocket();
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const WebSocketException("unable to connect to the server");
     }
   }
 }

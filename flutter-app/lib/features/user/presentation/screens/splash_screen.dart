@@ -1,4 +1,3 @@
-import 'package:wisp_wizz/controller/main_controller.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
@@ -12,7 +11,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    context.read<AuthBloc>().add(const GetCachedUserEvent());
+    context.read<AuthBloc>().add(const InitApplicationEvent());
     super.initState();
   }
 

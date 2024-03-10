@@ -14,3 +14,8 @@ export 'dart:async';
 export 'package:bot_toast/bot_toast.dart';
 export 'package:wisp_wizz/features/app/shared/widgets/input_field.dart';
 export 'package:wisp_wizz/features/app/theme/colors.dart';
+export 'package:wisp_wizz/features/chat/data/models/message_model.dart';
+export 'package:wisp_wizz/features/chat/presentation/widgets/message_input_container.dart';
+export 'package:wisp_wizz/features/chat/presentation/widgets/received_message_card.dart';
+export 'package:wisp_wizz/features/chat/presentation/widgets/sent_message_card.dart';
+export 'package:wisp_wizz/features/chat/data/models/chat_model.dart';

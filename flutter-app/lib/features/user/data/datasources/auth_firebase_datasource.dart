@@ -7,7 +7,7 @@ import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/user/domain/datasources/i_auth_firebase_datasource.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
-part './phone_auth_provider.dart';
+part 'phone_auth_provider_wrapper.dart';
 
 class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
   final FirebaseAuth _auth;

@@ -55,7 +55,7 @@ class ChatsScreen extends StatelessWidget {
                       notifications: "1000000000000",
                       onPressed: () {
                         Navigator.pushNamed(context, SingleChatScreen.routeName,
-                            arguments: user);
+                            arguments: ChatModel.empty());
                       },
                     ),
                   );
@@ -68,7 +68,11 @@ class ChatsScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           if (await FlutterContacts.requestPermission()) {
-            context.read<ContactBloc>().add(const ContactFetchEvent());
+            final contactsBloc = context.read<ContactBloc>();
+            if (contactsBloc.state is! ContactsFetched) {
+              context.read<ContactBloc>().add(const ContactFetchEvent());
+            }
+
             Navigator.pushNamed(context, ContactsScreen.routeName);
           }
         },

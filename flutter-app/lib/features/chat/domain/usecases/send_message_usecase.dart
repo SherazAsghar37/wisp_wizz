@@ -1,27 +1,39 @@
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/usecases/usecase.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
-import 'package:wisp_wizz/features/chat/domain/entities/chat_entity.dart';
-import 'package:wisp_wizz/features/chat/domain/entities/message_entity.dart';
 import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
 
-class SendMessageUseCase extends UsecaseWithParam<void, CustomSendMessgeParam> {
+class SendMessageUseCase
+    extends UsecaseWithParamSync<void, CustomSendMessgeParam> {
   final IChatRepository repository;
 
   SendMessageUseCase({required this.repository});
 
   @override
-  FutureVoid call(CustomSendMessgeParam param) async {
-    return await repository.sendMessage(param.chatEntity, param.messageEntity);
+  ResultVoid call(CustomSendMessgeParam param) {
+    return repository.sendMessage(
+        chatId: param.chatId,
+        message: param.message,
+        recipientId: param.recipientId,
+        senderId: param.senderId,
+        repliedToId: param.repliedToId);
   }
 }
 
 class CustomSendMessgeParam extends Equatable {
-  final ChatEntity chatEntity;
-  final MessageEntity messageEntity;
+  final String message;
+  final String senderId;
+  final String recipientId;
+  final String chatId;
+  final String? repliedToId;
   const CustomSendMessgeParam(
-      {required this.chatEntity, required this.messageEntity});
+      {required this.message,
+      required this.senderId,
+      required this.chatId,
+      required this.recipientId,
+      this.repliedToId});
 
   @override
-  List<Object?> get props => [chatEntity, messageEntity];
+  List<Object?> get props =>
+      [message, senderId, recipientId, chatId, repliedToId];
 }

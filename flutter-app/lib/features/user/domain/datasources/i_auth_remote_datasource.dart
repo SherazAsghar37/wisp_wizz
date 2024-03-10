@@ -16,4 +16,5 @@ abstract class IAuthRemoteDatasource {
   });
   Future<UserModel> updateUser(
       {required String? name, required String id, Uint8List? image});
+  Future<bool> connectSocket();
 }

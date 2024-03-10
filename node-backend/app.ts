@@ -12,15 +12,19 @@ colors;
 dotenv.config();
 
 const port = Number.parseInt(process.env.PORT as string) || 8000;
-const ip = Number.parseInt(process.env.IP as string);
+const socketPort = Number.parseInt(process.env.SOCKET_PORT as string) || 8001;
+const ip = process.env.IP as string;
 
 const app = appConfig();
 
 const server = http.createServer(app);
 socketIoConfig(server);
 
-server.listen(port, ip, () => {
-  console.log(`Server is listening on port ${port}`.yellow.bold);
+app.listen(port, ip, () => {
+  console.log(`Server is listening on port ${ip}:${port}`.yellow.bold);
+});
+server.listen(socketPort, ip, () => {
+  console.log(`Server is listening on port ${ip}:${socketPort}`.yellow.bold);
 });
 
 // Register routes

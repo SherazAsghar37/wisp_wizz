@@ -7,6 +7,7 @@ import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_remote_data_source.dart';
+import 'package:wisp_wizz/features/user/data/datasources/socket_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 
@@ -18,10 +19,14 @@ class MDio extends Mock implements Dio {
   MDio({required this.options});
 }
 
+class MWebSocketManagerWrapper extends Mock
+    implements WebSocketManagerWrapper {}
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   late AuthRemoteDatasource remoteDatasource;
   late Dio dio;
+  late WebSocketManagerWrapper webSocketManagerWrapper;
   // MultipartFile? multipartFile;
   final params = CustomUserParam(
       name: "whatever.name",
@@ -30,7 +35,9 @@ void main() {
 
   setUp(() {
     dio = MDio(options: BaseOptions(baseUrl: baseUrl));
-    remoteDatasource = AuthRemoteDatasource(dio: dio);
+    webSocketManagerWrapper = MWebSocketManagerWrapper();
+    remoteDatasource = AuthRemoteDatasource(
+        dio: dio, webSocketManagerWrapper: webSocketManagerWrapper);
     // multipartFile = params.image != null
     //     ? await MultipartFile.fromFile(params.image!.path,
     //         filename: imageFileName)
@@ -304,6 +311,36 @@ void main() {
               "id": userModel.id,
             })).called(1);
         verifyNoMoreInteractions(dio);
+      });
+    });
+    group("[Connect web socket ] - ", () {
+      test("It should call initSocket and return true by calling only once",
+          () async {
+        //Arrange
+        when(() => webSocketManagerWrapper.initSocket())
+            .thenAnswer((invocation) async => true);
+        //Act
+        final response = await remoteDatasource.connectSocket();
+        //Assert
+        expect(response, equals(true));
+        verify(() => webSocketManagerWrapper.initSocket()).called(1);
+        verifyNoMoreInteractions(webSocketManagerWrapper);
+      });
+      test(
+          "It should call remoteDataSource.loginUser and throw api exception when dio Exception occurs calling only once",
+          () {
+        // Arrange
+        when(() => webSocketManagerWrapper.initSocket())
+            .thenThrow(const WebSocketException(errorMessage));
+
+        // Act & Assert
+        expect(
+            () => remoteDatasource.connectSocket(),
+            throwsA(
+                const WebSocketException("unable to connect to the server")));
+
+        verify(() => webSocketManagerWrapper.initSocket()).called(1);
+        verifyNoMoreInteractions(webSocketManagerWrapper);
       });
     });
   });

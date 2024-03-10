@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
 
 class ContactEntity extends Equatable {
-  final List<String>? phoneNumber;
+  final String? phoneNumber;
   final String? name;
   final String? _id;
   final Uint8List? image;

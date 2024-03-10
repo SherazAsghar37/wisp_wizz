@@ -1,4 +1,4 @@
-import 'package:wisp_wizz/controller/main_controller.dart';
+import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final double radius = Dimensions.height9 + Dimensions.width9;
-    DebugHelper.printWarning("Building");
+
     return Scaffold(
         backgroundColor: theme.colorScheme.background,
         body: SafeArea(
@@ -84,9 +84,8 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                await context
-                                    .read<MainController>()
-                                    .connectSocket();
+                                DebugHelper.printWarning("Dropping database");
+                                await SqfliteManager.dropdb();
                               },
                               child: Text(
                                 appName,

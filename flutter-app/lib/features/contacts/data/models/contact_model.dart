@@ -3,13 +3,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/contacts/domain/entities/contact_entity.dart';
 
 class ContactModel extends ContactEntity {
   // ignore: unused_field
   final String _id;
   @override
-  final List<String> phoneNumber;
+  final String phoneNumber;
   @override
   final String name;
   @override
@@ -21,9 +22,10 @@ class ContactModel extends ContactEntity {
       required this.name})
       : _id = id,
         super(id: id, phoneNumber: phoneNumber, image: image, name: name);
+  String get id => _id;
 
   ContactModel copyWith({
-    List<String>? phoneNumber,
+    String? phoneNumber,
     String? name,
     String? id,
     Uint8List? image,
@@ -57,4 +59,12 @@ class ContactModel extends ContactEntity {
 
   factory ContactModel.fromJson(String source) =>
       ContactModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  ContactModel.empty()
+      : this(
+          phoneNumber: "empty.phoneNumber",
+          name: "empty.name",
+          id: "empty.id",
+          image: base64Decode(appDefaultPic),
+        );
 }
