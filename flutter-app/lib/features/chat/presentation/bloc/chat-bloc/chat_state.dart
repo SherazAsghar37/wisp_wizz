@@ -9,17 +9,26 @@ sealed class ChatState extends Equatable {
 
 final class ChatInitial extends ChatState {}
 
-final class Chat extends ChatState {
-  final List<MessageModel> messages;
-  final ChatModel chat;
-  const Chat({required this.chat, required this.messages});
+final class ChatFetching extends ChatState {
+  final int index;
+  const ChatFetching({required this.index});
+
   @override
-  List<Object> get props => [messages, chat];
+  List<Object> get props => [index];
 }
 
-// final class ChatFetchedState extends ChatState {
-//   final String chatId;
-//   const Chat({required this.chat, required this.messages});
-//   @override
-//   List<Object> get props => [messages, chat];
-// }
+final class ChatFetched extends ChatState {
+  final ChatModel chat;
+  const ChatFetched({
+    required this.chat,
+  });
+  @override
+  List<Object> get props => [chat];
+}
+
+final class ChatFetchFailed extends ChatState {
+  final String message;
+  const ChatFetchFailed({required this.message});
+  @override
+  List<Object> get props => [message];
+}

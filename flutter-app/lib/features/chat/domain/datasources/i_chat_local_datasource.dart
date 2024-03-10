@@ -1,3 +1,5 @@
+import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
+
 abstract class IChatLocalDatasource {
   void saveMessage(
       {required String message,
@@ -5,6 +7,6 @@ abstract class IChatLocalDatasource {
       required String recipientId,
       required String chatId,
       String? repliedToId});
-  Future<String> getChat(
+  Future<ChatModel> getChat(
       {required String recipientId, required String senderId});
 }

@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:isolate';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
+import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/contacts/data/models/contact_model.dart';
 
 class SqfliteManager {
@@ -12,16 +15,16 @@ class SqfliteManager {
   static Future<void> createTables(Database db) async {
     try {
       await db.execute("""create TABLE User(
-                      id char(36) primary key default (UUID()),
+                      id char(36) primary key not null,
                       name varchar(100) not null,
                       phoneNumber varchar(15) not null check (LENGTH(phoneNumber)>6) ,
                       image LONGBLOB,
                       status boolean not null default TRUE,
-                      lastseen datetime not null  default CURRENT_TIMESTAMP,
+                      lastSeen datetime not null  default CURRENT_TIMESTAMP,
                       createdAt datetime not null  default CURRENT_TIMESTAMP,
                       updatedAt datetime not null  default CURRENT_TIMESTAMP)""");
       await db.execute("""CREATE TABLE Chat (
-                      id VARCHAR(36) PRIMARY KEY default (UUID()),
+                      chatId VARCHAR(36) PRIMARY KEY not null,
                       recipientId VARCHAR(36) DEFAULT (UUID()),
                       senderId VARCHAR(36) DEFAULT (UUID()),
                       unreadMessages int not null default 0,
@@ -30,7 +33,7 @@ class SqfliteManager {
                       CONSTRAINT FK_Chat_User FOREIGN KEY (recipientId) REFERENCES User(id),
                       CONSTRAINT FK_Chat_Sender FOREIGN KEY (senderId) REFERENCES User(id))""");
       await db.execute("""CREATE TABLE Message (
-                      id VARCHAR(36) PRIMARY KEY default (UUID()),
+                      messageId VARCHAR(36) PRIMARY KEY not null,
                       chatId VARCHAR(36) DEFAULT (UUID()),
                       message LONGTEXT not null,
                       messageStatus TEXT CHECK(messageStatus IN ('Read', 'Sent', 'Unread', 'Seen')) DEFAULT 'Sent',
@@ -103,14 +106,39 @@ class SqfliteManager {
     } catch (e) {}
   }
 
-  static Future<String> fetchChat(String recipientId, String senderId) async {
+  static Future<MapData> fetchChat(String recipientId, String senderId) async {
     try {
-      final result = await db.query('Chat',
-          where: 'recipientId = ? and senderId = ?',
-          whereArgs: [recipientId, senderId],
-          columns: ['id']);
-      DebugHelper.printWarning(result.toString());
-      return "asd";
+      List<Map<String, dynamic>> chatAndSenderData =
+          await db.rawQuery("""SELECT * FROM Chat as c 
+          INNER JOIN User as u ON c.recipientId = u.id 
+          WHERE c.senderId ='$senderId' and c.recipientId = '$recipientId'""");
+      List<Map<String, dynamic>> messages = chatAndSenderData.isNotEmpty
+          ? await db.rawQuery("""SELECT * FROM Message 
+          WHERE chatId ='${chatAndSenderData[0]["chatId"]}'""")
+          : [];
+
+      if (chatAndSenderData.isEmpty) {
+        var uuid = const Uuid();
+        await db.insert(
+            "Chat",
+            {
+              "recipientId": recipientId,
+              "senderId": senderId,
+              "chatId": uuid.v6()
+            },
+            conflictAlgorithm: ConflictAlgorithm.abort);
+        chatAndSenderData = await db.rawQuery("""SELECT * FROM Chat as c 
+          INNER JOIN User as u ON c.recipientId = u.id 
+          WHERE c.senderId ='$senderId' and c.recipientId = '$recipientId'""");
+        messages = await db.rawQuery("""SELECT * FROM Message 
+          WHERE chatId ='${chatAndSenderData[0]["chatId"]}'""");
+      }
+      final Map<String, dynamic> data = {
+        "messages": messages,
+        ...chatAndSenderData[0],
+      };
+      DebugHelper.printWarning(data.toString());
+      return data;
     } catch (e) {
       throw SqfliteDBException(e.toString());
     }
@@ -141,7 +169,7 @@ class SqfliteManager {
               "id": item.id,
               "name": item.name,
               "phoneNumber": item.phoneNumber,
-              "image": item.image
+              "image": base64Encode(item.image)
             },
             conflictAlgorithm: ConflictAlgorithm.replace);
       }

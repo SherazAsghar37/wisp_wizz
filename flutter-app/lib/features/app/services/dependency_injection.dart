@@ -8,7 +8,10 @@ import 'package:wisp_wizz/features/chat/data/datasources/chat_local_datasource.d
 import 'package:wisp_wizz/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:wisp_wizz/features/chat/data/repositories/chat_repository.dart';
 import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/get_single_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_data_source.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_local_dataource.dart';
@@ -52,7 +55,7 @@ Future<void> init() async {
   sl.registerLazySingleton<SqfliteManagerWrapper>(
       () => const SqfliteManagerWrapper());
 
-  //state management
+//-----------Auth Bloc
   sl
     ..registerFactory<AuthBloc>(() => AuthBloc(
         loginUser: sl(),
@@ -99,6 +102,7 @@ Future<void> init() async {
     ..registerLazySingleton<PhoneAuthProviderWrapper>(
         () => PhoneAuthProviderWrapper());
 
+//-----------Contact Bloc
   sl
     ..registerFactory(() => ContactBloc(fetchContacts: sl()))
     //usecases
@@ -118,7 +122,7 @@ Future<void> init() async {
     //external dependency
     ..registerLazySingleton<FlutterContactsWrapper>(
         () => FlutterContactsWrapper());
-
+//-----------Message Bloc
   sl
     ..registerFactory(() => MessageBloc(sendMessageUseCase: sl()))
     //usecases
@@ -135,4 +139,14 @@ Future<void> init() async {
         ))
     //external dependency
     ..registerLazySingleton<IO.Socket>(() => WebSocketManager.socket);
+
+//-----------ChatBloc Bloc
+  sl
+    ..registerFactory(
+        () => ChatBloc(getChatUsecase: sl(), getMyChatUseCase: sl()))
+    //usecases
+    ..registerLazySingleton<GetChatUsecase>(
+        () => GetChatUsecase(repository: sl()))
+    ..registerLazySingleton<GetMyChatsUseCase>(
+        () => GetMyChatsUseCase(repository: sl()));
 }

@@ -3,12 +3,13 @@
 
 import 'dart:convert';
 
+import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/entities/chat_entity.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 
 class ChatModel extends ChatEntity {
   @override
-  final UserModel sender;
+  final String senderId;
   @override
   final String? recentTextMessage;
   @override
@@ -19,43 +20,72 @@ class ChatModel extends ChatEntity {
   final String chatId;
   @override
   final UserModel recipient;
+  @override
+  final List<MessageModel> messages;
 
   const ChatModel(
-      {required this.sender,
+      {required this.senderId,
       this.recentTextMessage,
       this.createdAt,
       this.totalUnReadMessages,
       required this.chatId,
-      required this.recipient})
+      required this.recipient,
+      required this.messages})
       : super(
             recentTextMessage: recentTextMessage,
             createdAt: createdAt,
             totalUnReadMessages: totalUnReadMessages,
             chatId: chatId,
-            recipient: recipient);
+            recipient: recipient,
+            messages: messages,
+            senderId: senderId);
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'sender': sender.toMap(),
+      'senderId': senderId,
       'recentTextMessage': recentTextMessage,
       'createdAt': createdAt?.millisecondsSinceEpoch,
       'totalUnReadMessages': totalUnReadMessages,
       'id': chatId,
-      "recipient": recipient.toMap()
+      "recipient": recipient.toString(),
+      "messages": messages.map((e) => e.toMap())
     };
   }
 
   ChatModel.fromMap(Map<String, dynamic> map)
       : this(
-          sender: UserModel.fromMap(map['sender']),
-          recentTextMessage: map['recentTextMessage'],
-          createdAt:
-              DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
-          totalUnReadMessages: map['totalUnReadMessages'],
-          chatId: map['id'],
-          recipient: UserModel.fromMap(map['recipient']),
-        );
+            senderId: map['senderId'],
+            recentTextMessage: "map['recentTextMessage']",
+            createdAt:
+                DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
+            totalUnReadMessages: map['unreadMessages'],
+            chatId: map['id'],
+            recipient: UserModel.fromMap(map['sender']),
+            messages: map['messages'].isNotEmpty
+                ? List<MessageModel>.from(map['messages']
+                    .map((e) => MessageModel.fromMap(e))
+                    .toList())
+                : []);
 
+  ChatModel.fromDBData(Map<String, dynamic> map)
+      : this(
+            senderId: map['senderId'],
+            recentTextMessage: "map['recentTextMessage']",
+            createdAt: DateTime.parse(map['createdAt']),
+            totalUnReadMessages: map['unreadMessages'],
+            chatId: map['id'],
+            recipient: UserModel(
+                name: map["name"],
+                phoneNumber: map["phoneNumber"],
+                id: map["id"],
+                status: map["status"] == 1 ? true : false,
+                lastSeen: DateTime.parse(map["lastSeen"]),
+                image: base64Decode(map["image"])),
+            messages: map['messages'].isNotEmpty
+                ? List<MessageModel>.from(map['messages']
+                    .map((e) => MessageModel.fromMap(e))
+                    .toList())
+                : []);
   String toJson() => json.encode(toMap());
 
   factory ChatModel.fromJson(String source) =>
@@ -63,34 +93,29 @@ class ChatModel extends ChatEntity {
 
   ChatModel.empty()
       : this(
-          sender: UserModel.empty(),
-          recentTextMessage: "hi testing message",
-          createdAt: DateTime.now(),
-          totalUnReadMessages: 4,
-          chatId: "12ab",
-          recipient: UserModel.empty(),
-        );
+            senderId: "asfasf",
+            recentTextMessage: "hi testing message",
+            createdAt: DateTime.now(),
+            totalUnReadMessages: 4,
+            chatId: "12ab",
+            recipient: UserModel.empty(),
+            messages: [MessageModel.empty()]);
 
-  ChatModel copyWith({
-    String? senderId,
-    String? recipientId,
-    String? senderName,
-    String? recipientName,
-    String? recentTextMessage,
-    DateTime? createdAt,
-    String? senderProfile,
-    String? recipientProfile,
-    int? totalUnReadMessages,
-    String? chatId,
-    UserModel? sender,
-  }) {
+  ChatModel copyWith(
+      {UserModel? recipient,
+      String? recentTextMessage,
+      DateTime? createdAt,
+      int? totalUnReadMessages,
+      String? chatId,
+      String? senderId,
+      List<MessageModel>? messages}) {
     return ChatModel(
-      sender: this.sender,
-      recentTextMessage: recentTextMessage ?? this.recentTextMessage,
-      createdAt: createdAt ?? this.createdAt,
-      totalUnReadMessages: totalUnReadMessages ?? this.totalUnReadMessages,
-      chatId: chatId ?? this.chatId,
-      recipient: recipient,
-    );
+        senderId: senderId ?? this.senderId,
+        recentTextMessage: recentTextMessage ?? this.recentTextMessage,
+        createdAt: createdAt ?? this.createdAt,
+        totalUnReadMessages: totalUnReadMessages ?? this.totalUnReadMessages,
+        chatId: chatId ?? this.chatId,
+        recipient: recipient ?? this.recipient,
+        messages: messages ?? this.messages);
   }
 }

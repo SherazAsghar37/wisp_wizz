@@ -90,14 +90,14 @@ class ChatRepository implements IChatRepository {
   }
 
   @override
-  ResultFuture<String> getSingleChat(
+  ResultFuture<ChatModel> getSingleChat(
       {required String recipientId, required String senderId}) async {
     try {
       final response = await _localDatasource.getChat(
           recipientId: recipientId, senderId: senderId);
       return Right(response);
-    } on ApiException catch (e) {
-      return Left(ApiFailure.fromException(e));
+    } on SqfliteDBException catch (e) {
+      return Left(SqfliteDBFailure.fromException(e));
     }
   }
 }

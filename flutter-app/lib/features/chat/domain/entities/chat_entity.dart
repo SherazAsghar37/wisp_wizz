@@ -2,29 +2,33 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/shared/entities/user_entity.dart';
+import 'package:wisp_wizz/features/chat/domain/entities/message_entity.dart';
 
 class ChatEntity extends Equatable {
-  final UserEntity? sender;
+  final String? senderId;
   final String? recentTextMessage;
   final DateTime? createdAt;
   final int? totalUnReadMessages;
   final String? chatId;
   final UserEntity? recipient;
+  final List<MessageEntity>? messages;
   const ChatEntity(
-      {this.sender,
+      {this.senderId,
       this.recentTextMessage,
       this.createdAt,
       this.totalUnReadMessages,
       this.chatId,
-      this.recipient});
+      this.recipient,
+      this.messages});
 
   @override
   List<Object?> get props => [
-        sender,
+        senderId,
         recentTextMessage,
         createdAt,
         totalUnReadMessages,
         chatId,
-        recipient
+        recipient,
+        messages
       ];
 }

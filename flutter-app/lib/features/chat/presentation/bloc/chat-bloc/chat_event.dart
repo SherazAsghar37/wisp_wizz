@@ -7,10 +7,12 @@ sealed class ChatEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class ChatFetch extends ChatEvent {
+class ChatFetchEvent extends ChatEvent {
   final String recipientId;
   final String senderId;
-  const ChatFetch({required this.recipientId, required this.senderId});
+  final int index;
+  const ChatFetchEvent(
+      {required this.recipientId, required this.senderId, required this.index});
   @override
-  List<Object> get props => [recipientId, senderId];
+  List<Object> get props => [recipientId, senderId, index];
 }

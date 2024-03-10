@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
+import 'package:wisp_wizz/features/app/utils/typedef.dart';
 import 'package:wisp_wizz/features/contacts/data/models/contact_model.dart';
 
 class SqfliteManagerWrapper {
@@ -32,7 +33,7 @@ class SqfliteManagerWrapper {
     return SqfliteManager.insertMultipleContacts(data);
   }
 
-  Future<String> fetchChat(String recipientId, String senderId) async {
+  Future<MapData> fetchChat(String recipientId, String senderId) async {
     return SqfliteManager.fetchChat(recipientId, senderId);
   }
 }

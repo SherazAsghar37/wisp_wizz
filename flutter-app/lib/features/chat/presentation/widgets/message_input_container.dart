@@ -176,10 +176,10 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                                 context
                                     .read<MessageBloc>()
                                     .add(SendMessageEvent(
-                                      senderId: chat.sender.id,
+                                      senderId: chat.senderId,
                                       recipientId: chat.recipient.id,
                                       message: messageController.text,
-                                      chatId: "123",
+                                      chatId: chat.chatId,
                                     ));
                                 setState(() {
                                   messageController.clear();

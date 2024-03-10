@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final double radius = Dimensions.height9 + Dimensions.width9;
-    DebugHelper.printWarning("Building");
+
     return Scaffold(
         backgroundColor: theme.colorScheme.background,
         body: SafeArea(
@@ -84,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             GestureDetector(
                               onTap: () async {
+                                DebugHelper.printWarning("Dropping database");
                                 await SqfliteManager.dropdb();
                               },
                               child: Text(

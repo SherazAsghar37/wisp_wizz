@@ -1,16 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/usecases/usecase.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
+import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
 
-class SendMessageUseCase
-    extends UsecaseWithParam<void, CustomGetSingleChatPAram> {
+class GetChatUsecase extends UsecaseWithParam<void, CustomGetChatParam> {
   final IChatRepository repository;
 
-  SendMessageUseCase({required this.repository});
+  GetChatUsecase({required this.repository});
 
   @override
-  ResultFuture<String> call(CustomGetSingleChatPAram param) {
+  ResultFuture<ChatModel> call(CustomGetChatParam param) {
     return repository.getSingleChat(
       recipientId: param.recipientId,
       senderId: param.senderId,
@@ -18,10 +18,10 @@ class SendMessageUseCase
   }
 }
 
-class CustomGetSingleChatPAram extends Equatable {
+class CustomGetChatParam extends Equatable {
   final String senderId;
   final String recipientId;
-  const CustomGetSingleChatPAram({
+  const CustomGetChatParam({
     required this.senderId,
     required this.recipientId,
   });
