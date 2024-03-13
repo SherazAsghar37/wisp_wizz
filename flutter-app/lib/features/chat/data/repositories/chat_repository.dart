@@ -34,16 +34,6 @@ class ChatRepository implements IChatRepository {
   }
 
   @override
-  ResultStreamList<MessageModel> getMessages(String chatId) {
-    try {
-      final response = _remoteDatasource.getMessages(chatId);
-      return Right(response);
-    } on ApiException catch (e) {
-      return Left(ApiFailure.fromException(e));
-    }
-  }
-
-  @override
   ResultStreamList<ChatModel> getMyChats(String userId) {
     try {
       final response = _remoteDatasource.getMyChats(userId);
@@ -64,20 +54,20 @@ class ChatRepository implements IChatRepository {
   }
 
   @override
-  ResultVoid sendMessage(
+  FutureMessage sendMessage(
       {required String message,
       required String senderId,
       required String recipientId,
       required String chatId,
-      String? repliedToId}) {
+      String? repliedToId}) async {
     try {
-      final response = _remoteDatasource.sendMessage(
+      _remoteDatasource.sendMessage(
           chatId: chatId,
           message: message,
           recipientId: recipientId,
           senderId: senderId,
           repliedToId: repliedToId);
-      _localDatasource.saveMessage(
+      final response = await _localDatasource.saveMessage(
           chatId: chatId,
           message: message,
           recipientId: recipientId,
@@ -98,6 +88,16 @@ class ChatRepository implements IChatRepository {
       return Right(response);
     } on SqfliteDBException catch (e) {
       return Left(SqfliteDBFailure.fromException(e));
+    }
+  }
+
+  @override
+  ResultFuture<List<MessageModel>> getMessages(String chatId) async {
+    try {
+      final response = await _localDatasource.getMessages(chatId);
+      return Right(response);
+    } on ApiException catch (e) {
+      return Left(ApiFailure.fromException(e));
     }
   }
 }

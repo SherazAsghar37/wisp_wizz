@@ -8,8 +8,9 @@ abstract class IChatRemoteDatasource {
       required String recipientId,
       required String chatId,
       String? repliedToId});
+
   Stream<List<ChatModel>> getMyChats(String userId);
-  Stream<List<MessageModel>> getMessages(String chatId);
+
   Future<void> deleteMessage(String messageId);
   Future<void> updateMessage(MessageModel message);
   Future<void> deleteChat(String chatId);

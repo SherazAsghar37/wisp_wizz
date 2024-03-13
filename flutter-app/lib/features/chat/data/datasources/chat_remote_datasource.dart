@@ -6,7 +6,6 @@ import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class ChatRemoteDatasource implements IChatRemoteDatasource {
   final io.Socket _socket;
-
   const ChatRemoteDatasource({
     required io.Socket socket,
   }) : _socket = socket;
@@ -19,13 +18,14 @@ class ChatRemoteDatasource implements IChatRemoteDatasource {
       required String chatId,
       String? repliedToId}) {
     try {
-      return _socket.emit("message", {
+      final data = {
         "message": message,
         "senderId": senderId,
         "recipientId": recipientId,
         "chatId": chatId,
-        "repliedToId": repliedToId
-      });
+        "repliedToId": repliedToId,
+      };
+      return _socket.emit("message", data);
     } catch (e) {
       throw const WebSocketException(
           "Something went wrong, Unable to send message");
@@ -41,12 +41,6 @@ class ChatRemoteDatasource implements IChatRemoteDatasource {
   @override
   Future<void> deleteMessage(String messageId) {
     // TODO: implement deleteMessage
-    throw UnimplementedError();
-  }
-
-  @override
-  Stream<List<MessageModel>> getMessages(String chatId) {
-    // TODO: implement getMessages
     throw UnimplementedError();
   }
 

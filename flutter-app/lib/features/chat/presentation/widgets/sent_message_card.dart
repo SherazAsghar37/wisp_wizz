@@ -40,6 +40,7 @@ class SentMessageCard extends StatelessWidget {
                     style: theme.textTheme.bodySmall!
                         .copyWith(color: theme.shadowColor)),
               ),
+              SizedBox(height: Dimensions.height5),
               isLast
                   ? Column(
                       children: [

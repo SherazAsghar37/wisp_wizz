@@ -1,4 +1,6 @@
+import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class SingleChatScreen extends StatefulWidget {
   static const String routeName = singleChatScreen;
@@ -10,7 +12,7 @@ class SingleChatScreen extends StatefulWidget {
 }
 
 MessageModel message = MessageModel.empty();
-const String senderId = "ca2de2e9-fff8-443d-8862-076bfa294c36";
+const String senderId = "814695df-9be7-414f-a068-f88bf8baa7d2";
 const String recipientId = "xyz";
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
@@ -51,10 +53,20 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
         recipientId: senderId)
   ];
   @override
+  void initState() {
+    // context.watch<MessageBloc>().messagesStream.listen((event) {
+    //   if (event[0].chatId == widget.chat.chatId) {
+    //     messages.add(event[0]);
+    //   }
+    // });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-        backgroundColor: theme.colorScheme.background.withOpacity(0.95),
+        backgroundColor: theme.colorScheme.background.withOpacity(0.9),
         extendBodyBehindAppBar: true,
         body: SafeArea(
           child: Padding(
@@ -69,28 +81,34 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                   onSelected: (value) {},
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    reverse: true,
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(Dimensions.width10, 0,
-                          Dimensions.width10, Dimensions.height50),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            height: Dimensions.height10,
-                          ),
-                          ...List.generate(
-                              messages.length,
-                              (index) => ChatUtils.messageCardManager(
-                                  index: index,
-                                  messages: messages,
-                                  chat: widget.chat))
-                        ],
-                      ),
-                    ),
-                  ),
-                )
+                    child: StreamBuilder(
+                        stream: context.watch<MessageBloc>().messagesStream,
+                        builder: (context, snapshot) {
+                          return SingleChildScrollView(
+                            reverse: true,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(Dimensions.width10,
+                                  0, Dimensions.width10, Dimensions.height50),
+                              child: messages.isNotEmpty
+                                  ? Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        SizedBox(
+                                          height: Dimensions.height10,
+                                        ),
+                                        ...List.generate(
+                                            messages.length,
+                                            (index) =>
+                                                ChatUtils.messageCardManager(
+                                                    index: index,
+                                                    messages: messages,
+                                                    chat: widget.chat))
+                                      ],
+                                    )
+                                  : const Text("No data"),
+                            ),
+                          );
+                        }))
               ],
             ),
           ),

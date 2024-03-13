@@ -8,6 +8,7 @@ import 'package:wisp_wizz/features/chat/data/datasources/chat_local_datasource.d
 import 'package:wisp_wizz/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:wisp_wizz/features/chat/data/repositories/chat_repository.dart';
 import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/get_messages_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_single_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/send_message_usecase.dart';
@@ -124,10 +125,13 @@ Future<void> init() async {
         () => FlutterContactsWrapper());
 //-----------Message Bloc
   sl
-    ..registerFactory(() => MessageBloc(sendMessageUseCase: sl()))
+    ..registerFactory(
+        () => MessageBloc(sendMessageUseCase: sl(), getMessagesUseCase: sl()))
     //usecases
     ..registerLazySingleton<SendMessageUseCase>(
         () => SendMessageUseCase(repository: sl()))
+    ..registerLazySingleton<GetMessagesUseCase>(
+        () => GetMessagesUseCase(repository: sl()))
     //repositories
     ..registerLazySingleton<IChatRepository>(() => ChatRepository(sl(), sl()))
     //data sources

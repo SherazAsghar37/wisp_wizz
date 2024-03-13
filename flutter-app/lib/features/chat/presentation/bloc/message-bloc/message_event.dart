@@ -27,3 +27,16 @@ class SendMessageEvent extends MessageEvent {
   List<Object?> get props =>
       [senderId, recipientId, message, chatId, repliedTo, repliedToId];
 }
+
+class FetchMessagesEvent extends MessageEvent {
+  final String chatId;
+
+  const FetchMessagesEvent({
+    required this.chatId,
+  });
+
+  @override
+  List<Object?> get props => [
+        chatId,
+      ];
+}

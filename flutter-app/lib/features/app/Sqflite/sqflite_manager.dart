@@ -25,16 +25,16 @@ class SqfliteManager {
                       updatedAt datetime not null  default CURRENT_TIMESTAMP)""");
       await db.execute("""CREATE TABLE Chat (
                       chatId VARCHAR(36) PRIMARY KEY not null,
-                      recipientId VARCHAR(36) DEFAULT (UUID()),
-                      senderId VARCHAR(36) DEFAULT (UUID()),
+                      recipientId VARCHAR(36) NOT NULL,
+                      senderId VARCHAR(36) NOT NULL,
                       unreadMessages int not null default 0,
                       createdAt datetime not null  default CURRENT_TIMESTAMP,
                       updatedAt datetime not null  default CURRENT_TIMESTAMP,
                       CONSTRAINT FK_Chat_User FOREIGN KEY (recipientId) REFERENCES User(id),
                       CONSTRAINT FK_Chat_Sender FOREIGN KEY (senderId) REFERENCES User(id))""");
       await db.execute("""CREATE TABLE Message (
-                      messageId VARCHAR(36) PRIMARY KEY not null,
-                      chatId VARCHAR(36) DEFAULT (UUID()),
+                      messageId VARCHAR(36) PRIMARY KEYNOT NULL,
+                      chatId VARCHAR(36) NOT NULL,
                       message LONGTEXT not null,
                       messageStatus TEXT CHECK(messageStatus IN ('Read', 'Sent', 'Unread', 'Seen')) DEFAULT 'Sent',
                       repliedToId  VARCHAR(36),
@@ -90,21 +90,21 @@ class SqfliteManager {
     }
   }
 
-  static Future<void> saveMessage({
-    required String senderId,
-    required String recipientId,
-    required String message,
-  }) async {
-    try {
-      final db = await getDB();
-      final result = await db.query('Chat',
-          where: 'recipientId = ?',
-          whereArgs: [recipientId],
-          columns: ['id'] // Replace with your actual value for id
-          );
-      DebugHelper.printWarning(result.toString());
-    } catch (e) {}
-  }
+  // static Future<void> saveMessage({
+  //   required String senderId,
+  //   required String recipientId,
+  //   required String message,
+  // }) async {
+  //   try {
+  //     final db = await getDB();
+  //     final result = await db.query('Chat',
+  //         where: 'recipientId = ?',
+  //         whereArgs: [recipientId],
+  //         columns: ['id'] // Replace with your actual value for id
+  //         );
+  //     DebugHelper.printWarning(result.toString());
+  //   } catch (e) {}
+  // }
 
   static Future<MapData> fetchChat(String recipientId, String senderId) async {
     try {
@@ -130,8 +130,7 @@ class SqfliteManager {
         chatAndSenderData = await db.rawQuery("""SELECT * FROM Chat as c 
           INNER JOIN User as u ON c.recipientId = u.id 
           WHERE c.senderId ='$senderId' and c.recipientId = '$recipientId'""");
-        messages = await db.rawQuery("""SELECT * FROM Message 
-          WHERE chatId ='${chatAndSenderData[0]["chatId"]}'""");
+        messages = await fetchMessages(chatAndSenderData[0]["chatId"]);
       }
       final Map<String, dynamic> data = {
         "messages": messages,
@@ -177,6 +176,31 @@ class SqfliteManager {
       args[2].send("completed");
     } catch (e) {
       rethrow;
+    }
+  }
+
+  static Future<List<MapData>> fetchMessages(String chatId) async {
+    try {
+      List<Map<String, dynamic>> messages =
+          await db.rawQuery("""SELECT * FROM Message WHERE chatId = '$chatId'
+         """);
+      DebugHelper.printWarning(messages.toString());
+      return messages;
+    } catch (e) {
+      throw SqfliteDBException(e.toString());
+    }
+  }
+
+  static Future<MapData> insertMessage(MapData data) async {
+    try {
+      var uuid = const Uuid();
+      final newdata = {...data, "messageId": uuid.v6()};
+      DebugHelper.printWarning(newdata.toString());
+      await db.insert("Message", newdata,
+          conflictAlgorithm: ConflictAlgorithm.fail);
+      return newdata;
+    } catch (e) {
+      throw SqfliteDBException(e.toString());
     }
   }
 }

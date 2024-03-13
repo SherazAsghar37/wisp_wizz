@@ -43,6 +43,7 @@ class ReceivedMessageCard extends StatelessWidget {
                     style: theme.textTheme.bodySmall!
                         .copyWith(color: theme.colorScheme.background)),
               ),
+              SizedBox(height: Dimensions.height5),
               isLast
                   ? Column(
                       children: [

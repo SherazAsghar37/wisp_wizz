@@ -20,3 +20,26 @@ final class MessageFailed extends MessageState {
   @override
   List<Object> get props => [message];
 }
+
+final class MessagesFetching extends MessageState {}
+
+final class MessagesFetched extends MessageState {
+  const MessagesFetched();
+
+  // @override
+  // List<Object> get props => [
+  //       _messageController,
+  //       inMessage,
+  //       outMessage,
+  //       _insertMessageController,
+  //       inInsertMessage
+  //     ];
+}
+
+final class MessagesFetchFailed extends MessageState {
+  final String message;
+  const MessagesFetchFailed(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

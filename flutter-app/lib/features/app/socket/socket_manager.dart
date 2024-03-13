@@ -11,7 +11,7 @@ class WebSocketManager {
   static IO.Socket get socket => _socket;
   static Future<bool> socketInit() async {
     Completer<bool> completer = Completer<bool>();
-    _socket = IO.io(baseUrl, <String, dynamic>{
+    _socket = IO.io(socketIOBaseUrl, <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": true
     });
