@@ -1,20 +1,20 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
 
 class ChatsScreen extends StatelessWidget {
-  final UserModel user;
-  const ChatsScreen({super.key, required this.user});
+  const ChatsScreen({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    // final UserModel user = UserModel.empty();
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       extendBodyBehindAppBar: true,
@@ -40,27 +40,62 @@ class ChatsScreen extends StatelessWidget {
                 )
               ],
             ),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: Dimensions.height5),
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: Dimensions.height2),
-                    child: ChatCard(
-                      user: user,
-                      lastMessage: "Hello there $index",
-                      lastMessageTime: DateTime.now(),
-                      messageStatus: index % 2 == 0 ? "read" : "sent",
-                      notifications: "1000000000000",
-                      onPressed: () {
-                        Navigator.pushNamed(context, SingleChatScreen.routeName,
-                            arguments: ChatModel.empty());
+            BlocBuilder<UserChatsBloc, UserChatsState>(
+              builder: (context, state) {
+                if (state is UsersChatsFetching) {
+                  return Expanded(
+                    child: ListView.builder(
+                      padding:
+                          EdgeInsets.symmetric(vertical: Dimensions.height5),
+                      itemCount: state.chats.length + 1,
+                      itemBuilder: (context, index) {
+                        return index == state.chats.length
+                            ? CircularProgressIndicator(
+                                color: theme.primaryColor,
+                              )
+                            : Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: Dimensions.height2),
+                                child: ChatCard(
+                                  chat: state.chats[index],
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                        context, SingleChatScreen.routeName,
+                                        arguments: ChatModel.empty());
+                                  },
+                                ),
+                              );
                       },
                     ),
                   );
-                },
-              ),
+                } else if (state is UsersChatsFetched) {
+                  return Expanded(
+                    child: ListView.builder(
+                      padding:
+                          EdgeInsets.symmetric(vertical: Dimensions.height5),
+                      itemCount: state.chats.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: Dimensions.height2),
+                          child: ChatCard(
+                            chat: state.chats[index],
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, SingleChatScreen.routeName,
+                                  arguments: ChatModel.empty());
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                } else if (state is UsersChatsFetchFailed) {
+                  return Center(child: Text(state.message));
+                } else {
+                  return const Center(child: Text("unknown error occured"));
+                }
+              },
             )
           ],
         ),

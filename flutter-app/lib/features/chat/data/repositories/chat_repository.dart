@@ -34,12 +34,13 @@ class ChatRepository implements IChatRepository {
   }
 
   @override
-  ResultStreamList<ChatModel> getMyChats(String userId) {
+  ResultFuture<List<ChatModel>> getMyChats(
+      int currentPage, String userId) async {
     try {
-      final response = _remoteDatasource.getMyChats(userId);
+      final response = await _localDatasource.fetchChats(currentPage, userId);
       return Right(response);
-    } on ApiException catch (e) {
-      return Left(ApiFailure.fromException(e));
+    } on SqfliteDBException catch (e) {
+      return Left(SqfliteDBFailure.fromException(e));
     }
   }
 
@@ -96,8 +97,8 @@ class ChatRepository implements IChatRepository {
     try {
       final response = await _localDatasource.getMessages(chatId);
       return Right(response);
-    } on ApiException catch (e) {
-      return Left(ApiFailure.fromException(e));
+    } on SqfliteDBException catch (e) {
+      return Left(SqfliteDBFailure.fromException(e));
     }
   }
 }

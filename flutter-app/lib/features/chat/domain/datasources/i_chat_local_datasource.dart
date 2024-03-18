@@ -17,4 +17,5 @@ abstract class IChatLocalDatasource {
       required String recipientId,
       required String chatId,
       String? repliedToId});
+  Future<List<ChatModel>> fetchChats(int currentPage, String userId);
 }

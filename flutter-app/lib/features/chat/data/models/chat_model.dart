@@ -21,7 +21,7 @@ class ChatModel extends ChatEntity {
   @override
   final UserModel recipient;
   @override
-  final List<MessageModel> messages;
+  final MessageModel? lastMessage;
 
   const ChatModel(
       {required this.senderId,
@@ -30,14 +30,14 @@ class ChatModel extends ChatEntity {
       this.totalUnReadMessages,
       required this.chatId,
       required this.recipient,
-      required this.messages})
+      required this.lastMessage})
       : super(
             recentTextMessage: recentTextMessage,
             createdAt: createdAt,
             totalUnReadMessages: totalUnReadMessages,
             chatId: chatId,
             recipient: recipient,
-            messages: messages,
+            lastMessage: lastMessage,
             senderId: senderId);
 
   Map<String, dynamic> toMap() {
@@ -48,7 +48,7 @@ class ChatModel extends ChatEntity {
       'totalUnReadMessages': totalUnReadMessages,
       'id': chatId,
       "recipient": recipient.toString(),
-      "messages": messages.map((e) => e.toMap())
+      "lastMessage": lastMessage?.toMap()
     };
   }
 
@@ -61,11 +61,9 @@ class ChatModel extends ChatEntity {
             totalUnReadMessages: map['unreadMessages'],
             chatId: map['id'],
             recipient: UserModel.fromMap(map['sender']),
-            messages: map['messages'].isNotEmpty
-                ? List<MessageModel>.from(map['messages']
-                    .map((e) => MessageModel.fromMap(e))
-                    .toList())
-                : []);
+            lastMessage: map['lastMessage'] != null
+                ? MessageModel.fromMap(map['lastMessage'])
+                : null);
 
   ChatModel.fromDBData(Map<String, dynamic> map)
       : this(
@@ -73,7 +71,7 @@ class ChatModel extends ChatEntity {
             recentTextMessage: "map['recentTextMessage']",
             createdAt: DateTime.parse(map['createdAt']),
             totalUnReadMessages: map['unreadMessages'],
-            chatId: map['id'],
+            chatId: map['chatId'],
             recipient: UserModel(
                 name: map["name"],
                 phoneNumber: map["phoneNumber"],
@@ -81,11 +79,16 @@ class ChatModel extends ChatEntity {
                 status: map["status"] == 1 ? true : false,
                 lastSeen: DateTime.parse(map["lastSeen"]),
                 image: base64Decode(map["image"])),
-            messages: map['messages'].isNotEmpty
-                ? List<MessageModel>.from(map['messages']
-                    .map((e) => MessageModel.fromMap(e))
-                    .toList())
-                : []);
+            lastMessage: map["messageId"] != null
+                ? MessageModel(
+                    senderId: map['senderId'],
+                    recipientId: map['recipientId'],
+                    message: map["message"],
+                    messageStatus: map["messageStatus"],
+                    createdAt: map["sentAt"],
+                    messageId: map['messageId'],
+                    chatId: map['chatId'])
+                : null);
   String toJson() => json.encode(toMap());
 
   factory ChatModel.fromJson(String source) =>
@@ -99,7 +102,7 @@ class ChatModel extends ChatEntity {
             totalUnReadMessages: 4,
             chatId: "12ab",
             recipient: UserModel.empty(),
-            messages: [MessageModel.empty()]);
+            lastMessage: MessageModel.empty());
 
   ChatModel copyWith(
       {UserModel? recipient,
@@ -108,7 +111,7 @@ class ChatModel extends ChatEntity {
       int? totalUnReadMessages,
       String? chatId,
       String? senderId,
-      List<MessageModel>? messages}) {
+      MessageModel? lastMessage}) {
     return ChatModel(
         senderId: senderId ?? this.senderId,
         recentTextMessage: recentTextMessage ?? this.recentTextMessage,
@@ -116,6 +119,6 @@ class ChatModel extends ChatEntity {
         totalUnReadMessages: totalUnReadMessages ?? this.totalUnReadMessages,
         chatId: chatId ?? this.chatId,
         recipient: recipient ?? this.recipient,
-        messages: messages ?? this.messages);
+        lastMessage: lastMessage ?? this.lastMessage);
   }
 }

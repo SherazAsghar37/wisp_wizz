@@ -7,7 +7,7 @@ class GroupsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final UserModel user = UserModel.empty();
+    final ChatModel chat = ChatModel.empty();
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       extendBodyBehindAppBar: true,
@@ -41,11 +41,7 @@ class GroupsScreen extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: Dimensions.height2),
                     child: ChatCard(
-                      user: user,
-                      lastMessage: "Hello there $index",
-                      lastMessageTime: DateTime.now(),
-                      messageStatus: index % 2 == 0 ? "read" : "sent",
-                      notifications: "1000000000000",
+                      chat: chat,
                       onPressed: () {},
                     ),
                   );

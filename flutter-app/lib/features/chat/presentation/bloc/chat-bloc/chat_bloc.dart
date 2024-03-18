@@ -2,21 +2,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
-import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_single_chat_usecase.dart';
 
 part 'chat_event.dart';
 part 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
-  final GetMyChatsUseCase _getMyChatUseCase;
   final GetChatUsecase _getChatUsecase;
 
-  ChatBloc(
-      {required GetMyChatsUseCase getMyChatUseCase,
-      required GetChatUsecase getChatUsecase})
-      : _getMyChatUseCase = getMyChatUseCase,
-        _getChatUsecase = getChatUsecase,
+  ChatBloc({required GetChatUsecase getChatUsecase})
+      : _getChatUsecase = getChatUsecase,
         super(ChatInitial()) {
     on<ChatFetchEvent>(_onFetchChat);
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -199,6 +200,30 @@ class SqfliteManager {
       await db.insert("Message", newdata,
           conflictAlgorithm: ConflictAlgorithm.fail);
       return newdata;
+    } catch (e) {
+      throw SqfliteDBException(e.toString());
+    }
+  }
+
+  static Future<List<MapData>> fetchChats(
+      String userId, int currentPage) async {
+    try {
+      final data = await db.rawQuery('''
+      SELECT c.*, m.messageId, m.message, m.messageStatus, m.updatedAt AS sentAt,u.*
+FROM Chat AS c
+INNER JOIN User as u on c.recipientId = u.id
+LEFT JOIN Message AS m ON c.chatId = m.chatId
+AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY updatedAt desc limit 1)
+WHERE c.senderId = ?
+LIMIT ? OFFSET ?
+
+      ''', [userId, chatsLoadAtEachTime, currentPage * chatsLoadAtEachTime]);
+      // final d = await db.rawQuery('''
+      //  SELECT message,chatId From Message
+      // ''');
+      DebugHelper.printWarning(data.toString());
+      // log(d.toString());
+      return data;
     } catch (e) {
       throw SqfliteDBException(e.toString());
     }

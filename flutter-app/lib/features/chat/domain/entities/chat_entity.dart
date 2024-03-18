@@ -11,7 +11,7 @@ class ChatEntity extends Equatable {
   final int? totalUnReadMessages;
   final String? chatId;
   final UserEntity? recipient;
-  final List<MessageEntity>? messages;
+  final MessageEntity? lastMessage;
   const ChatEntity(
       {this.senderId,
       this.recentTextMessage,
@@ -19,7 +19,7 @@ class ChatEntity extends Equatable {
       this.totalUnReadMessages,
       this.chatId,
       this.recipient,
-      this.messages});
+      this.lastMessage});
 
   @override
   List<Object?> get props => [
@@ -29,6 +29,6 @@ class ChatEntity extends Equatable {
         totalUnReadMessages,
         chatId,
         recipient,
-        messages
+        lastMessage
       ];
 }

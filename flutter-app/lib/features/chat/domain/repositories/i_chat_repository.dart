@@ -12,7 +12,7 @@ abstract class IChatRepository {
   ResultFuture<List<MessageModel>> getMessages(String chatId);
   ResultFuture<ChatModel> getSingleChat(
       {required String recipientId, required String senderId});
-  ResultStreamList<ChatModel> getMyChats(String userId);
+  ResultFuture<List<ChatModel>> getMyChats(int currentPage, String userId);
 
   FutureVoid deleteMessage(String messageId);
   FutureVoid updateMessage(MessageModel message);

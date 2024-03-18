@@ -14,6 +14,7 @@ import 'package:wisp_wizz/features/chat/domain/usecases/get_single_chat_usecase.
 import 'package:wisp_wizz/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_data_source.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_local_dataource.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/flutter_contacts_wraper.dart';
@@ -144,13 +145,21 @@ Future<void> init() async {
     //external dependency
     ..registerLazySingleton<IO.Socket>(() => WebSocketManager.socket);
 
-//-----------ChatBloc Bloc
+//-----------Chat Bloc
   sl
-    ..registerFactory(
-        () => ChatBloc(getChatUsecase: sl(), getMyChatUseCase: sl()))
+    ..registerFactory(() => ChatBloc(
+          getChatUsecase: sl(),
+        ))
     //usecases
     ..registerLazySingleton<GetChatUsecase>(
-        () => GetChatUsecase(repository: sl()))
+        () => GetChatUsecase(repository: sl()));
+
+  //-----------User Chat Bloc
+  sl
+    ..registerFactory(() => UserChatsBloc(
+          getMyChatsUseCase: sl(),
+        ))
+    //usecases
     ..registerLazySingleton<GetMyChatsUseCase>(
         () => GetMyChatsUseCase(repository: sl()));
 }

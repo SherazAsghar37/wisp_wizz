@@ -44,4 +44,8 @@ class SqfliteManagerWrapper {
   Future<MapData> insertMessage(MapData data) {
     return SqfliteManager.insertMessage(data);
   }
+
+  Future<List<MapData>> fetchChats(String userId, int currentPage) {
+    return SqfliteManager.fetchChats(userId, currentPage);
+  }
 }

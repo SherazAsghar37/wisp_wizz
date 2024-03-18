@@ -30,6 +30,7 @@ model Chat{
   recipientId       String      
   recipient         User?       @relation(fields: [recipientId], references: [id])
   unreadMessages    Int         @default(0)
+  lastMessageId     String      
   Messages          Message[]
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @default(now())
@@ -42,15 +43,15 @@ enum MessageStatus{
 }
 
 model Message {
-  messageId               String   @id @default(uuid())
-  chatId           String   
-  chat             Chat?    @relation(fields: [chatId], references: [chatId])
+  messageId       String        @id @default(uuid()) 
+  chatId          String        
+  chat            Chat?         @relation(fields: [chatId], references: [chatId])
   message         String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
   messageStatus   MessageStatus @default(Sent)
-  repliedTo       Message?  @relation("Replies",fields: [repliedToId], references: [messageId])
-  repliedToId     String?   @map("repliedToId")
-  replies        Message[]  @relation(name: "Replies")
+  repliedTo       Message?      @relation("Replies",fields: [repliedToId], references: [messageId])
+  repliedToId     String?       @map("repliedToId")
+  replies        Message[]      @relation(name: "Replies")
 }
 

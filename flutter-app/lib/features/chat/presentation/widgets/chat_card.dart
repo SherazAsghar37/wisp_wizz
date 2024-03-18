@@ -1,19 +1,12 @@
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class ChatCard extends StatelessWidget {
-  final UserModel user;
-  final String? lastMessage;
-  final String? notifications;
-  final DateTime? lastMessageTime;
-  final String? messageStatus;
+  final ChatModel chat;
   final VoidCallback onPressed;
   ChatCard({
     super.key,
-    required this.user,
-    this.lastMessage,
-    this.notifications,
-    this.lastMessageTime,
-    this.messageStatus,
+    required this.chat,
     required this.onPressed,
   });
 
@@ -35,7 +28,8 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: radius,
-                  backgroundImage: Utils.getUserImage(user),
+                  backgroundImage:
+                      Utils.getUserImageFromUint8List(chat.recipient.image),
                 ),
                 SizedBox(
                   width: Dimensions.width10,
@@ -45,35 +39,35 @@ class ChatCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.name,
+                      chat.recipient.name,
                       style: theme.textTheme.bodyLarge!.copyWith(
                           color: theme.primaryColorDark,
                           fontSize: Dimensions.height18),
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        messageStatus != null
-                            ? Row(
+                    chat.lastMessage != null
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
                                 children: [
                                   ChatUtils.getMessageStatusIcon(
-                                      context, messageStatus!),
+                                      context, chat.lastMessage!.messageStatus),
                                   SizedBox(
                                     width: Dimensions.width2,
                                   ),
                                 ],
-                              )
-                            : const SizedBox(),
-                        SizedBox(
-                          width: Dimensions.screenWidth * 0.45,
-                          child: Text(lastMessage ?? "",
-                              maxLines: 1,
-                              softWrap: false,
-                              style: theme.textTheme.bodySmall!
-                                  .copyWith(fontSize: Dimensions.height14)),
-                        ),
-                      ],
-                    ),
+                              ),
+                              SizedBox(
+                                width: Dimensions.screenWidth * 0.45,
+                                child: Text(chat.lastMessage!.message,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: theme.textTheme.bodySmall!.copyWith(
+                                        fontSize: Dimensions.height14)),
+                              ),
+                            ],
+                          )
+                        : const SizedBox(),
                   ],
                 ),
               ],
@@ -81,13 +75,14 @@ class ChatCard extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                notifications != null
+                chat.totalUnReadMessages != null &&
+                        chat.totalUnReadMessages! > 0
                     ? NotificationIcon(
-                        notifications: notifications!,
+                        notifications: chat.totalUnReadMessages.toString(),
                       )
                     : const SizedBox(),
                 Text(
-                  lastMessageTime?.toString().substring(2, 10) ?? "",
+                  chat.lastMessage?.createdAt.timeFormat() ?? "",
                   style: theme.textTheme.bodyMedium!.copyWith(
                     fontSize: Dimensions.height13,
                   ),

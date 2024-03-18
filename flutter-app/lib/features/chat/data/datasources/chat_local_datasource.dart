@@ -48,9 +48,13 @@ class ChatLocalDatasource extends IChatLocalDatasource {
       List<MessageModel> messages =
           List<MessageModel>.from(response.map((e) => MessageModel.fromMap(e)));
       return messages;
-    } catch (e) {
-      throw const WebSocketException(
+    } on SqfliteDBException catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const SqfliteDBException(
           "Something went wrong, Unable to load messages");
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const SqfliteDBException("Something went wrong");
     }
   }
 
@@ -75,10 +79,28 @@ class ChatLocalDatasource extends IChatLocalDatasource {
         "senderId": senderId,
         "recipientId": recipientId,
       });
-    } catch (e) {
+    } on SqfliteDBException catch (e) {
       DebugHelper.printError(e.toString());
       throw const SqfliteDBException(
           "Something went wrong, Unable to send message");
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const SqfliteDBException("Something went wrong");
+    }
+  }
+
+  @override
+  Future<List<ChatModel>> fetchChats(int currentPage, String userId) async {
+    try {
+      final res = await _sqfliteManagerWrapper.fetchChats(userId, currentPage);
+      return res.map((e) => ChatModel.fromDBData(e)).toList();
+    } on SqfliteDBException catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const SqfliteDBException(
+          "Something went wrong, Unable to fetch your chats");
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const SqfliteDBException("Something went wrong");
     }
   }
 }
