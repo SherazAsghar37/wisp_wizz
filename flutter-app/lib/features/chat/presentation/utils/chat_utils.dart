@@ -1,30 +1,31 @@
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class ChatUtils {
-  static Widget getMessageStatusIcon(BuildContext context, String status) {
+  static Widget getMessageStatusIcon(BuildContext context, String status,
+      {double? inconSize}) {
     final colorScheme = Theme.of(context).colorScheme;
     switch (status) {
-      case "sent":
+      case "Sent":
         return Icon(
           starHalfIcon,
           color: colorScheme.primary,
-          size: Dimensions.height17,
+          size: inconSize ?? Dimensions.height17,
         );
-      case "sending":
+      case "Sending":
         return Icon(
           clockIcon,
-          size: Dimensions.height17,
+          size: inconSize ?? Dimensions.height17,
           color: colorScheme.primary,
         );
-      case "received":
+      case "Delivered":
         return Icon(
-          size: Dimensions.height17,
+          size: inconSize ?? Dimensions.height17,
           starIcon,
           color: colorScheme.primary,
         );
-      case "read":
+      case "Seen":
         return Icon(
-          size: Dimensions.height17,
+          size: inconSize ?? Dimensions.height17,
           starIcon,
           color: colorScheme.secondary,
         );
@@ -37,15 +38,20 @@ class ChatUtils {
       {required int index,
       required List<MessageModel> messages,
       required ChatModel chat}) {
-    final bool formula = (index > 0 &&
-                index < messages.length - 1 &&
-                messages[index - 1].senderId == messages[index].senderId &&
+    final bool senderFormula = (index < messages.length - 1 &&
                 messages[index + 1].senderId != messages[index].senderId) ||
             index == messages.length - 1
         ? true
         : false;
-    return messages[index].recipientId == chat.recipient.id
-        ? ReceivedMessageCard(message: messages[index], isLast: formula)
-        : SentMessageCard(message: messages[index], isLast: formula);
+    final bool recipientFormula = (index < messages.length - 1 &&
+                messages[index + 1].recipientId !=
+                    messages[index].recipientId) ||
+            index == messages.length - 1
+        ? true
+        : false;
+    return messages[index].senderId == chat.senderId
+        ? SentMessageCard(message: messages[index], isLast: senderFormula)
+        : ReceivedMessageCard(
+            message: messages[index], isLast: recipientFormula);
   }
 }

@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen>
     tabController = TabController(vsync: this, length: tabScreens.length);
     context
         .read<UserChatsBloc>()
-        .add(FetchUserChatsEvent(chats: [], userId: widget.user.id));
+        .add(FetchUserChatsEvent(chats: const [], userId: widget.user.id));
   }
 
   @override

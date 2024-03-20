@@ -74,6 +74,20 @@ class MessageModel extends MessageEntity {
     );
   }
 
+  factory MessageModel.fromDBData(Map<String, dynamic> map) {
+    return MessageModel(
+      senderId: map['senderId'],
+      chatId: map['chatId'],
+      recipientId: map['recipientId'],
+      message: map['message'],
+      createdAt: DateTime.parse(map['updatedAt']),
+      messageStatus: map['messageStatus'],
+      repliedToId: map['repliedToId'],
+      repliedMessage: map['repliedMessage'],
+      messageId: map['messageId'],
+    );
+  }
+
   String toJson() => json.encode(toMap());
 
   factory MessageModel.fromJson(String source) =>

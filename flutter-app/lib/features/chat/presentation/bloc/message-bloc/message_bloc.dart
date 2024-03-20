@@ -47,7 +47,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     emit(MessagesFetching());
     final response = await _getMessagesUseCase(event.chatId);
     response.fold((f) => emit(MessagesFetchFailed(f.message)), (s) {
-      _messageController.sink.add(s);
+      if (s.isNotEmpty) {
+        _messageController.sink.add(s);
+      }
       emit(const MessagesFetched());
     });
   }

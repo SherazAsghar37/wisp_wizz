@@ -77,6 +77,8 @@ class ChatRepository implements IChatRepository {
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
+    } on SqfliteDBException catch (e) {
+      return Left(SqfliteDBFailure.fromException(e));
     }
   }
 

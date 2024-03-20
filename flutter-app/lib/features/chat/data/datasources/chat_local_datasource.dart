@@ -45,15 +45,15 @@ class ChatLocalDatasource extends IChatLocalDatasource {
   Future<List<MessageModel>> getMessages(String chatId) async {
     try {
       final response = await _sqfliteManagerWrapper.fetchMessages(chatId);
-      List<MessageModel> messages =
-          List<MessageModel>.from(response.map((e) => MessageModel.fromMap(e)));
+      List<MessageModel> messages = List<MessageModel>.from(
+          response.map((e) => MessageModel.fromDBData(e)));
       return messages;
     } on SqfliteDBException catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("SqfliteDBException$e");
       throw const SqfliteDBException(
           "Something went wrong, Unable to load messages");
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("Internal Error : $e");
       throw const SqfliteDBException("Something went wrong");
     }
   }
@@ -74,17 +74,18 @@ class ChatLocalDatasource extends IChatLocalDatasource {
         "createdAt": DateTime.now().toIso8601String()
       };
       final res = await _sqfliteManagerWrapper.insertMessage(data);
-      return MessageModel.fromMap({
+      final newData = {
         ...res,
         "senderId": senderId,
         "recipientId": recipientId,
-      });
+      };
+      return MessageModel.fromMap(newData);
     } on SqfliteDBException catch (e) {
       DebugHelper.printError(e.toString());
       throw const SqfliteDBException(
           "Something went wrong, Unable to send message");
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("Internal erro $e");
       throw const SqfliteDBException("Something went wrong");
     }
   }

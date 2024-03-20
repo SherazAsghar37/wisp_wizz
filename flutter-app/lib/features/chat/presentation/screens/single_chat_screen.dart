@@ -1,3 +1,4 @@
+import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
@@ -12,59 +13,57 @@ class SingleChatScreen extends StatefulWidget {
 }
 
 MessageModel message = MessageModel.empty();
-const String senderId = "814695df-9be7-414f-a068-f88bf8baa7d2";
-const String recipientId = "xyz";
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
   final List<MessageModel> messages = [
-    message.copyWith(
-        message: "this is a text message from friend.",
-        senderId: senderId,
-        recipientId: recipientId),
-    message.copyWith(
-        message: "gida gadi gida gida o",
-        senderId: senderId,
-        recipientId: recipientId),
-    message.copyWith(
-        message: "Ai bi merri along time go,",
-        senderId: senderId,
-        recipientId: recipientId),
-    message.copyWith(
-        message: " wud u du cum for ",
-        senderId: recipientId,
-        recipientId: senderId),
-    message.copyWith(
-        message: "wud u do go", senderId: recipientId, recipientId: senderId),
-    message.copyWith(
-        message: "wud yu du cum for putlando",
-        senderId: recipientId,
-        recipientId: senderId),
-    message.copyWith(
-        message: "Zzzzz", senderId: senderId, recipientId: recipientId),
-    message.copyWith(
-        message:
-            "processMotionEvent MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=208.0, y[0]=1097.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=82226094, downTime=82226094, deviceId=3, source=0x1002, displayId=0 }",
-        senderId: senderId,
-        recipientId: recipientId),
-    message.copyWith(
-        message:
-            "processMotionEvent MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=208.0, y[0]=1097.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=82226094, downTime=82226094, deviceId=3, source=0x1002, displayId=0 }",
-        senderId: recipientId,
-        recipientId: senderId)
+    // message.copyWith(
+    //     message: "this is a text message from friend.",
+    //     senderId: senderId,
+    //     recipientId: recipientId),
+    // message.copyWith(
+    //     message: "gida gadi gida gida o",
+    //     senderId: senderId,
+    //     recipientId: recipientId),
+    // message.copyWith(
+    //     message: "Ai bi merri along time go,",
+    //     senderId: senderId,
+    //     recipientId: recipientId),
+    // message.copyWith(
+    //     message: " wud u du cum for ",
+    //     senderId: recipientId,
+    //     recipientId: senderId),
+    // message.copyWith(
+    //     message: "wud u do go", senderId: recipientId, recipientId: senderId),
+    // message.copyWith(
+    //     message: "wud yu du cum for putlando",
+    //     senderId: recipientId,
+    //     recipientId: senderId),
+    // message.copyWith(
+    //     message: "Zzzzz", senderId: senderId, recipientId: recipientId),
   ];
   @override
   void initState() {
-    // context.watch<MessageBloc>().messagesStream.listen((event) {
-    //   if (event[0].chatId == widget.chat.chatId) {
-    //     messages.add(event[0]);
-    //   }
-    // });
+    context.read<MessageBloc>().messagesStream.listen((event) {
+      if (event.isNotEmpty && event[0].chatId == widget.chat.chatId) {
+        messages.addAll(event);
+      }
+    });
+    context
+        .read<MessageBloc>()
+        .add(FetchMessagesEvent(chatId: widget.chat.chatId));
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    messages.add(
+      message.copyWith(
+          message: "Zzzzz",
+          senderId: widget.chat.recipient.id,
+          recipientId: widget.chat.senderId),
+    );
     return Scaffold(
         backgroundColor: theme.colorScheme.background.withOpacity(0.9),
         extendBodyBehindAppBar: true,
@@ -78,11 +77,13 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                   user: widget.chat.recipient,
                   color: theme.colorScheme.background,
                   onPressed: () {},
-                  onSelected: (value) {},
+                  onSelected: (value) {
+                    SqfliteManager.trunciateMessages();
+                  },
                 ),
                 Expanded(
                     child: StreamBuilder(
-                        stream: context.watch<MessageBloc>().messagesStream,
+                        stream: context.read<MessageBloc>().messagesStream,
                         builder: (context, snapshot) {
                           return SingleChildScrollView(
                             reverse: true,

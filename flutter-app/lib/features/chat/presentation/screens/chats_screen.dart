@@ -82,8 +82,15 @@ class ChatsScreen extends StatelessWidget {
                             chat: state.chats[index],
                             onPressed: () {
                               Navigator.pushNamed(
-                                  context, SingleChatScreen.routeName,
-                                  arguments: ChatModel.empty());
+                                      context, SingleChatScreen.routeName,
+                                      arguments: state.chats[index])
+                                  .then((value) {
+                                print("heeeeeeeeeeeeeeeeeeeeeee");
+                                context.read<UserChatsBloc>().add(
+                                    FetchUpdatedUserChatsEvent(
+                                        chats: state.chats,
+                                        userId: state.chats[0].senderId));
+                              });
                             },
                           ),
                         );

@@ -85,7 +85,7 @@ class ChatModel extends ChatEntity {
                     recipientId: map['recipientId'],
                     message: map["message"],
                     messageStatus: map["messageStatus"],
-                    createdAt: map["sentAt"],
+                    createdAt: DateTime.parse(map["sentAt"]),
                     messageId: map['messageId'],
                     chatId: map['chatId'])
                 : null);

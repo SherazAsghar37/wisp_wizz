@@ -6,7 +6,24 @@ extension EitherX<L, R> on Either<L, R> {
 }
 
 extension TimeFormatter on DateTime {
-  String timeFormat() => "$hour:$minute ${(hour < 12) ? 'AM' : 'PM'}";
+  String timeFormat() {
+    String hours = "";
+    switch (hour) {
+      case 00:
+        hours = "12";
+        break;
+      case < 10:
+        hours = "0$hour";
+        break;
+      case > 12:
+        hours = (hour % 12).toString();
+        break;
+      default:
+        hours = hour.toString();
+    }
+    final String minutes = minute < 10 ? "0$minute" : minute.toString();
+    return "$hours:$minutes ${(hour < 12) ? 'AM' : 'PM'}";
+  }
 }
 
 extension DateFormatter on DateTime {

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -37,7 +36,7 @@ class SqfliteManager {
                       messageId VARCHAR(36) PRIMARY KEYNOT NULL,
                       chatId VARCHAR(36) NOT NULL,
                       message LONGTEXT not null,
-                      messageStatus TEXT CHECK(messageStatus IN ('Read', 'Sent', 'Unread', 'Seen')) DEFAULT 'Sent',
+                      messageStatus TEXT CHECK(messageStatus IN ('Sending', 'Sent', 'Delivered', 'Seen')) DEFAULT 'Sent',
                       repliedToId  VARCHAR(36),
                       createdAt datetime not null  default CURRENT_TIMESTAMP,
                       updatedAt datetime not null  default CURRENT_TIMESTAMP,
@@ -131,7 +130,10 @@ class SqfliteManager {
         chatAndSenderData = await db.rawQuery("""SELECT * FROM Chat as c 
           INNER JOIN User as u ON c.recipientId = u.id 
           WHERE c.senderId ='$senderId' and c.recipientId = '$recipientId'""");
-        messages = await fetchMessages(chatAndSenderData[0]["chatId"]);
+        messages = await db.rawQuery("""
+          SELECT * FROM Message 
+          where chatId = ?
+         """, [chatAndSenderData[0]["chatId"]]);
       }
       final Map<String, dynamic> data = {
         "messages": messages,
@@ -139,6 +141,20 @@ class SqfliteManager {
       };
       DebugHelper.printWarning(data.toString());
       return data;
+    } catch (e) {
+      throw SqfliteDBException(e.toString());
+    }
+  }
+
+  static Future<List<MapData>> fetchMessages(String chatId) async {
+    try {
+      List<Map<String, dynamic>> messages = await db.rawQuery("""
+          SELECT m.*,c.senderId,c.recipientId FROM Message as m 
+          LEFT JOIN Chat as c on c.chatId = m.chatId
+          where m.chatId = ?
+         """, [chatId]);
+
+      return messages;
     } catch (e) {
       throw SqfliteDBException(e.toString());
     }
@@ -180,23 +196,11 @@ class SqfliteManager {
     }
   }
 
-  static Future<List<MapData>> fetchMessages(String chatId) async {
-    try {
-      List<Map<String, dynamic>> messages =
-          await db.rawQuery("""SELECT * FROM Message WHERE chatId = '$chatId'
-         """);
-      DebugHelper.printWarning(messages.toString());
-      return messages;
-    } catch (e) {
-      throw SqfliteDBException(e.toString());
-    }
-  }
-
   static Future<MapData> insertMessage(MapData data) async {
     try {
       var uuid = const Uuid();
       final newdata = {...data, "messageId": uuid.v6()};
-      DebugHelper.printWarning(newdata.toString());
+      // DebugHelper.printWarning(newdata.toString());
       await db.insert("Message", newdata,
           conflictAlgorithm: ConflictAlgorithm.fail);
       return newdata;
@@ -210,13 +214,12 @@ class SqfliteManager {
     try {
       final data = await db.rawQuery('''
       SELECT c.*, m.messageId, m.message, m.messageStatus, m.updatedAt AS sentAt,u.*
-FROM Chat AS c
-INNER JOIN User as u on c.recipientId = u.id
-LEFT JOIN Message AS m ON c.chatId = m.chatId
-AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY updatedAt desc limit 1)
-WHERE c.senderId = ?
-LIMIT ? OFFSET ?
-
+      FROM Chat AS c
+      INNER JOIN User as u on c.recipientId = u.id
+      LEFT JOIN Message AS m ON c.chatId = m.chatId
+      AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY updatedAt desc limit 1)
+      WHERE c.senderId = ?
+      LIMIT ? OFFSET ?
       ''', [userId, chatsLoadAtEachTime, currentPage * chatsLoadAtEachTime]);
       // final d = await db.rawQuery('''
       //  SELECT message,chatId From Message
@@ -224,6 +227,16 @@ LIMIT ? OFFSET ?
       DebugHelper.printWarning(data.toString());
       // log(d.toString());
       return data;
+    } catch (e) {
+      throw SqfliteDBException(e.toString());
+    }
+  }
+
+  static Future<void> trunciateMessages() async {
+    try {
+      await db.rawQuery(
+        '''DELETE FROM Message''',
+      );
     } catch (e) {
       throw SqfliteDBException(e.toString());
     }
