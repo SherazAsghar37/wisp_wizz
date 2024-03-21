@@ -9,7 +9,7 @@ extension TimeFormatter on DateTime {
   String timeFormat() {
     String hours = "";
     switch (hour) {
-      case 00:
+      case == 0:
         hours = "12";
         break;
       case < 10:
