@@ -2,6 +2,8 @@ import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
@@ -43,6 +45,11 @@ class _HomeScreenState extends State<HomeScreen>
     context
         .read<UserChatsBloc>()
         .add(FetchUserChatsEvent(chats: const [], userId: widget.user.id));
+    // context.read<MessageBloc>().messagesStream.listen((event) {
+    //   if (event.isNotEmpty) {
+    //     context.read<ChatBloc>().add(event)
+    //   }
+    // });
   }
 
   @override

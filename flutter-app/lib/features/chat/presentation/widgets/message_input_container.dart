@@ -2,6 +2,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/switchable_icons.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/chat/presentation/widgets/attachment_button.dart';
 // import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart'
@@ -181,9 +182,17 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                                       message: messageController.text,
                                       chatId: chat.chatId,
                                     ));
+
                                 setState(() {
                                   messageController.clear();
                                 });
+                                final chatBloc = context.read<UserChatsBloc>();
+                                final chatState = chatBloc.state;
+                                if (chatState is UsersChatsFetched) {
+                                  chatBloc.add(FetchUpdatedUserChatsEvent(
+                                      chats: chatState.chats,
+                                      userId: chatState.chats[0].senderId));
+                                }
                               },
                               icon: const Icon(sendIcon)),
                         )

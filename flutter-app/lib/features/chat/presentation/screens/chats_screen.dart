@@ -86,10 +86,6 @@ class ChatsScreen extends StatelessWidget {
                                       arguments: state.chats[index])
                                   .then((value) {
                                 print("heeeeeeeeeeeeeeeeeeeeeee");
-                                context.read<UserChatsBloc>().add(
-                                    FetchUpdatedUserChatsEvent(
-                                        chats: state.chats,
-                                        userId: state.chats[0].senderId));
                               });
                             },
                           ),

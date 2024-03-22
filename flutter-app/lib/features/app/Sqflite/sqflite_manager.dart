@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
@@ -81,7 +82,9 @@ class SqfliteManager {
         "id": id,
         "name": name,
         "phoneNumber": phoneNumber,
-        "image": image
+        "image": image,
+        "createdAt": DateTime.now().toSqfliteFormat(),
+        "updatedAt": DateTime.now().toSqfliteFormat(),
       };
       return await db.insert("User", data,
           conflictAlgorithm: ConflictAlgorithm.replace);
@@ -124,7 +127,9 @@ class SqfliteManager {
             {
               "recipientId": recipientId,
               "senderId": senderId,
-              "chatId": uuid.v6()
+              "chatId": uuid.v6(),
+              "createdAt": DateTime.now().toSqfliteFormat(),
+              "updatedAt": DateTime.now().toSqfliteFormat(),
             },
             conflictAlgorithm: ConflictAlgorithm.abort);
         chatAndSenderData = await db.rawQuery("""SELECT * FROM Chat as c 
@@ -185,7 +190,9 @@ class SqfliteManager {
               "id": item.id,
               "name": item.name,
               "phoneNumber": item.phoneNumber,
-              "image": base64Encode(item.image)
+              "image": base64Encode(item.image),
+              "createdAt": DateTime.now().toSqfliteFormat(),
+              "updatedAt": DateTime.now().toSqfliteFormat(),
             },
             conflictAlgorithm: ConflictAlgorithm.replace);
       }
@@ -199,10 +206,18 @@ class SqfliteManager {
   static Future<MapData> insertMessage(MapData data) async {
     try {
       var uuid = const Uuid();
-      final newdata = {...data, "messageId": uuid.v6()};
+      final id = uuid.v6();
+      final newdata = {
+        ...data,
+        "messageId": id,
+        "updatedAt": data["createdAt"]
+      };
       // DebugHelper.printWarning(newdata.toString());
-      await db.insert("Message", newdata,
-          conflictAlgorithm: ConflictAlgorithm.fail);
+      await db.insert(
+        "Message",
+        newdata,
+        conflictAlgorithm: ConflictAlgorithm.fail,
+      );
       return newdata;
     } catch (e) {
       throw SqfliteDBException(e.toString());
@@ -219,6 +234,7 @@ class SqfliteManager {
       LEFT JOIN Message AS m ON c.chatId = m.chatId
       AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY updatedAt desc limit 1)
       WHERE c.senderId = ?
+      ORDER BY m.updatedAt desc
       LIMIT ? OFFSET ?
       ''', [userId, chatsLoadAtEachTime, currentPage * chatsLoadAtEachTime]);
       // final d = await db.rawQuery('''

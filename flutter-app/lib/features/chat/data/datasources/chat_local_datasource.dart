@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager_wrapper.dart';
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
@@ -71,21 +74,24 @@ class ChatLocalDatasource extends IChatLocalDatasource {
         "chatId": chatId,
         "messageStatus": "Sent",
         "repliedToId": repliedToId,
-        "createdAt": DateTime.now().toIso8601String()
+        "createdAt": DateTime.now().toSqfliteFormat()
       };
+
       final res = await _sqfliteManagerWrapper.insertMessage(data);
+
       final newData = {
         ...res,
         "senderId": senderId,
         "recipientId": recipientId,
       };
+      log(res.toString());
       return MessageModel.fromMap(newData);
     } on SqfliteDBException catch (e) {
       DebugHelper.printError(e.toString());
       throw const SqfliteDBException(
           "Something went wrong, Unable to send message");
     } catch (e) {
-      DebugHelper.printError("Internal erro $e");
+      DebugHelper.printError("Internal error $e");
       throw const SqfliteDBException("Something went wrong");
     }
   }

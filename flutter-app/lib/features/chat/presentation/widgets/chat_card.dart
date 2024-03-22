@@ -13,6 +13,7 @@ class ChatCard extends StatelessWidget {
   final double radius = Dimensions.height12 + Dimensions.width12;
   @override
   Widget build(BuildContext context) {
+    print(chat.lastMessage?.createdAt);
     final theme = Theme.of(context);
     return MaterialButton(
       padding: EdgeInsets.zero,

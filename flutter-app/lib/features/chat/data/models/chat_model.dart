@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/entities/chat_entity.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
@@ -69,7 +70,7 @@ class ChatModel extends ChatEntity {
       : this(
             senderId: map['senderId'],
             recentTextMessage: "map['recentTextMessage']",
-            createdAt: DateTime.parse(map['createdAt']),
+            createdAt: DateFormatter.fromSqfliteFormat(map['createdAt']),
             totalUnReadMessages: map['unreadMessages'],
             chatId: map['chatId'],
             recipient: UserModel(
@@ -77,7 +78,7 @@ class ChatModel extends ChatEntity {
                 phoneNumber: map["phoneNumber"],
                 id: map["id"],
                 status: map["status"] == 1 ? true : false,
-                lastSeen: DateTime.parse(map["lastSeen"]),
+                lastSeen: DateFormatter.fromSqfliteFormat(map["lastSeen"]),
                 image: base64Decode(map["image"])),
             lastMessage: map["messageId"] != null
                 ? MessageModel(
@@ -85,7 +86,7 @@ class ChatModel extends ChatEntity {
                     recipientId: map['recipientId'],
                     message: map["message"],
                     messageStatus: map["messageStatus"],
-                    createdAt: DateTime.parse(map["sentAt"]),
+                    createdAt: DateFormatter.fromSqfliteFormat(map["sentAt"]),
                     messageId: map['messageId'],
                     chatId: map['chatId'])
                 : null);

@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/domain/entities/message_entity.dart';
 
 class MessageModel extends MessageEntity {
@@ -80,7 +81,7 @@ class MessageModel extends MessageEntity {
       chatId: map['chatId'],
       recipientId: map['recipientId'],
       message: map['message'],
-      createdAt: DateTime.parse(map['updatedAt']),
+      createdAt: DateFormatter.fromSqfliteFormat(map['createdAt']),
       messageStatus: map['messageStatus'],
       repliedToId: map['repliedToId'],
       repliedMessage: map['repliedMessage'],
