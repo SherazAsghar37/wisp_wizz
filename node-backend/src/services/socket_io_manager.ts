@@ -2,23 +2,24 @@ import { Socket } from "socket.io";
 import { singleton } from "tsyringe";
 
 @singleton()
-class SocketIOManager {
-  constructor(
-    private _connectedUsers: Record<string, any> = {},
-    private _connectedSockets: Record<string, any> = {}
-  ) {}
+export default class SocketIOManager {
+  private _connectedUsers: Record<string, any> = {};
+  private _connectedSockets: Record<string, any> = {};
+  constructor() {}
   public userConnected = (userId: string, socket: Socket) => {
     const data = {
       userId: userId,
     };
     this._connectedUsers[socket.id] = userId;
     this._connectedSockets[userId] = socket.id;
+    console.log(this._connectedUsers);
   };
 
   public userDisconnected = (socket: Socket) => {
     const userId = this._connectedUsers[socket.id];
     delete this._connectedUsers[socket.id];
     delete this._connectedSockets[userId];
+    console.log(this._connectedUsers);
   };
 
   public checkUsersConnectionStatus = (userId: string): string | undefined => {

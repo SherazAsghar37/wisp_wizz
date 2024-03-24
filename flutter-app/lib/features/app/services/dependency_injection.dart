@@ -11,6 +11,7 @@ import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.da
 import 'package:wisp_wizz/features/chat/domain/usecases/get_messages_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_single_chat_usecase.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/received_message_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
@@ -126,11 +127,15 @@ Future<void> init() async {
         () => FlutterContactsWrapper());
 //-----------Message Bloc
   sl
-    ..registerFactory(
-        () => MessageBloc(sendMessageUseCase: sl(), getMessagesUseCase: sl()))
+    ..registerFactory(() => MessageBloc(
+        sendMessageUseCase: sl(),
+        getMessagesUseCase: sl(),
+        receivedMessageUseCase: sl()))
     //usecases
     ..registerLazySingleton<SendMessageUseCase>(
         () => SendMessageUseCase(repository: sl()))
+    ..registerLazySingleton<ReceivedMessageUseCase>(
+        () => ReceivedMessageUseCase(repository: sl()))
     ..registerLazySingleton<GetMessagesUseCase>(
         () => GetMessagesUseCase(repository: sl()))
     //repositories

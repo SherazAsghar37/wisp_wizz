@@ -11,7 +11,11 @@ final class MessageInitial extends MessageState {}
 
 final class MessageSending extends MessageState {}
 
+final class MessageReceiving extends MessageState {}
+
 final class MessageSent extends MessageState {}
+
+final class MessageReceived extends MessageState {}
 
 final class MessageFailed extends MessageState {
   final String message;

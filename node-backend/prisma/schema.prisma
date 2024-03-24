@@ -13,6 +13,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum MessageStatus{
+  Sending
+  Sent
+  Delivered
+  Seen
+}
+
 model User {
   id                String      @id @default(uuid())
   name              String
@@ -23,6 +30,8 @@ model User {
   chats             Chat[]      
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @default(now())
+  sender            Message[]   @relation("sender")
+  recipient         Message[]   @relation("recipient")
   } 
 
 model Chat{
@@ -35,16 +44,13 @@ model Chat{
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @default(now())
 }
-enum MessageStatus{
-  Read
-  Sent
-  Unread
-  Seen
-}
+
 
 model Message {
   messageId       String        @id @default(uuid()) 
   chatId          String        
+  recipientId     String        
+  senderId        String        
   chat            Chat?         @relation(fields: [chatId], references: [chatId])
   message         String
   createdAt       DateTime      @default(now())
@@ -52,6 +58,47 @@ model Message {
   messageStatus   MessageStatus @default(Sent)
   repliedTo       Message?      @relation("Replies",fields: [repliedToId], references: [messageId])
   repliedToId     String?       @map("repliedToId")
-  replies        Message[]      @relation(name: "Replies")
+  repliedMessage        Message[]      @relation(name: "Replies")
+  sender        User      @relation("sender", fields: [recipientId], references: [id])
+  recipient     User      @relation("recipient",fields: [senderId], references: [id])
 }
+
+
+// model User {
+//   id          String   @id @default(uuid()) 
+//   name        String
+//   phoneNumber String   @unique
+//   image       Bytes?
+//   status      Boolean  @default(true)
+//   lastSeen    DateTime @default(now())
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+// }
+
+// model Chat {
+//   chatId        String   @id  @default(uuid())
+//   recipientId   String
+//   senderId      String
+//   unreadMessages Int      @default(0)
+//   createdAt     DateTime @default(now())
+//   updatedAt     DateTime @updatedAt
+//   sender         User     @relation("sender", fields: [recipientId], references: [id])
+//   recipient      User     @relation(fields: [senderId], references: [id])
+// }
+
+// model Message {
+//   messageId     String    @id  @default(uuid())
+//   chatId        String
+//   recipientId   String
+//   senderId      String
+//   message       String
+//   messageStatus String    @default("Sent")
+//   repliedToId   String?
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
+//   Chat          Chat      @relation(fields: [chatId], references: [chatId])
+  // sender        User      @relation(fields: [recipientId], references: [id])
+  // recipient     User      @relation("sender",fields: [senderId], references: [id])
+//   Message       Message?  @relation("repliedMessage", fields: [repliedToId], references: [messageId])
+// }
 

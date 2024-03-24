@@ -62,30 +62,32 @@ class ChatLocalDatasource extends IChatLocalDatasource {
   }
 
   @override
-  Future<MessageModel> saveMessage(
-      {required String message,
-      required String senderId,
-      required String recipientId,
-      required String chatId,
-      String? repliedToId}) async {
+  Future<MessageModel> saveMessage({
+    required String message,
+    required String senderId,
+    required String recipientId,
+    required String chatId,
+    String? repliedToId,
+    String? repliedMessage,
+    String? messageId,
+  }) async {
     try {
       final data = {
         "message": message,
         "chatId": chatId,
         "messageStatus": "Sent",
         "repliedToId": repliedToId,
-        "createdAt": DateTime.now().toSqfliteFormat()
+        "senderId": senderId,
+        "recipientId": recipientId,
+        "createdAt": DateTime.now().toSqfliteFormat(),
+        "messageId": messageId,
       };
 
       final res = await _sqfliteManagerWrapper.insertMessage(data);
 
-      final newData = {
-        ...res,
-        "senderId": senderId,
-        "recipientId": recipientId,
-      };
+      final newData = {...res, "repliedMessage": repliedMessage};
       log(res.toString());
-      return MessageModel.fromMap(newData);
+      return MessageModel.fromDBData(newData);
     } on SqfliteDBException catch (e) {
       DebugHelper.printError(e.toString());
       throw const SqfliteDBException(

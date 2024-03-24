@@ -1,4 +1,5 @@
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/datasources/i_chat_remote_datasource.dart';
@@ -11,12 +12,14 @@ class ChatRemoteDatasource implements IChatRemoteDatasource {
   }) : _socket = socket;
 
   @override
-  void sendMessage(
-      {required String message,
-      required String senderId,
-      required String recipientId,
-      required String chatId,
-      String? repliedToId}) {
+  void sendMessage({
+    required String message,
+    required String senderId,
+    required String recipientId,
+    required String chatId,
+    String? repliedToId,
+    String? repliedMessage,
+  }) {
     try {
       final data = {
         "message": message,
@@ -24,6 +27,8 @@ class ChatRemoteDatasource implements IChatRemoteDatasource {
         "recipientId": recipientId,
         "chatId": chatId,
         "repliedToId": repliedToId,
+        "repliedMessage": repliedMessage,
+        "createdAt": DateTime.now().toSqfliteFormat()
       };
       return _socket.emit("message", data);
     } catch (e) {

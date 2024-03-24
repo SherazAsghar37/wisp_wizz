@@ -55,25 +55,56 @@ class ChatRepository implements IChatRepository {
   }
 
   @override
-  FutureMessage sendMessage(
-      {required String message,
-      required String senderId,
-      required String recipientId,
-      required String chatId,
-      String? repliedToId}) async {
+  FutureMessage sendMessage({
+    required String message,
+    required String senderId,
+    required String recipientId,
+    required String chatId,
+    String? repliedToId,
+    String? repliedMessage,
+  }) async {
     try {
       _remoteDatasource.sendMessage(
-          chatId: chatId,
-          message: message,
-          recipientId: recipientId,
-          senderId: senderId,
-          repliedToId: repliedToId);
+        chatId: chatId,
+        message: message,
+        recipientId: recipientId,
+        senderId: senderId,
+        repliedToId: repliedToId,
+      );
       final response = await _localDatasource.saveMessage(
           chatId: chatId,
           message: message,
           recipientId: recipientId,
           senderId: senderId,
-          repliedToId: repliedToId);
+          repliedToId: repliedToId,
+          repliedMessage: repliedMessage);
+      return Right(response);
+    } on ApiException catch (e) {
+      return Left(ApiFailure.fromException(e));
+    } on SqfliteDBException catch (e) {
+      return Left(SqfliteDBFailure.fromException(e));
+    }
+  }
+
+  @override
+  FutureMessage receivedMessage({
+    required String message,
+    required String senderId,
+    required String recipientId,
+    required String chatId,
+    String? repliedToId,
+    String? repliedMessage,
+    String? messageId,
+  }) async {
+    try {
+      final response = await _localDatasource.saveMessage(
+          chatId: chatId,
+          message: message,
+          recipientId: recipientId,
+          senderId: senderId,
+          repliedToId: repliedToId,
+          repliedMessage: repliedMessage,
+          messageId: messageId);
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));

@@ -191,7 +191,7 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                                 if (chatState is UsersChatsFetched) {
                                   chatBloc.add(FetchUpdatedUserChatsEvent(
                                       chats: chatState.chats,
-                                      userId: chatState.chats[0].senderId));
+                                      userId: chat.senderId));
                                 }
                               },
                               icon: const Icon(sendIcon)),

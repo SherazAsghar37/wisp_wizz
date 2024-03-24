@@ -11,11 +11,14 @@ abstract class IChatLocalDatasource {
   Future<ChatModel> getChat(
       {required String recipientId, required String senderId});
   Future<List<MessageModel>> getMessages(String chatId);
-  Future<void> saveMessage(
-      {required String message,
-      required String senderId,
-      required String recipientId,
-      required String chatId,
-      String? repliedToId});
+  Future<void> saveMessage({
+    required String message,
+    required String senderId,
+    required String recipientId,
+    required String chatId,
+    String? repliedToId,
+    String? repliedMessage,
+    String? messageId,
+  });
   Future<List<ChatModel>> fetchChats(int currentPage, String userId);
 }

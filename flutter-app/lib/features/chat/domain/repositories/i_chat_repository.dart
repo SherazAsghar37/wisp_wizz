@@ -8,7 +8,17 @@ abstract class IChatRepository {
       required String senderId,
       required String recipientId,
       required String chatId,
-      String? repliedToId});
+      String? repliedToId,
+      String? repliedMessage});
+  FutureMessage receivedMessage({
+    required String message,
+    required String senderId,
+    required String recipientId,
+    required String chatId,
+    String? repliedToId,
+    String? repliedMessage,
+    String? messageId,
+  });
   ResultFuture<List<MessageModel>> getMessages(String chatId);
   ResultFuture<ChatModel> getSingleChat(
       {required String recipientId, required String senderId});

@@ -34,15 +34,20 @@ class SqfliteManager {
                       CONSTRAINT FK_Chat_User FOREIGN KEY (recipientId) REFERENCES User(id),
                       CONSTRAINT FK_Chat_Sender FOREIGN KEY (senderId) REFERENCES User(id))""");
       await db.execute("""CREATE TABLE Message (
-                      messageId VARCHAR(36) PRIMARY KEYNOT NULL,
+                      messageId VARCHAR(36) PRIMARY KEY NOT NULL,
                       chatId VARCHAR(36) NOT NULL,
+                      recipientId VARCHAR(36) NOT NULL,
+                      senderId VARCHAR(36)  NOT NULL,
                       message LONGTEXT not null,
                       messageStatus TEXT CHECK(messageStatus IN ('Sending', 'Sent', 'Delivered', 'Seen')) DEFAULT 'Sent',
                       repliedToId  VARCHAR(36),
                       createdAt datetime not null  default CURRENT_TIMESTAMP,
                       updatedAt datetime not null  default CURRENT_TIMESTAMP,
-                      CONSTRAINT FK_Chat_Message FOREIGN KEY (chatId) REFERENCES Chat(id),
-                      CONSTRAINT FK_Replied_Message FOREIGN KEY (repliedToId) REFERENCES Message(id))""");
+                      CONSTRAINT FK_Chat_Message FOREIGN KEY (chatId) REFERENCES Chat(chatId),
+                      CONSTRAINT FK_Replied_Message FOREIGN KEY (repliedToId) REFERENCES Message(messageId),
+                      CONSTRAINT FK_Message_Recipient FOREIGN KEY (recipientId) REFERENCES User(id),
+                      CONSTRAINT FK_Message_Sender FOREIGN KEY (senderId) REFERENCES User(id)
+                      )""");
     } catch (e) {
       throw SqfliteDBException(e.toString());
     }
@@ -154,7 +159,7 @@ class SqfliteManager {
   static Future<List<MapData>> fetchMessages(String chatId) async {
     try {
       List<Map<String, dynamic>> messages = await db.rawQuery("""
-          SELECT m.*,c.senderId,c.recipientId FROM Message as m 
+          SELECT m.*,(Select ms.message from Message as ms where ms.messageId = m.repliedToId) FROM Message as m 
           LEFT JOIN Chat as c on c.chatId = m.chatId
           where m.chatId = ?
          """, [chatId]);
@@ -209,7 +214,7 @@ class SqfliteManager {
       final id = uuid.v6();
       final newdata = {
         ...data,
-        "messageId": id,
+        "messageId": data["messageId"] ?? id,
         "updatedAt": data["createdAt"]
       };
       // DebugHelper.printWarning(newdata.toString());
@@ -232,7 +237,7 @@ class SqfliteManager {
       FROM Chat AS c
       INNER JOIN User as u on c.recipientId = u.id
       LEFT JOIN Message AS m ON c.chatId = m.chatId
-      AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY updatedAt desc limit 1)
+      AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY createdAt desc limit 1)
       WHERE c.senderId = ?
       ORDER BY m.updatedAt desc
       LIMIT ? OFFSET ?
@@ -241,7 +246,7 @@ class SqfliteManager {
       //  SELECT message,chatId From Message
       // ''');
       DebugHelper.printWarning(data.toString());
-      // log(d.toString());
+
       return data;
     } catch (e) {
       throw SqfliteDBException(e.toString());

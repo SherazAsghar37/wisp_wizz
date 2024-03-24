@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
@@ -15,32 +17,7 @@ class SingleChatScreen extends StatefulWidget {
 MessageModel message = MessageModel.empty();
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
-  final List<MessageModel> messages = [
-    // message.copyWith(
-    //     message: "this is a text message from friend.",
-    //     senderId: senderId,
-    //     recipientId: recipientId),
-    // message.copyWith(
-    //     message: "gida gadi gida gida o",
-    //     senderId: senderId,
-    //     recipientId: recipientId),
-    // message.copyWith(
-    //     message: "Ai bi merri along time go,",
-    //     senderId: senderId,
-    //     recipientId: recipientId),
-    // message.copyWith(
-    //     message: " wud u du cum for ",
-    //     senderId: recipientId,
-    //     recipientId: senderId),
-    // message.copyWith(
-    //     message: "wud u do go", senderId: recipientId, recipientId: senderId),
-    // message.copyWith(
-    //     message: "wud yu du cum for putlando",
-    //     senderId: recipientId,
-    //     recipientId: senderId),
-    // message.copyWith(
-    //     message: "Zzzzz", senderId: senderId, recipientId: recipientId),
-  ];
+  final List<MessageModel> messages = [];
   @override
   void initState() {
     context.read<MessageBloc>().messagesStream.listen((event) {
@@ -58,12 +35,6 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    messages.add(
-      message.copyWith(
-          message: "Zzzzz",
-          senderId: widget.chat.recipient.id,
-          recipientId: widget.chat.senderId),
-    );
     return Scaffold(
         backgroundColor: theme.colorScheme.background.withOpacity(0.9),
         extendBodyBehindAppBar: true,

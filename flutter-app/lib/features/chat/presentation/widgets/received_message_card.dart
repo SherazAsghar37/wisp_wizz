@@ -35,7 +35,7 @@ class ReceivedMessageCard extends StatelessWidget {
                   topRight: Radius.circular(borderRadius),
                 )),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(message.message,
                     softWrap: true,
@@ -45,15 +45,9 @@ class ReceivedMessageCard extends StatelessWidget {
                   height: Dimensions.height2,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ChatUtils.getMessageStatusIcon(
-                        context, message.messageStatus,
-                        inconSize: Dimensions.height14),
-                    SizedBox(
-                      width: Dimensions.width2,
-                    ),
                     Text(message.createdAt.timeFormat(),
                         maxLines: 1,
                         softWrap: false,
