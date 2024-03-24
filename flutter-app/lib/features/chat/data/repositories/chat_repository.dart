@@ -7,6 +7,7 @@ import 'package:wisp_wizz/features/chat/data/datasources/chat_remote_datasource.
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
 
 class ChatRepository implements IChatRepository {
   final ChatRemoteDatasource _remoteDatasource;
@@ -34,7 +35,7 @@ class ChatRepository implements IChatRepository {
   }
 
   @override
-  ResultFuture<List<ChatModel>> getMyChats(
+  ResultFuture<CustomGetMyChatsResponse> getMyChats(
       int currentPage, String userId) async {
     try {
       final response = await _localDatasource.fetchChats(currentPage, userId);
@@ -92,9 +93,10 @@ class ChatRepository implements IChatRepository {
     required String senderId,
     required String recipientId,
     required String chatId,
+    required bool isChatClosed,
+    required String messageId,
     String? repliedToId,
     String? repliedMessage,
-    String? messageId,
   }) async {
     try {
       final response = await _localDatasource.saveMessage(
@@ -104,7 +106,8 @@ class ChatRepository implements IChatRepository {
           senderId: senderId,
           repliedToId: repliedToId,
           repliedMessage: repliedMessage,
-          messageId: messageId);
+          messageId: messageId,
+          isChatClosed: isChatClosed);
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));

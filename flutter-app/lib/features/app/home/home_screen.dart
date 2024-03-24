@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
@@ -45,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
     tabController = TabController(vsync: this, length: tabScreens.length);
     final chatBloc = context.read<UserChatsBloc>();
-    final chatState = chatBloc.state;
     chatBloc.add(FetchUserChatsEvent(chats: const [], userId: widget.user.id));
     WebSocketManager.socket.on("message${widget.user.id}", (data) {
       context.read<MessageBloc>().add(ReceivedMessageEvent(
@@ -54,19 +51,10 @@ class _HomeScreenState extends State<HomeScreen>
           message: data["message"],
           chatId: data["chatId"],
           repliedToId: data["repliedToId"],
-          repliedMessage: data["repliedMessage"]));
-      if (chatState is UsersChatsFetched) {
-        log("here");
-        chatBloc.add(FetchUpdatedUserChatsEvent(
-            chats: chatState.chats, userId: widget.user.id));
-      }
+          repliedMessage: data["repliedMessage"],
+          isChatClosed: true,
+          messageId: data["messageId"]));
     });
-
-    // context.read<MessageBloc>().messagesStream.listen((event) {
-    //   if (event.isNotEmpty) {
-    //     context.read<ChatBloc>().add(event)
-    //   }
-    // });
   }
 
   @override

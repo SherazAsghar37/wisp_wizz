@@ -56,7 +56,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         recipientId: event.recipientId,
         messageId: event.messageId,
         repliedToId: event.repliedToId,
-        repliedToMessage: event.repliedMessage));
+        repliedToMessage: event.repliedMessage,
+        isChatClosed: event.isChatClosed,
+       ));
     response.fold((f) => emit(MessageFailed(f.message)), (s) {
       _addToSink(s);
       emit(MessageReceived());

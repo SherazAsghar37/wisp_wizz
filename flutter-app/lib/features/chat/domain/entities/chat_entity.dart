@@ -8,7 +8,7 @@ class ChatEntity extends Equatable {
   final String? senderId;
   final String? recentTextMessage;
   final DateTime? createdAt;
-  final int? totalUnReadMessages;
+  final int? unreadMessages;
   final String? chatId;
   final UserEntity? recipient;
   final MessageEntity? lastMessage;
@@ -16,7 +16,7 @@ class ChatEntity extends Equatable {
       {this.senderId,
       this.recentTextMessage,
       this.createdAt,
-      this.totalUnReadMessages,
+      this.unreadMessages,
       this.chatId,
       this.recipient,
       this.lastMessage});
@@ -26,7 +26,7 @@ class ChatEntity extends Equatable {
         senderId,
         recentTextMessage,
         createdAt,
-        totalUnReadMessages,
+        unreadMessages,
         chatId,
         recipient,
         lastMessage

@@ -16,7 +16,7 @@ class ChatModel extends ChatEntity {
   @override
   final DateTime? createdAt;
   @override
-  final int? totalUnReadMessages;
+  final int unreadMessages;
   @override
   final String chatId;
   @override
@@ -28,14 +28,14 @@ class ChatModel extends ChatEntity {
       {required this.senderId,
       this.recentTextMessage,
       this.createdAt,
-      this.totalUnReadMessages,
+      required this.unreadMessages,
       required this.chatId,
       required this.recipient,
       required this.lastMessage})
       : super(
             recentTextMessage: recentTextMessage,
             createdAt: createdAt,
-            totalUnReadMessages: totalUnReadMessages,
+            unreadMessages: unreadMessages,
             chatId: chatId,
             recipient: recipient,
             lastMessage: lastMessage,
@@ -46,7 +46,7 @@ class ChatModel extends ChatEntity {
       'senderId': senderId,
       'recentTextMessage': recentTextMessage,
       'createdAt': createdAt?.millisecondsSinceEpoch,
-      'totalUnReadMessages': totalUnReadMessages,
+      'unreadMessages': unreadMessages,
       'id': chatId,
       "recipient": recipient.toString(),
       "lastMessage": lastMessage?.toMap()
@@ -59,7 +59,7 @@ class ChatModel extends ChatEntity {
             recentTextMessage: "map['recentTextMessage']",
             createdAt:
                 DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
-            totalUnReadMessages: map['unreadMessages'],
+            unreadMessages: map['unreadMessages'],
             chatId: map['id'],
             recipient: UserModel.fromMap(map['sender']),
             lastMessage: map['lastMessage'] != null
@@ -71,7 +71,7 @@ class ChatModel extends ChatEntity {
             senderId: map['senderId'],
             recentTextMessage: "map['recentTextMessage']",
             createdAt: DateFormatter.fromSqfliteFormat(map['createdAt']),
-            totalUnReadMessages: map['unreadMessages'],
+            unreadMessages: map['unreadMessages'],
             chatId: map['chatId'],
             recipient: UserModel(
                 name: map["name"],
@@ -100,7 +100,7 @@ class ChatModel extends ChatEntity {
             senderId: "asfasf",
             recentTextMessage: "hi testing message",
             createdAt: DateTime.now(),
-            totalUnReadMessages: 4,
+            unreadMessages: 4,
             chatId: "12ab",
             recipient: UserModel.empty(),
             lastMessage: MessageModel.empty());
@@ -109,7 +109,7 @@ class ChatModel extends ChatEntity {
       {UserModel? recipient,
       String? recentTextMessage,
       DateTime? createdAt,
-      int? totalUnReadMessages,
+      int? unreadMessages,
       String? chatId,
       String? senderId,
       MessageModel? lastMessage}) {
@@ -117,7 +117,7 @@ class ChatModel extends ChatEntity {
         senderId: senderId ?? this.senderId,
         recentTextMessage: recentTextMessage ?? this.recentTextMessage,
         createdAt: createdAt ?? this.createdAt,
-        totalUnReadMessages: totalUnReadMessages ?? this.totalUnReadMessages,
+        unreadMessages: unreadMessages ?? this.unreadMessages,
         chatId: chatId ?? this.chatId,
         recipient: recipient ?? this.recipient,
         lastMessage: lastMessage ?? this.lastMessage);

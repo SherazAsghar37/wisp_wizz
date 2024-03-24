@@ -20,22 +20,27 @@ class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
 
   Future<void> _onFetchUserChatsEvent(
       FetchUserChatsEvent event, Emitter<UserChatsState> emit) async {
-    emit(UsersChatsFetching(event.chats));
+    emit(UsersChatsFetching(event.chats, 0));
     final res = await _getMyChatsUseCase(CustomGetMyChatsParams(
         currentPage: _currentPages, userId: event.userId));
     res.fold((f) => emit(UsersChatsFetchFailed(f.message)), (s) {
       _currentPages += 1;
-      emit(UsersChatsFetched([...event.chats, ...s]));
+
+      emit(UsersChatsFetched(
+          [...event.chats, ...s.chats], s.totalUnreadMessages));
     });
   }
 
   Future<void> _onFetchUpdatedUserChatsEvent(
       FetchUpdatedUserChatsEvent event, Emitter<UserChatsState> emit) async {
-    emit(UsersChatsFetching(event.chats));
+    emit(UsersChatsFetching(event.chats, event.totalUnreadMessages));
     final res = await _getMyChatsUseCase(
         CustomGetMyChatsParams(currentPage: 0, userId: event.userId));
-    res.fold((f) => emit(UsersChatsFetchFailed(f.message)), (s) {
-      emit(UsersChatsFetched(s));
+    res.fold(
+        (f) => emit(UsersChatsFetchFailed(
+              f.message,
+            )), (s) {
+      emit(UsersChatsFetched(s.chats, s.totalUnreadMessages));
     });
   }
 }

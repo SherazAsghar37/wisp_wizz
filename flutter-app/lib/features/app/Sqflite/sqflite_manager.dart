@@ -163,6 +163,10 @@ class SqfliteManager {
           LEFT JOIN Chat as c on c.chatId = m.chatId
           where m.chatId = ?
          """, [chatId]);
+      await db.rawQuery("""
+          UPDATE Chat SET unreadMessages = 0
+          where chatId = ?
+         """, [chatId]);
 
       return messages;
     } catch (e) {
@@ -208,7 +212,7 @@ class SqfliteManager {
     }
   }
 
-  static Future<MapData> insertMessage(MapData data) async {
+  static Future<MapData> insertMessage(MapData data, bool isChatClosed) async {
     try {
       var uuid = const Uuid();
       final id = uuid.v6();
@@ -223,14 +227,19 @@ class SqfliteManager {
         newdata,
         conflictAlgorithm: ConflictAlgorithm.fail,
       );
+      if (isChatClosed) {
+        DebugHelper.printError("here");
+        await db.rawQuery("""
+      UPDATE Chat SET unreadMessages = unreadMessages +1  WHERE chatId = ? 
+      """, [data["chatId"]]);
+      }
       return newdata;
     } catch (e) {
       throw SqfliteDBException(e.toString());
     }
   }
 
-  static Future<List<MapData>> fetchChats(
-      String userId, int currentPage) async {
+  static Future<MapData> fetchChats(String userId, int currentPage) async {
     try {
       final data = await db.rawQuery('''
       SELECT c.*, m.messageId, m.message, m.messageStatus, m.updatedAt AS sentAt,u.*
@@ -242,12 +251,16 @@ class SqfliteManager {
       ORDER BY m.updatedAt desc
       LIMIT ? OFFSET ?
       ''', [userId, chatsLoadAtEachTime, currentPage * chatsLoadAtEachTime]);
-      // final d = await db.rawQuery('''
-      //  SELECT message,chatId From Message
-      // ''');
+      final totalUnreadMessages = await db.rawQuery('''
+      SELECT SUM(unreadMessages) as totalUnreadMessages
+      FROM Chat where senderId = '$userId'
+      ''');
       DebugHelper.printWarning(data.toString());
 
-      return data;
+      return {
+        "data": data,
+        "totalUnreadMessages": totalUnreadMessages[0]["totalUnreadMessages"]
+      };
     } catch (e) {
       throw SqfliteDBException(e.toString());
     }

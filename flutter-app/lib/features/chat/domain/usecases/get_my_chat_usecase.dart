@@ -5,13 +5,13 @@ import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
 
 class GetMyChatsUseCase
-    extends UsecaseWithParam<List<ChatModel>, CustomGetMyChatsParams> {
+    extends UsecaseWithParam<CustomGetMyChatsResponse, CustomGetMyChatsParams> {
   final IChatRepository repository;
 
   GetMyChatsUseCase({required this.repository});
 
   @override
-  ResultFuture<List<ChatModel>> call(CustomGetMyChatsParams param) {
+  ResultFuture<CustomGetMyChatsResponse> call(CustomGetMyChatsParams param) {
     return repository.getMyChats(param.currentPage, param.userId);
   }
 }
@@ -24,4 +24,14 @@ class CustomGetMyChatsParams extends Equatable {
 
   @override
   List<Object?> get props => [currentPage, userId];
+}
+
+class CustomGetMyChatsResponse extends Equatable {
+  final int totalUnreadMessages;
+  final List<ChatModel> chats;
+  const CustomGetMyChatsResponse(
+      {required this.totalUnreadMessages, required this.chats});
+
+  @override
+  List<Object?> get props => [totalUnreadMessages, chats];
 }

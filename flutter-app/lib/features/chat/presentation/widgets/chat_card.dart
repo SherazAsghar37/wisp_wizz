@@ -76,10 +76,9 @@ class ChatCard extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                chat.totalUnReadMessages != null &&
-                        chat.totalUnReadMessages! > 0
+                chat.unreadMessages > 0
                     ? NotificationIcon(
-                        notifications: chat.totalUnReadMessages.toString(),
+                        notifications: chat.unreadMessages.toString(),
                       )
                     : const SizedBox(),
                 Text(

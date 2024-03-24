@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
@@ -53,34 +54,54 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                   },
                 ),
                 Expanded(
-                    child: StreamBuilder(
-                        stream: context.read<MessageBloc>().messagesStream,
-                        builder: (context, snapshot) {
-                          return SingleChildScrollView(
-                            reverse: true,
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(Dimensions.width10,
-                                  0, Dimensions.width10, Dimensions.height50),
-                              child: messages.isNotEmpty
-                                  ? Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SizedBox(
-                                          height: Dimensions.height10,
-                                        ),
-                                        ...List.generate(
-                                            messages.length,
-                                            (index) =>
-                                                ChatUtils.messageCardManager(
-                                                    index: index,
-                                                    messages: messages,
-                                                    chat: widget.chat))
-                                      ],
-                                    )
-                                  : const Text("No data"),
-                            ),
-                          );
-                        }))
+                    child: BlocListener<MessageBloc, MessageState>(
+                        listener: (context, state) {
+                          if (state is MessageSent ||
+                              state is MessageReceived) {
+                            final chatBloc = context.read<UserChatsBloc>();
+                            final chatState = chatBloc.state;
+                            if (chatState is UsersChatsFetched) {
+                              log("here");
+                              chatBloc.add(FetchUpdatedUserChatsEvent(
+                                  chats: chatState.chats,
+                                  userId: widget.chat.senderId,
+                                  totalUnreadMessages:
+                                      chatState.totalUnreadMessages));
+                            }
+                          }
+                        },
+                        child: StreamBuilder(
+                            stream: context.read<MessageBloc>().messagesStream,
+                            builder: (context, snapshot) {
+                              return SingleChildScrollView(
+                                reverse: true,
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(
+                                      Dimensions.width10,
+                                      0,
+                                      Dimensions.width10,
+                                      Dimensions.height50),
+                                  child: messages.isNotEmpty
+                                      ? Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            SizedBox(
+                                              height: Dimensions.height10,
+                                            ),
+                                            ...List.generate(
+                                                messages.length,
+                                                (index) => ChatUtils
+                                                    .messageCardManager(
+                                                        index: index,
+                                                        messages: messages,
+                                                        chat: widget.chat))
+                                          ],
+                                        )
+                                      : const Text("No data"),
+                                ),
+                              );
+                            })))
               ],
             ),
           ),

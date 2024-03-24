@@ -36,16 +36,19 @@ class ReceivedMessageEvent extends MessageEvent {
   final String chatId;
   final String? repliedMessage;
   final String? repliedToId;
-  final String? messageId;
+  final String messageId;
+  final bool isChatClosed;
 
-  const ReceivedMessageEvent(
-      {required this.senderId,
-      required this.recipientId,
-      required this.message,
-      required this.chatId,
-      this.repliedMessage,
-      this.repliedToId,
-      this.messageId});
+  const ReceivedMessageEvent({
+    required this.senderId,
+    required this.messageId,
+    required this.recipientId,
+    required this.message,
+    required this.chatId,
+    required this.isChatClosed,
+    this.repliedMessage,
+    this.repliedToId,
+  });
 
   @override
   List<Object?> get props => [
@@ -55,7 +58,8 @@ class ReceivedMessageEvent extends MessageEvent {
         chatId,
         repliedMessage,
         repliedToId,
-        messageId
+        messageId,
+        isChatClosed
       ];
 }
 

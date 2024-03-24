@@ -23,15 +23,15 @@ class WebSocketManager {
     });
     _socket.onerror((error) {
       DebugHelper.printError(error);
-      throw SocketException(error);
+      throw WebSocketException(error);
     });
     _socket.onConnectError((data) {
       DebugHelper.printError(data);
-      throw SocketException(data);
+      throw WebSocketException(data);
     });
     _socket.onConnectTimeout((data) {
       DebugHelper.printError(data);
-      throw SocketException(data);
+      throw WebSocketException(data);
     });
 
     _socket.connect();

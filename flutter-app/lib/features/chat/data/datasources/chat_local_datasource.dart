@@ -7,26 +7,12 @@ import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/datasources/i_chat_local_datasource.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
 
 class ChatLocalDatasource extends IChatLocalDatasource {
   final SqfliteManagerWrapper _sqfliteManagerWrapper;
   ChatLocalDatasource({required SqfliteManagerWrapper sqfliteManagerWrapper})
       : _sqfliteManagerWrapper = sqfliteManagerWrapper;
-  // @override
-  // void saveMessage(
-  //     {required String message,
-  //     required String senderId,
-  //     required String recipientId,
-  //     required String chatId,
-  //     String? repliedToId}) {
-  //   try {
-  //     _sqfliteManagerWrapper.saveMessage(
-  //         recipientId: recipientId, senderId: senderId, message: message);
-  //   } catch (e) {
-  //     DebugHelper.printError(e.toString());
-  //     throw const SqfliteDBException("Unable to send message");
-  //   }
-  // }
 
   @override
   Future<ChatModel> getChat(
@@ -67,6 +53,7 @@ class ChatLocalDatasource extends IChatLocalDatasource {
     required String senderId,
     required String recipientId,
     required String chatId,
+    bool? isChatClosed,
     String? repliedToId,
     String? repliedMessage,
     String? messageId,
@@ -83,7 +70,8 @@ class ChatLocalDatasource extends IChatLocalDatasource {
         "messageId": messageId,
       };
 
-      final res = await _sqfliteManagerWrapper.insertMessage(data);
+      final res = await _sqfliteManagerWrapper.insertMessage(
+          data, isChatClosed ?? false);
 
       final newData = {...res, "repliedMessage": repliedMessage};
       log(res.toString());
@@ -99,10 +87,14 @@ class ChatLocalDatasource extends IChatLocalDatasource {
   }
 
   @override
-  Future<List<ChatModel>> fetchChats(int currentPage, String userId) async {
+  Future<CustomGetMyChatsResponse> fetchChats(
+      int currentPage, String userId) async {
     try {
       final res = await _sqfliteManagerWrapper.fetchChats(userId, currentPage);
-      return res.map((e) => ChatModel.fromDBData(e)).toList();
+      return CustomGetMyChatsResponse(
+          totalUnreadMessages: res["totalUnreadMessages"],
+          chats: List<ChatModel>.from(
+              res["data"].map((e) => ChatModel.fromDBData(e)).toList()));
     } on SqfliteDBException catch (e) {
       DebugHelper.printError(e.toString());
       throw const SqfliteDBException(

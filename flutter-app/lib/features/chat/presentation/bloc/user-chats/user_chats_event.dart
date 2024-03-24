@@ -17,8 +17,13 @@ class FetchUserChatsEvent extends UserChatsEvent {
 
 class FetchUpdatedUserChatsEvent extends UserChatsEvent {
   final String userId;
+  final int totalUnreadMessages;
   final List<ChatModel> chats;
-  const FetchUpdatedUserChatsEvent({required this.userId, required this.chats});
+
+  const FetchUpdatedUserChatsEvent(
+      {required this.userId,
+      required this.chats,
+      required this.totalUnreadMessages});
   @override
-  List<Object> get props => [userId, chats];
+  List<Object> get props => [userId, chats, totalUnreadMessages];
 }

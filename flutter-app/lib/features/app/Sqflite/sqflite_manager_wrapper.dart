@@ -41,11 +41,11 @@ class SqfliteManagerWrapper {
     return SqfliteManager.fetchMessages(chatId);
   }
 
-  Future<MapData> insertMessage(MapData data) {
-    return SqfliteManager.insertMessage(data);
+  Future<MapData> insertMessage(MapData data, bool isChatClosed) {
+    return SqfliteManager.insertMessage(data, isChatClosed);
   }
 
-  Future<List<MapData>> fetchChats(String userId, int currentPage) {
+  Future<MapData> fetchChats(String userId, int currentPage) {
     return SqfliteManager.fetchChats(userId, currentPage);
   }
 }
