@@ -12,14 +12,12 @@ export default class SocketIOManager {
     };
     this._connectedUsers[socket.id] = userId;
     this._connectedSockets[userId] = socket.id;
-    console.log(this._connectedUsers);
   };
 
   public userDisconnected = (socket: Socket) => {
     const userId = this._connectedUsers[socket.id];
     delete this._connectedUsers[socket.id];
     delete this._connectedSockets[userId];
-    console.log(this._connectedUsers);
   };
 
   public checkUsersConnectionStatus = (userId: string): string | undefined => {

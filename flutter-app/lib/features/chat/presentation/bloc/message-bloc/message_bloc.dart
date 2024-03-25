@@ -32,6 +32,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<SendMessageEvent>(_onSendMessage);
     on<ReceivedMessageEvent>(_onReceivedMessageEvent);
     on<FetchMessagesEvent>(_onfetchMessages);
+    on<InitMessagesEvent>(_onInitMessagesEvent);
   }
   void _onSendMessage(
       SendMessageEvent event, Emitter<MessageState> emit) async {
@@ -41,8 +42,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         chatId: event.chatId,
         recipientId: event.recipientId));
     response.fold((f) => emit(MessageFailed(f.message)), (s) {
-      _addToSink(s);
-      emit(MessageSent());
+      // _addToSink(s);
+      event.messages.add(s);
+      emit(MessageSent(messages: event.messages));
     });
   }
 
@@ -74,6 +76,11 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       }
       emit(const MessagesFetched());
     });
+  }
+
+  void _onInitMessagesEvent(
+      InitMessagesEvent event, Emitter<MessageState> emit) {
+    emit(MessagesState(messages: event.messages));
   }
 
   void dispose() {

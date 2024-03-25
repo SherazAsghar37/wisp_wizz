@@ -14,8 +14,10 @@ class SendMessageEvent extends MessageEvent {
   final String chatId;
   final String? repliedMessage;
   final String? repliedToId;
+  final List<MessageModel> messages;
 
   const SendMessageEvent({
+    required this.messages,
     required this.senderId,
     required this.recipientId,
     required this.message,
@@ -25,8 +27,15 @@ class SendMessageEvent extends MessageEvent {
   });
 
   @override
-  List<Object?> get props =>
-      [senderId, recipientId, message, chatId, repliedMessage, repliedToId];
+  List<Object?> get props => [
+        senderId,
+        recipientId,
+        message,
+        chatId,
+        repliedMessage,
+        repliedToId,
+        messages
+      ];
 }
 
 class ReceivedMessageEvent extends MessageEvent {
@@ -73,5 +82,14 @@ class FetchMessagesEvent extends MessageEvent {
   @override
   List<Object?> get props => [
         chatId,
+      ];
+}
+
+class InitMessagesEvent extends MessageEvent {
+  final List<MessageModel> messages;
+  const InitMessagesEvent({required this.messages});
+  @override
+  List<Object?> get props => [
+        messages,
       ];
 }
