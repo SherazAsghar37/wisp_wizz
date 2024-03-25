@@ -46,4 +46,8 @@ class SqfliteManagerWrapper {
   Future<MapData> fetchChats(String userId, int currentPage) {
     return SqfliteManager.fetchChats(userId, currentPage);
   }
+
+  Future<void> removeUnreadMarkFromChat(String chatId) {
+    return SqfliteManager.removeUnreadMarkFromChat(chatId);
+  }
 }

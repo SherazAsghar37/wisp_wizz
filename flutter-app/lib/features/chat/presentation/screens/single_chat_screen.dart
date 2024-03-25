@@ -17,13 +17,12 @@ class SingleChatScreen extends StatefulWidget {
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
   List<MessageModel> messages = [];
+  late StreamSubscription<List<MessageModel>> streamSubscription;
   @override
   void initState() {
-    // if (!_initialMessagesAssigned) {
-    //   messages = widget.chat.messages;
-    //   _initialMessagesAssigned = true;
-    // }
-    // context.read<MessageBloc>().messagesStream.listen((event) {
+    messages = widget.chat.messages;
+    // streamSubscription =
+    //     context.read<MessageBloc>().messagesStream.listen((event) {
     //   DebugHelper.printError(event.toString());
     //   DebugHelper.printError((widget.chat.chatId).toString());
     //   if (event.isNotEmpty && event[0].chatId == widget.chat.chatId) {
@@ -36,6 +35,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
 
   @override
   void dispose() {
+    // streamSubscription.cancel();
     super.dispose();
   }
 
@@ -60,82 +60,67 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                   },
                 ),
                 Expanded(
-                    child: BlocConsumer<MessageBloc, MessageState>(
+                    child: BlocListener<MessageBloc, MessageState>(
                         listener: (context, state) {
-                  if (state is MessagesState) {
-                    final chatBloc = context.read<UserChatsBloc>();
-                    final chatState = chatBloc.state;
-                    if (chatState is UsersChatsFetched) {
-                      // log("here");
-                      chatBloc.add(AddMessageUserChatsEvent(
-                          chats: chatState.chats,
-                          userId: widget.chat.senderId,
-                          totalUnreadMessages: chatState.totalUnreadMessages,
-                          message: messages.last,
-                          index: widget.index));
-                    }
-                  }
-                }, builder: (context, messaegsState) {
-                  if (messaegsState is MessagesState) {
-                    return SingleChildScrollView(
-                      reverse: true,
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(Dimensions.width10, 0,
-                            Dimensions.width10, Dimensions.height50),
-                        child: messaegsState.messages.isNotEmpty
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    height: Dimensions.height10,
-                                  ),
-                                  ...List.generate(
-                                      messaegsState.messages.length,
-                                      (index) => ChatUtils.messageCardManager(
-                                          index: index,
-                                          messages: messaegsState.messages,
-                                          chat: widget.chat))
-                                ],
-                              )
-                            : const Text("No data"),
-                      ),
-                    );
-                  } else if (messaegsState is MessageSent) {
-                    return SingleChildScrollView(
-                      reverse: true,
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(Dimensions.width10, 0,
-                            Dimensions.width10, Dimensions.height50),
-                        child: messaegsState.messages.isNotEmpty
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    height: Dimensions.height10,
-                                  ),
-                                  ...List.generate(
-                                      messaegsState.messages.length,
-                                      (index) => ChatUtils.messageCardManager(
-                                          index: index,
-                                          messages: messaegsState.messages,
-                                          chat: widget.chat))
-                                ],
-                              )
-                            : const Text("No data"),
-                      ),
-                    );
-                  } else {
-                    return SizedBox(
-                      height: Dimensions.height40,
-                      width: Dimensions.width40,
-                      child: FittedBox(
-                        child: CircularProgressIndicator(
-                          color: theme.primaryColor,
-                        ),
-                      ),
-                    );
-                  }
-                }))
+                          if (state is MessageSent) {
+                            final chatBloc = context.read<UserChatsBloc>();
+                            final chatState = chatBloc.state;
+                            if (chatState is UsersChatsFetched) {
+                              DebugHelper.printWarning("here");
+                              chatBloc.add(AddMessageUserChatsEvent(
+                                  chats: chatState.chats,
+                                  userId: widget.chat.senderId,
+                                  totalUnreadMessages:
+                                      chatState.totalUnreadMessages,
+                                  message: state.message,
+                                  index: widget.index));
+                            }
+                          }
+                          // if (state is MessageReceived) {
+                          //   final chatBloc = context.read<UserChatsBloc>();
+                          //   final chatState = chatBloc.state;
+                          //   if (chatState is UsersChatsFetched) {
+                          //     DebugHelper.printWarning("here");
+                          //     chatBloc.add(AddMessageUserChatsEvent(
+                          //         chats: chatState.chats,
+                          //         userId: widget.chat.senderId,
+                          //         totalUnreadMessages:
+                          //             chatState.totalUnreadMessages,
+                          //         message: state.message,
+                          //         index: widget.index));
+                          //   }
+                          // }
+                        },
+                        child: StreamBuilder(
+                          stream: context.read<MessageBloc>().messagesStream,
+                          builder: (context, snapshot) {
+                            return SingleChildScrollView(
+                              reverse: true,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(Dimensions.width10,
+                                    0, Dimensions.width10, Dimensions.height50),
+                                child: messages.isNotEmpty
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SizedBox(
+                                            height: Dimensions.height10,
+                                          ),
+                                          ...List.generate(
+                                              messages.length,
+                                              (index) =>
+                                                  ChatUtils.messageCardManager(
+                                                      index: index,
+                                                      messages: messages,
+                                                      chat: widget.chat))
+                                        ],
+                                      )
+                                    : const Text("No data"),
+                              ),
+                            );
+                          },
+                        )))
               ],
             ),
           ),
@@ -146,3 +131,12 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
         ));
   }
 }
+//  return SizedBox(
+//                       height: Dimensions.height40,
+//                       width: Dimensions.width40,
+//                       child: FittedBox(
+//                         child: CircularProgressIndicator(
+//                           color: theme.primaryColor,
+//                         ),
+//                       ),
+//                     );

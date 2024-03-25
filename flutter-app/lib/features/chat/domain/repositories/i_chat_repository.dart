@@ -30,5 +30,10 @@ abstract class IChatRepository {
   FutureVoid deleteMessage(String messageId);
   FutureVoid updateMessage(MessageModel message);
   FutureVoid deleteChat(String chatId);
+  Result<void> initChat({required String chatId});
+  Result<void> sendChatStatus({
+    required String? chatId,
+    required String userId,
+  });
   // FutureChat getChat
 }

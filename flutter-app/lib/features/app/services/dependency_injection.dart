@@ -11,9 +11,12 @@ import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.da
 import 'package:wisp_wizz/features/chat/domain/usecases/get_messages_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_single_chat_usecase.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/init_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/received_message_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/send_status_usecase.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/current-chat-bloc/current_chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_data_source.dart';
@@ -161,10 +164,17 @@ Future<void> init() async {
 
   //-----------User Chat Bloc
   sl
-    ..registerFactory(() => UserChatsBloc(
-          getMyChatsUseCase: sl(),
-        ))
+    ..registerFactory(
+        () => UserChatsBloc(getMyChatsUseCase: sl(), initChatUsecase: sl()))
     //usecases
     ..registerLazySingleton<GetMyChatsUseCase>(
-        () => GetMyChatsUseCase(repository: sl()));
+        () => GetMyChatsUseCase(repository: sl()))
+    ..registerLazySingleton<InitChatUsecase>(
+        () => InitChatUsecase(repository: sl()));
+
+  //-----------Current Chat Bloc
+  sl
+    ..registerFactory(() => CurrentChatBloc(sendStatusUsecase: sl()))
+    ..registerLazySingleton<SendStatusUsecase>(
+        () => SendStatusUsecase(repository: sl()));
 }

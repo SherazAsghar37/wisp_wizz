@@ -32,24 +32,26 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<SendMessageEvent>(_onSendMessage);
     on<ReceivedMessageEvent>(_onReceivedMessageEvent);
     on<FetchMessagesEvent>(_onfetchMessages);
-    on<InitMessagesEvent>(_onInitMessagesEvent);
+    // on<InitMessagesEvent>(_onInitMessagesEvent);
   }
   void _onSendMessage(
       SendMessageEvent event, Emitter<MessageState> emit) async {
+    emit(MessageSending());
+
     final response = await _sendMessageUseCase(CustomSendMessgeParam(
         message: event.message,
         senderId: event.senderId,
         chatId: event.chatId,
         recipientId: event.recipientId));
     response.fold((f) => emit(MessageFailed(f.message)), (s) {
-      // _addToSink(s);
-      event.messages.add(s);
-      emit(MessageSent(messages: event.messages));
+      _addToSink(s);
+      emit(MessageSent(message: s));
     });
   }
 
   void _onReceivedMessageEvent(
       ReceivedMessageEvent event, Emitter<MessageState> emit) async {
+    emit(MessageReceiving());
     final response = await _receivedMessageUseCase(CustomReceivedMessgeParam(
       message: event.message,
       senderId: event.senderId,
@@ -78,10 +80,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     });
   }
 
-  void _onInitMessagesEvent(
-      InitMessagesEvent event, Emitter<MessageState> emit) {
-    emit(MessagesState(messages: event.messages));
-  }
+  // void _onInitMessagesEvent(
+  //     InitMessagesEvent event, Emitter<MessageState> emit) {
+  //   emit(MessagesState(messages: event.messages));
+  // }
 
   void dispose() {
     _messageController.close();

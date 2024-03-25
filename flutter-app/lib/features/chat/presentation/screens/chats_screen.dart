@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/current-chat-bloc/current_chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
@@ -79,20 +79,27 @@ class ChatsScreen extends StatelessWidget {
                                   child: ChatCard(
                                     chat: state.chats[index],
                                     onPressed: () {
+                                      final currentChatBloc =
+                                          context.read<CurrentChatBloc>();
+                                      final userChatsBloc =
+                                          context.read<UserChatsBloc>();
+
                                       Navigator.pushNamed(
                                           context, SingleChatScreen.routeName,
                                           arguments: [
                                             state.chats[index],
-                                            index
-                                          ]);
-                                      final chatBloc =
-                                          context.read<UserChatsBloc>();
-
-                                      // chatBloc.add(FetchUpdatedUserChatsEvent(
-                                      //     chats: state.chats,
-                                      //     userId: user.id,
-                                      //     totalUnreadMessages:
-                                      //         state.totalUnreadMessages));
+                                            index,
+                                          ]).then((value) => currentChatBloc
+                                          .add(CurrentChatCloseEvent(
+                                              userId: user.id)));
+                                      currentChatBloc.add(CurrentChatOpenEvent(
+                                          chatId: state.chats[index].chatId,
+                                          userId: user.id));
+                                      userChatsBloc.add(IntiChatUserChatsEvent(
+                                          chats: state.chats,
+                                          totalUnreadMessages:
+                                              state.totalUnreadMessages,
+                                          index: index));
                                     },
                                   ),
                                 );
@@ -103,14 +110,17 @@ class ChatsScreen extends StatelessWidget {
                       ? BlocListener<MessageBloc, MessageState>(
                           listener: (context, messageState) {
                             if (messageState is MessageReceived) {
-                              DebugHelper.printError("here");
-                              // context.read<UserChatsBloc>().add(
-                              //     AddMessageUserChatsEvent(
-                              //         chats: state.chats,
-                              //         userId: user.id,
-                              //         totalUnreadMessages:
-                              //             state.totalUnreadMessages,
-                              //         message: messageState.message));
+                              final chatBloc = context.read<UserChatsBloc>();
+                              final chatState = chatBloc.state;
+                              if (chatState is UsersChatsFetched) {
+                                chatBloc.add(AddMessageUserChatsEvent(
+                                    chats: chatState.chats,
+                                    userId: user.id,
+                                    totalUnreadMessages:
+                                        chatState.totalUnreadMessages,
+                                    message: messageState.message,
+                                    index: null));
+                              }
                             }
                           },
                           child: state.chats.isEmpty
@@ -129,24 +139,35 @@ class ChatsScreen extends StatelessWidget {
                                         child: ChatCard(
                                           chat: state.chats[index],
                                           onPressed: () {
-                                            final chatBloc =
+                                            final currentChatBloc =
+                                                context.read<CurrentChatBloc>();
+                                            final userChatsBloc =
                                                 context.read<UserChatsBloc>();
-                                            context.read<MessageBloc>().add(
-                                                InitMessagesEvent(
-                                                    messages: state.chats[index]
-                                                        .messages));
+                                            currentChatBloc.add(
+                                                CurrentChatOpenEvent(
+                                                    chatId: state
+                                                        .chats[index].chatId,
+                                                    userId: user.id));
                                             Navigator.pushNamed(context,
                                                 SingleChatScreen.routeName,
                                                 arguments: [
                                                   state.chats[index],
                                                   index,
-                                                ]);
-                                            // chatBloc.add(
-                                            //     FetchUpdatedUserChatsEvent(
-                                            //         chats: state.chats,
-                                            //         userId: user.id,
-                                            //         totalUnreadMessages: state
-                                            //             .totalUnreadMessages));
+                                                ]).then((value) =>
+                                                currentChatBloc.add(
+                                                    CurrentChatCloseEvent(
+                                                        userId: user.id)));
+                                            currentChatBloc.add(
+                                                CurrentChatOpenEvent(
+                                                    chatId: state
+                                                        .chats[index].chatId,
+                                                    userId: user.id));
+                                            userChatsBloc.add(
+                                                IntiChatUserChatsEvent(
+                                                    chats: state.chats,
+                                                    totalUnreadMessages: state
+                                                        .totalUnreadMessages,
+                                                    index: index));
                                           },
                                         ),
                                       );
@@ -180,3 +201,5 @@ class ChatsScreen extends StatelessWidget {
     );
   }
 }
+
+void _onChatOpened() {}

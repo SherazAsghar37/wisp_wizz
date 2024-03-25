@@ -14,12 +14,17 @@ final class MessageSending extends MessageState {}
 final class MessageReceiving extends MessageState {}
 
 final class MessageSent extends MessageState {
-  final List<MessageModel> messages;
-  const MessageSent({required this.messages});
+  final MessageModel message;
+  const MessageSent({required this.message});
+
   @override
-  List<Object> get props => [
-        messages,
-      ];
+  List<Object> get props => [message];
+  // final List<MessageModel> messages;
+  // const MessageSent({required this.messages});
+  // @override
+  // List<Object> get props => [
+  //       messages,
+  //     ];
 }
 
 final class MessageReceived extends MessageState {

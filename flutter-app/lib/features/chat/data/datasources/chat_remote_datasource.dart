@@ -60,4 +60,18 @@ class ChatRemoteDatasource implements IChatRemoteDatasource {
     // TODO: implement updateMessage
     throw UnimplementedError();
   }
+
+  @override
+  void sendStatus(String? chatId, String userId) {
+    try {
+      final data = {
+        "userId": userId,
+        "chatId": chatId,
+      };
+      return _socket.emit("status", data);
+    } catch (e) {
+      throw const WebSocketException(
+          "Something went wrong, Unable to send message");
+    }
+  }
 }

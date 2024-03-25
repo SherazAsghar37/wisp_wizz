@@ -16,4 +16,5 @@ abstract class IChatLocalDatasource {
       String? messageId,
       bool? isChatClosed});
   Future<CustomGetMyChatsResponse> fetchChats(int currentPage, String userId);
+  Future<void> readMessages(String chatId);
 }

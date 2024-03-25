@@ -175,6 +175,21 @@ class SqfliteManager {
     }
   }
 
+  static Future<void> removeUnreadMarkFromChat(String chatId) async {
+    try {
+      await db.rawQuery("""
+          UPDATE Chat SET unreadMessages = 0
+          where chatId = ?
+         """, [chatId]);
+      // await db.rawQuery("""
+      //     UPDATE Message SET messageStatus = 'Seen'
+      //     where chatId = ?
+      //    """, [chatId]);
+    } catch (e) {
+      throw SqfliteDBException(e.toString());
+    }
+  }
+
   static Future<void> insertMultipleContacts(List<ContactModel> data) async {
     try {
       final db = await getDB();

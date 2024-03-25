@@ -104,4 +104,18 @@ class ChatLocalDatasource extends IChatLocalDatasource {
       throw const SqfliteDBException("Something went wrong");
     }
   }
+
+  @override
+  Future<void> readMessages(String chatId) async {
+    try {
+      await _sqfliteManagerWrapper.removeUnreadMarkFromChat(chatId);
+    } on SqfliteDBException catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const SqfliteDBException(
+          "Something went wrong, Unable to fetch your messages");
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const SqfliteDBException("Something went wrong");
+    }
+  }
 }

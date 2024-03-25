@@ -16,4 +16,5 @@ abstract class IChatRemoteDatasource {
   Future<void> deleteMessage(String messageId);
   Future<void> updateMessage(MessageModel message);
   Future<void> deleteChat(String chatId);
+  void sendStatus(String? chatId, String userId);
 }

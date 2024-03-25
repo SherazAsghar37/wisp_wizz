@@ -137,4 +137,27 @@ class ChatRepository implements IChatRepository {
       return Left(SqfliteDBFailure.fromException(e));
     }
   }
+
+  @override
+  Result<void> initChat({
+    required String chatId,
+  }) {
+    try {
+      _localDatasource.readMessages(chatId);
+      return const Right(null);
+    } on SqfliteDBException catch (e) {
+      return Left(SqfliteDBFailure.fromException(e));
+    }
+  }
+
+  @override
+  Result<void> sendChatStatus(
+      {required String? chatId, required String userId}) {
+    try {
+      _remoteDatasource.sendStatus(chatId, userId);
+      return const Right(null);
+    } on WebSocketException catch (e) {
+      return Left(WebSocketFailure.fromException(e));
+    }
+  }
 }

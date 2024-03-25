@@ -46,3 +46,16 @@ class AddMessageUserChatsEvent extends UserChatsEvent {
   List<Object?> get props =>
       [userId, chats, totalUnreadMessages, message, index, isChatClosed];
 }
+
+class IntiChatUserChatsEvent extends UserChatsEvent {
+  final int totalUnreadMessages;
+  final List<ChatModel> chats;
+  final int index;
+
+  const IntiChatUserChatsEvent(
+      {required this.chats,
+      required this.totalUnreadMessages,
+      required this.index});
+  @override
+  List<Object> get props => [chats, totalUnreadMessages];
+}
