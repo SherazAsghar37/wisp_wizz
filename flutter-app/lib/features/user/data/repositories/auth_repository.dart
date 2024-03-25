@@ -32,16 +32,17 @@ class AuthRepository implements IAuthRepository {
     try {
       final response = await _remoteDatasource.loginUser(
           name: name, phoneNumber: phoneNumber, image: image);
+      _remoteDatasource.connectSocket(response.id);
       await _localDataSource.cacheUserData(response);
       return Right(response);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
-      // } catch (e) {
-      //   return Left(ApiFailure(message: e.toString(), statusCode: 500));
     } on CacheException catch (e) {
       return Left(CacheFailure.fromException(e));
     } on SqfliteDBException catch (e) {
       return Left(SqfliteDBFailure.fromException(e));
+    } on WebSocketException catch (e) {
+      return Left(WebSocketFailure.fromException(e));
     }
   }
 
@@ -102,9 +103,12 @@ class AuthRepository implements IAuthRepository {
   FutureVoid logout() async {
     try {
       final response = await _localDataSource.removeCachedUser();
+      _remoteDatasource.disconnectSocket();
       return Right(response);
     } on CacheException catch (e) {
       return Left(CacheFailure.fromException(e));
+    } on WebSocketException catch (e) {
+      return Left(WebSocketFailure.fromException(e));
     }
   }
 
@@ -135,10 +139,11 @@ class AuthRepository implements IAuthRepository {
   @override
   ResultFuture<UserModel?> initApplication() async {
     try {
-      await _remoteDatasource.connectSocket();
       await _localDataSource.initLocalDB();
-      _localDataSource.getCachedUserData();
       final user = _localDataSource.getCachedUserData();
+      if (user != null) {
+        _remoteDatasource.connectSocket(user.id);
+      }
       return Right(user);
     } on WebSocketException catch (e) {
       return Left(WebSocketFailure.fromException(e));

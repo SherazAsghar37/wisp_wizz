@@ -1,60 +1,49 @@
+import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class SingleChatScreen extends StatefulWidget {
   static const String routeName = singleChatScreen;
   final ChatModel chat;
-  const SingleChatScreen({super.key, required this.chat});
+  final int index;
+  const SingleChatScreen({super.key, required this.chat, required this.index});
 
   @override
   State<SingleChatScreen> createState() => _SingleChatScreenState();
 }
 
-MessageModel message = MessageModel.empty();
-const String senderId = "ca2de2e9-fff8-443d-8862-076bfa294c36";
-const String recipientId = "xyz";
-
 class _SingleChatScreenState extends State<SingleChatScreen> {
-  final List<MessageModel> messages = [
-    message.copyWith(
-        message: "this is a text message from friend.",
-        senderId: senderId,
-        recipientId: recipientId),
-    message.copyWith(
-        message: "gida gadi gida gida o",
-        senderId: senderId,
-        recipientId: recipientId),
-    message.copyWith(
-        message: "Ai bi merri along time go,",
-        senderId: senderId,
-        recipientId: recipientId),
-    message.copyWith(
-        message: " wud u du cum for ",
-        senderId: recipientId,
-        recipientId: senderId),
-    message.copyWith(
-        message: "wud u do go", senderId: recipientId, recipientId: senderId),
-    message.copyWith(
-        message: "wud yu du cum for putlando",
-        senderId: recipientId,
-        recipientId: senderId),
-    message.copyWith(
-        message: "Zzzzz", senderId: senderId, recipientId: recipientId),
-    message.copyWith(
-        message:
-            "processMotionEvent MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=208.0, y[0]=1097.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=82226094, downTime=82226094, deviceId=3, source=0x1002, displayId=0 }",
-        senderId: senderId,
-        recipientId: recipientId),
-    message.copyWith(
-        message:
-            "processMotionEvent MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=208.0, y[0]=1097.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=82226094, downTime=82226094, deviceId=3, source=0x1002, displayId=0 }",
-        senderId: recipientId,
-        recipientId: senderId)
-  ];
+  List<MessageModel> messages = [];
+  @override
+  void initState() {
+    // if (!_initialMessagesAssigned) {
+    //   messages = widget.chat.messages;
+    //   _initialMessagesAssigned = true;
+    // }
+    // context.read<MessageBloc>().messagesStream.listen((event) {
+    //   DebugHelper.printError(event.toString());
+    //   DebugHelper.printError((widget.chat.chatId).toString());
+    //   if (event.isNotEmpty && event[0].chatId == widget.chat.chatId) {
+    //     messages.addAll(event);
+    //   }
+    // });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-        backgroundColor: theme.colorScheme.background.withOpacity(0.95),
+        backgroundColor: theme.colorScheme.background.withOpacity(0.9),
         extendBodyBehindAppBar: true,
         body: SafeArea(
           child: Padding(
@@ -66,31 +55,87 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                   user: widget.chat.recipient,
                   color: theme.colorScheme.background,
                   onPressed: () {},
-                  onSelected: (value) {},
+                  onSelected: (value) {
+                    SqfliteManager.trunciateMessages();
+                  },
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    reverse: true,
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(Dimensions.width10, 0,
-                          Dimensions.width10, Dimensions.height50),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            height: Dimensions.height10,
-                          ),
-                          ...List.generate(
-                              messages.length,
-                              (index) => ChatUtils.messageCardManager(
-                                  index: index,
-                                  messages: messages,
-                                  chat: widget.chat))
-                        ],
+                    child: BlocConsumer<MessageBloc, MessageState>(
+                        listener: (context, state) {
+                  if (state is MessagesState) {
+                    final chatBloc = context.read<UserChatsBloc>();
+                    final chatState = chatBloc.state;
+                    if (chatState is UsersChatsFetched) {
+                      // log("here");
+                      chatBloc.add(AddMessageUserChatsEvent(
+                          chats: chatState.chats,
+                          userId: widget.chat.senderId,
+                          totalUnreadMessages: chatState.totalUnreadMessages,
+                          message: messages.last,
+                          index: widget.index));
+                    }
+                  }
+                }, builder: (context, messaegsState) {
+                  if (messaegsState is MessagesState) {
+                    return SingleChildScrollView(
+                      reverse: true,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(Dimensions.width10, 0,
+                            Dimensions.width10, Dimensions.height50),
+                        child: messaegsState.messages.isNotEmpty
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  SizedBox(
+                                    height: Dimensions.height10,
+                                  ),
+                                  ...List.generate(
+                                      messaegsState.messages.length,
+                                      (index) => ChatUtils.messageCardManager(
+                                          index: index,
+                                          messages: messaegsState.messages,
+                                          chat: widget.chat))
+                                ],
+                              )
+                            : const Text("No data"),
                       ),
-                    ),
-                  ),
-                )
+                    );
+                  } else if (messaegsState is MessageSent) {
+                    return SingleChildScrollView(
+                      reverse: true,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(Dimensions.width10, 0,
+                            Dimensions.width10, Dimensions.height50),
+                        child: messaegsState.messages.isNotEmpty
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  SizedBox(
+                                    height: Dimensions.height10,
+                                  ),
+                                  ...List.generate(
+                                      messaegsState.messages.length,
+                                      (index) => ChatUtils.messageCardManager(
+                                          index: index,
+                                          messages: messaegsState.messages,
+                                          chat: widget.chat))
+                                ],
+                              )
+                            : const Text("No data"),
+                      ),
+                    );
+                  } else {
+                    return SizedBox(
+                      height: Dimensions.height40,
+                      width: Dimensions.width40,
+                      child: FittedBox(
+                        child: CircularProgressIndicator(
+                          color: theme.primaryColor,
+                        ),
+                      ),
+                    );
+                  }
+                }))
               ],
             ),
           ),

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:sqflite/sqflite.dart';
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
@@ -11,7 +9,7 @@ class SqfliteManagerWrapper {
       {required String id,
       required String name,
       required String phoneNumber,
-      required Uint8List image}) {
+      required String image}) {
     return SqfliteManager.createUser(
         id: id, name: name, phoneNumber: phoneNumber, image: image);
   }
@@ -20,14 +18,14 @@ class SqfliteManagerWrapper {
     return SqfliteManager.getDB();
   }
 
-  Future<void> saveMessage({
-    required String recipientId,
-    required String senderId,
-    required String message,
-  }) {
-    return SqfliteManager.saveMessage(
-        recipientId: recipientId, message: message, senderId: senderId);
-  }
+  // Future<void> saveMessage({
+  //   required String recipientId,
+  //   required String senderId,
+  //   required String message,
+  // }) {
+  //   return SqfliteManager.saveMessage(
+  //       recipientId: recipientId, message: message, senderId: senderId);
+  // }
 
   Future<void> insertMultipleContacts(List<ContactModel> data) async {
     return SqfliteManager.insertMultipleContacts(data);
@@ -35,5 +33,17 @@ class SqfliteManagerWrapper {
 
   Future<MapData> fetchChat(String recipientId, String senderId) async {
     return SqfliteManager.fetchChat(recipientId, senderId);
+  }
+
+  Future<List<MapData>> fetchMessages(String chatId) async {
+    return SqfliteManager.fetchMessages(chatId);
+  }
+
+  Future<MapData> insertMessage(MapData data, bool isChatClosed) {
+    return SqfliteManager.insertMessage(data, isChatClosed);
+  }
+
+  Future<MapData> fetchChats(String userId, int currentPage) {
+    return SqfliteManager.fetchChats(userId, currentPage);
   }
 }

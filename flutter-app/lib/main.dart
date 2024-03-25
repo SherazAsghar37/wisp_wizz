@@ -11,6 +11,7 @@ import 'package:wisp_wizz/features/app/services/dependency_injection.dart'
 import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/otp/otp_bloc.dart';
@@ -49,6 +50,9 @@ void main() async {
         ),
         BlocProvider(
           create: (context) => dep.sl<MessageBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => dep.sl<UserChatsBloc>(),
         ),
       ],
       child: MultiProvider(providers: [

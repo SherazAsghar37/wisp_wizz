@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
+import 'package:wisp_wizz/features/app/socket/socket_manager.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/screens/login_screen.dart';
@@ -24,9 +29,7 @@ class _HomeScreenState extends State<HomeScreen>
   TextEditingController searchController = TextEditingController();
   final String notifications = "5";
   late List<Widget> tabScreens = [
-    ChatsScreen(
-      user: widget.user,
-    ),
+    const ChatsScreen(),
     const GroupsScreen(),
     const CallsScreen(),
   ];
@@ -41,6 +44,20 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     tabController = TabController(vsync: this, length: tabScreens.length);
+    final chatBloc = context.read<UserChatsBloc>();
+    chatBloc.add(FetchUserChatsEvent(chats: const [], userId: widget.user.id));
+    WebSocketManager.socket.on("message${widget.user.id}", (data) {
+      log("received");
+      context.read<MessageBloc>().add(ReceivedMessageEvent(
+          senderId: data["senderId"],
+          recipientId: data["recipientId"],
+          message: data["message"],
+          chatId: data["chatId"],
+          repliedToId: data["repliedToId"],
+          repliedMessage: data["repliedMessage"],
+          isChatClosed: true,
+          messageId: data["messageId"]));
+    });
   }
 
   @override
@@ -84,8 +101,9 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                DebugHelper.printWarning("Dropping database");
-                                await SqfliteManager.dropdb();
+                                // DebugHelper.printWarning("Dropping database");
+                                // await SqfliteManager.dropdb();
+                                SqfliteManager.fetchChats(widget.user.id, 0);
                               },
                               child: Text(
                                 appName,

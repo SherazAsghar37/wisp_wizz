@@ -169,18 +169,25 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                           alignment: FractionalOffset(micAlignment, 0),
                           child: IconButton(
                               onPressed: () {
-                                // final authbloc = context
-                                //     .read<auth.AuthBloc>()
-                                //     .state as auth.AuthloggedIn;
                                 final chat = widget.chat;
-                                context
-                                    .read<MessageBloc>()
-                                    .add(SendMessageEvent(
+                                final messageBloc = context.read<MessageBloc>();
+                                final messageState = messageBloc.state;
+                                if (messageState is MessagesState) {
+                                  messageBloc.add(SendMessageEvent(
                                       senderId: chat.senderId,
                                       recipientId: chat.recipient.id,
                                       message: messageController.text,
                                       chatId: chat.chatId,
-                                    ));
+                                      messages: messageState.messages));
+                                } else if (messageState is MessageSent) {
+                                  messageBloc.add(SendMessageEvent(
+                                      senderId: chat.senderId,
+                                      recipientId: chat.recipient.id,
+                                      message: messageController.text,
+                                      chatId: chat.chatId,
+                                      messages: messageState.messages));
+                                }
+
                                 setState(() {
                                   messageController.clear();
                                 });

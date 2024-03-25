@@ -1,25 +1,19 @@
+import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class ChatCard extends StatelessWidget {
-  final UserModel user;
-  final String? lastMessage;
-  final String? notifications;
-  final DateTime? lastMessageTime;
-  final String? messageStatus;
+  final ChatModel chat;
   final VoidCallback onPressed;
   ChatCard({
     super.key,
-    required this.user,
-    this.lastMessage,
-    this.notifications,
-    this.lastMessageTime,
-    this.messageStatus,
+    required this.chat,
     required this.onPressed,
   });
 
   final double radius = Dimensions.height12 + Dimensions.width12;
   @override
   Widget build(BuildContext context) {
+    final lastMessage = chat.messages.last;
     final theme = Theme.of(context);
     return MaterialButton(
       padding: EdgeInsets.zero,
@@ -35,7 +29,8 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: radius,
-                  backgroundImage: Utils.getUserImage(user),
+                  backgroundImage:
+                      Utils.getUserImageFromUint8List(chat.recipient.image),
                 ),
                 SizedBox(
                   width: Dimensions.width10,
@@ -45,7 +40,7 @@ class ChatCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.name,
+                      chat.recipient.name,
                       style: theme.textTheme.bodyLarge!.copyWith(
                           color: theme.primaryColorDark,
                           fontSize: Dimensions.height18),
@@ -53,27 +48,25 @@ class ChatCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        messageStatus != null
-                            ? Row(
-                                children: [
-                                  ChatUtils.getMessageStatusIcon(
-                                      context, messageStatus!),
-                                  SizedBox(
-                                    width: Dimensions.width2,
-                                  ),
-                                ],
-                              )
-                            : const SizedBox(),
+                        Row(
+                          children: [
+                            ChatUtils.getMessageStatusIcon(
+                                context, lastMessage.messageStatus),
+                            SizedBox(
+                              width: Dimensions.width2,
+                            ),
+                          ],
+                        ),
                         SizedBox(
                           width: Dimensions.screenWidth * 0.45,
-                          child: Text(lastMessage ?? "",
+                          child: Text(lastMessage.message,
                               maxLines: 1,
                               softWrap: false,
                               style: theme.textTheme.bodySmall!
                                   .copyWith(fontSize: Dimensions.height14)),
                         ),
                       ],
-                    ),
+                    )
                   ],
                 ),
               ],
@@ -81,13 +74,13 @@ class ChatCard extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                notifications != null
+                chat.unreadMessages > 0
                     ? NotificationIcon(
-                        notifications: notifications!,
+                        notifications: chat.unreadMessages.toString(),
                       )
                     : const SizedBox(),
                 Text(
-                  lastMessageTime?.toString().substring(2, 10) ?? "",
+                  lastMessage.createdAt.timeFormat(),
                   style: theme.textTheme.bodyMedium!.copyWith(
                     fontSize: Dimensions.height13,
                   ),

@@ -18,52 +18,47 @@ class ReceivedMessageCard extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.only(bottom: Dimensions.height3),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                constraints:
-                    BoxConstraints(maxWidth: Dimensions.screenWidth * 0.7),
-                padding: EdgeInsets.symmetric(
-                  vertical: Dimensions.height10,
-                  horizontal: Dimensions.width10,
-                ),
-                decoration: BoxDecoration(
-                    color: theme.primaryColor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: isLast
-                          ? Radius.circular(borderRadius - 5)
-                          : Radius.circular(borderRadius),
-                      bottomRight: Radius.circular(borderRadius),
-                      topLeft: Radius.circular(borderRadius),
-                      topRight: Radius.circular(borderRadius),
-                    )),
-                child: Text(message.message,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: Dimensions.screenWidth * 0.7),
+            padding: EdgeInsets.symmetric(
+              vertical: Dimensions.height10,
+              horizontal: Dimensions.width10,
+            ),
+            decoration: BoxDecoration(
+                color: theme.primaryColor,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: isLast
+                      ? Radius.circular(borderRadius - 5)
+                      : Radius.circular(borderRadius),
+                  bottomRight: Radius.circular(borderRadius),
+                  topLeft: Radius.circular(borderRadius),
+                  topRight: Radius.circular(borderRadius),
+                )),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(message.message,
                     softWrap: true,
                     style: theme.textTheme.bodySmall!
                         .copyWith(color: theme.colorScheme.background)),
-              ),
-              isLast
-                  ? Column(
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: Dimensions.width2,
-                            ),
-                            Text(message.createdAt.timeFormat(),
-                                maxLines: 1,
-                                softWrap: false,
-                                style: theme.textTheme.bodySmall),
-                          ],
-                        ),
-                        SizedBox(
-                          height: Dimensions.height10,
-                        )
-                      ],
-                    )
-                  : const SizedBox(),
-            ],
+                SizedBox(
+                  height: Dimensions.height2,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(message.createdAt.timeFormat(),
+                        maxLines: 1,
+                        softWrap: false,
+                        style: theme.textTheme.bodySmall!.copyWith(
+                            fontSize: Dimensions.height10,
+                            color:
+                                theme.colorScheme.background.withOpacity(0.9))),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],

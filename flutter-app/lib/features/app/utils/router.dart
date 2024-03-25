@@ -40,8 +40,8 @@ Route<dynamic> routesGenerator(RouteSettings routeSettings) {
     case SingleChatScreen.routeName:
       return SlidePageRoute(
           widget: SingleChatScreen(
-        chat: routeSettings.arguments as ChatModel,
-      ));
+              chat: (routeSettings.arguments as List)[0] as ChatModel,
+              index: (routeSettings.arguments as List)[1]));
 
     default:
       return MaterialPageRoute(

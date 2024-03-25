@@ -137,9 +137,19 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
   }
 
   @override
-  Future<bool> connectSocket() {
+  void connectSocket(String userId) {
     try {
-      return _webSocketManagerWrapper.initSocket();
+      return _webSocketManagerWrapper.initSocket(userId);
+    } catch (e) {
+      DebugHelper.printError(e.toString());
+      throw const WebSocketException("unable to connect to the server");
+    }
+  }
+
+  @override
+  void disconnectSocket() {
+    try {
+      return _webSocketManagerWrapper.disconnect();
     } catch (e) {
       DebugHelper.printError(e.toString());
       throw const WebSocketException("unable to connect to the server");

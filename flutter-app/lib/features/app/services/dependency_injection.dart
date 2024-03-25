@@ -8,11 +8,14 @@ import 'package:wisp_wizz/features/chat/data/datasources/chat_local_datasource.d
 import 'package:wisp_wizz/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:wisp_wizz/features/chat/data/repositories/chat_repository.dart';
 import 'package:wisp_wizz/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/get_messages_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_single_chat_usecase.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/received_message_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_data_source.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/contacts_local_dataource.dart';
 import 'package:wisp_wizz/features/contacts/data/datasources/flutter_contacts_wraper.dart';
@@ -124,10 +127,17 @@ Future<void> init() async {
         () => FlutterContactsWrapper());
 //-----------Message Bloc
   sl
-    ..registerFactory(() => MessageBloc(sendMessageUseCase: sl()))
+    ..registerFactory(() => MessageBloc(
+        sendMessageUseCase: sl(),
+        getMessagesUseCase: sl(),
+        receivedMessageUseCase: sl()))
     //usecases
     ..registerLazySingleton<SendMessageUseCase>(
         () => SendMessageUseCase(repository: sl()))
+    ..registerLazySingleton<ReceivedMessageUseCase>(
+        () => ReceivedMessageUseCase(repository: sl()))
+    ..registerLazySingleton<GetMessagesUseCase>(
+        () => GetMessagesUseCase(repository: sl()))
     //repositories
     ..registerLazySingleton<IChatRepository>(() => ChatRepository(sl(), sl()))
     //data sources
@@ -140,13 +150,21 @@ Future<void> init() async {
     //external dependency
     ..registerLazySingleton<IO.Socket>(() => WebSocketManager.socket);
 
-//-----------ChatBloc Bloc
+//-----------Chat Bloc
   sl
-    ..registerFactory(
-        () => ChatBloc(getChatUsecase: sl(), getMyChatUseCase: sl()))
+    ..registerFactory(() => ChatBloc(
+          getChatUsecase: sl(),
+        ))
     //usecases
     ..registerLazySingleton<GetChatUsecase>(
-        () => GetChatUsecase(repository: sl()))
+        () => GetChatUsecase(repository: sl()));
+
+  //-----------User Chat Bloc
+  sl
+    ..registerFactory(() => UserChatsBloc(
+          getMyChatsUseCase: sl(),
+        ))
+    //usecases
     ..registerLazySingleton<GetMyChatsUseCase>(
         () => GetMyChatsUseCase(repository: sl()));
 }

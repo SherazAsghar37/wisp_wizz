@@ -12,18 +12,84 @@ class SendMessageEvent extends MessageEvent {
   final String recipientId;
   final String message;
   final String chatId;
-  final String? repliedTo;
+  final String? repliedMessage;
   final String? repliedToId;
+  final List<MessageModel> messages;
 
-  const SendMessageEvent(
-      {required this.senderId,
-      required this.recipientId,
-      required this.message,
-      required this.chatId,
-      this.repliedTo,
-      this.repliedToId});
+  const SendMessageEvent({
+    required this.messages,
+    required this.senderId,
+    required this.recipientId,
+    required this.message,
+    required this.chatId,
+    this.repliedMessage,
+    this.repliedToId,
+  });
 
   @override
-  List<Object?> get props =>
-      [senderId, recipientId, message, chatId, repliedTo, repliedToId];
+  List<Object?> get props => [
+        senderId,
+        recipientId,
+        message,
+        chatId,
+        repliedMessage,
+        repliedToId,
+        messages
+      ];
+}
+
+class ReceivedMessageEvent extends MessageEvent {
+  final String senderId;
+  final String recipientId;
+  final String message;
+  final String chatId;
+  final String? repliedMessage;
+  final String? repliedToId;
+  final String messageId;
+  final bool isChatClosed;
+
+  const ReceivedMessageEvent({
+    required this.senderId,
+    required this.messageId,
+    required this.recipientId,
+    required this.message,
+    required this.chatId,
+    required this.isChatClosed,
+    this.repliedMessage,
+    this.repliedToId,
+  });
+
+  @override
+  List<Object?> get props => [
+        senderId,
+        recipientId,
+        message,
+        chatId,
+        repliedMessage,
+        repliedToId,
+        messageId,
+        isChatClosed
+      ];
+}
+
+class FetchMessagesEvent extends MessageEvent {
+  final String chatId;
+
+  const FetchMessagesEvent({
+    required this.chatId,
+  });
+
+  @override
+  List<Object?> get props => [
+        chatId,
+      ];
+}
+
+class InitMessagesEvent extends MessageEvent {
+  final List<MessageModel> messages;
+  const InitMessagesEvent({required this.messages});
+  @override
+  List<Object?> get props => [
+        messages,
+      ];
 }

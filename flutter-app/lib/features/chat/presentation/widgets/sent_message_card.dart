@@ -15,58 +15,51 @@ class SentMessageCard extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.only(bottom: Dimensions.height5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                constraints:
-                    BoxConstraints(maxWidth: Dimensions.screenWidth * 0.7),
-                padding: EdgeInsets.symmetric(
-                  vertical: Dimensions.height10,
-                  horizontal: Dimensions.width10,
-                ),
-                decoration: BoxDecoration(
-                    color: theme.colorScheme.background.withOpacity(0.7),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(borderRadius),
-                      bottomRight: isLast
-                          ? Radius.circular(borderRadius - 5)
-                          : Radius.circular(borderRadius),
-                      topLeft: Radius.circular(borderRadius),
-                      topRight: Radius.circular(borderRadius),
-                    )),
-                child: Text(message.message,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: Dimensions.screenWidth * 0.7),
+            padding: EdgeInsets.symmetric(
+              vertical: Dimensions.height10,
+              horizontal: Dimensions.width10,
+            ),
+            decoration: BoxDecoration(
+                color: theme.colorScheme.background.withOpacity(0.7),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(borderRadius),
+                  bottomRight: isLast
+                      ? Radius.circular(borderRadius - 5)
+                      : Radius.circular(borderRadius),
+                  topLeft: Radius.circular(borderRadius),
+                  topRight: Radius.circular(borderRadius),
+                )),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(message.message,
                     softWrap: true,
                     style: theme.textTheme.bodySmall!
                         .copyWith(color: theme.shadowColor)),
-              ),
-              isLast
-                  ? Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            ChatUtils.getMessageStatusIcon(
-                                context, message.messageStatus),
-                            SizedBox(
-                              width: Dimensions.width2,
-                            ),
-                            Text(message.createdAt.timeFormat(),
-                                maxLines: 1,
-                                softWrap: false,
-                                style: theme.textTheme.bodySmall),
-                            SizedBox(
-                              width: Dimensions.width5,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: Dimensions.height10,
-                        )
-                      ],
-                    )
-                  : const SizedBox(),
-            ],
+                SizedBox(
+                  height: Dimensions.height2,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ChatUtils.getMessageStatusIcon(
+                        context, message.messageStatus,
+                        inconSize: Dimensions.height14),
+                    SizedBox(
+                      width: Dimensions.width2,
+                    ),
+                    Text(message.createdAt.timeFormat(),
+                        maxLines: 1,
+                        softWrap: false,
+                        style: theme.textTheme.bodySmall!
+                            .copyWith(fontSize: Dimensions.height10)),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],
