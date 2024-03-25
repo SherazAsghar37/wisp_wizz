@@ -16,13 +16,3 @@ class ChatFetchEvent extends ChatEvent {
   @override
   List<Object> get props => [recipientId, senderId, index];
 }
-
-// class ChatUpdateEvent extends ChatEvent {
-//   final String recipientId;
-//   final String senderId;
-//   final int index;
-//   const ChatUpdateEvent(
-//       {required this.recipientId, required this.senderId, required this.index});
-//   @override
-//   List<Object> get props => [recipientId, senderId, index];
-// }

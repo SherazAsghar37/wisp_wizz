@@ -2,6 +2,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
+import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
 
 part 'user_chats_event.dart';
@@ -16,6 +17,7 @@ class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
         super(UserChatsInitial()) {
     on<FetchUserChatsEvent>(_onFetchUserChatsEvent);
     on<FetchUpdatedUserChatsEvent>(_onFetchUpdatedUserChatsEvent);
+    on<AddMessageUserChatsEvent>(_onAddMessageUserChatsEvent);
   }
 
   Future<void> _onFetchUserChatsEvent(
@@ -42,5 +44,22 @@ class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
             )), (s) {
       emit(UsersChatsFetched(s.chats, s.totalUnreadMessages));
     });
+  }
+
+  Future<void> _onAddMessageUserChatsEvent(
+      AddMessageUserChatsEvent event, Emitter<UserChatsState> emit) async {
+    if (event.index != null) {
+      event.chats[event.index!].messages.add(event.message);
+    } else {
+      int index = event.chats
+          .indexWhere((element) => element.chatId == event.message.chatId);
+      event.chats[index].messages.add(event.message);
+      event.chats[index] = event.chats[index]
+          .copyWith(unreadMessages: event.chats[index].unreadMessages + 1);
+    }
+    emit(UsersChatsFetched(
+      event.chats,
+      event.totalUnreadMessages,
+    ));
   }
 }

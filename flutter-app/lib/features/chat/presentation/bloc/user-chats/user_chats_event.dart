@@ -4,7 +4,7 @@ sealed class UserChatsEvent extends Equatable {
   const UserChatsEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class FetchUserChatsEvent extends UserChatsEvent {
@@ -26,4 +26,23 @@ class FetchUpdatedUserChatsEvent extends UserChatsEvent {
       required this.totalUnreadMessages});
   @override
   List<Object> get props => [userId, chats, totalUnreadMessages];
+}
+
+class AddMessageUserChatsEvent extends UserChatsEvent {
+  final String userId;
+  final int totalUnreadMessages;
+  final List<ChatModel> chats;
+  final MessageModel message;
+  final int? index;
+  final bool? isChatClosed;
+  const AddMessageUserChatsEvent(
+      {required this.userId,
+      required this.chats,
+      required this.totalUnreadMessages,
+      required this.message,
+      this.index,
+      this.isChatClosed});
+  @override
+  List<Object?> get props =>
+      [userId, chats, totalUnreadMessages, message, index, isChatClosed];
 }

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
@@ -80,15 +81,18 @@ class ChatsScreen extends StatelessWidget {
                                     onPressed: () {
                                       Navigator.pushNamed(
                                           context, SingleChatScreen.routeName,
-                                          arguments: ChatModel.empty());
+                                          arguments: [
+                                            state.chats[index],
+                                            index
+                                          ]);
                                       final chatBloc =
                                           context.read<UserChatsBloc>();
 
-                                      chatBloc.add(FetchUpdatedUserChatsEvent(
-                                          chats: state.chats,
-                                          userId: user.id,
-                                          totalUnreadMessages:
-                                              state.totalUnreadMessages));
+                                      // chatBloc.add(FetchUpdatedUserChatsEvent(
+                                      //     chats: state.chats,
+                                      //     userId: user.id,
+                                      //     totalUnreadMessages:
+                                      //         state.totalUnreadMessages));
                                     },
                                   ),
                                 );
@@ -98,44 +102,53 @@ class ChatsScreen extends StatelessWidget {
                   : state is UsersChatsFetched
                       ? BlocListener<MessageBloc, MessageState>(
                           listener: (context, messageState) {
-                            if (messageState is MessageSent ||
-                                messageState is MessageReceived) {
-                              context.read<UserChatsBloc>().add(
-                                  FetchUpdatedUserChatsEvent(
-                                      chats: state.chats,
-                                      userId: user.id,
-                                      totalUnreadMessages:
-                                          state.totalUnreadMessages));
+                            if (messageState is MessageReceived) {
+                              DebugHelper.printError("here");
+                              // context.read<UserChatsBloc>().add(
+                              //     AddMessageUserChatsEvent(
+                              //         chats: state.chats,
+                              //         userId: user.id,
+                              //         totalUnreadMessages:
+                              //             state.totalUnreadMessages,
+                              //         message: messageState.message));
                             }
                           },
-                          child: Expanded(
-                            child: ListView.builder(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: Dimensions.height5),
-                              itemCount: state.chats.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: Dimensions.height2),
-                                  child: ChatCard(
-                                    chat: state.chats[index],
-                                    onPressed: () {
-                                      final chatBloc =
-                                          context.read<UserChatsBloc>();
-                                      Navigator.pushNamed(
-                                          context, SingleChatScreen.routeName,
-                                          arguments: state.chats[index]);
-                                      chatBloc.add(FetchUpdatedUserChatsEvent(
-                                          chats: state.chats,
-                                          userId: user.id,
-                                          totalUnreadMessages:
-                                              state.totalUnreadMessages));
+                          child: state.chats.isEmpty
+                              ? const Center(
+                                  child: Text("No chats found"),
+                                )
+                              : Expanded(
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: Dimensions.height5),
+                                    itemCount: state.chats.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: Dimensions.height2),
+                                        child: ChatCard(
+                                          chat: state.chats[index],
+                                          onPressed: () {
+                                            final chatBloc =
+                                                context.read<UserChatsBloc>();
+                                            Navigator.pushNamed(context,
+                                                SingleChatScreen.routeName,
+                                                arguments: [
+                                                  state.chats[index],
+                                                  index,
+                                                ]);
+                                            // chatBloc.add(
+                                            //     FetchUpdatedUserChatsEvent(
+                                            //         chats: state.chats,
+                                            //         userId: user.id,
+                                            //         totalUnreadMessages: state
+                                            //             .totalUnreadMessages));
+                                          },
+                                        ),
+                                      );
                                     },
                                   ),
-                                );
-                              },
-                            ),
-                          ),
+                                ),
                         )
                       : state is UsersChatsFetchFailed
                           ? Center(child: Text(state.message))

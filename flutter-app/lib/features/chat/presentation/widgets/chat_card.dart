@@ -13,7 +13,7 @@ class ChatCard extends StatelessWidget {
   final double radius = Dimensions.height12 + Dimensions.width12;
   @override
   Widget build(BuildContext context) {
-    print(chat.lastMessage?.createdAt);
+    final lastMessage = chat.messages.last;
     final theme = Theme.of(context);
     return MaterialButton(
       padding: EdgeInsets.zero,
@@ -45,30 +45,28 @@ class ChatCard extends StatelessWidget {
                           color: theme.primaryColorDark,
                           fontSize: Dimensions.height18),
                     ),
-                    chat.lastMessage != null
-                        ? Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  ChatUtils.getMessageStatusIcon(
-                                      context, chat.lastMessage!.messageStatus),
-                                  SizedBox(
-                                    width: Dimensions.width2,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                width: Dimensions.screenWidth * 0.45,
-                                child: Text(chat.lastMessage!.message,
-                                    maxLines: 1,
-                                    softWrap: false,
-                                    style: theme.textTheme.bodySmall!.copyWith(
-                                        fontSize: Dimensions.height14)),
-                              ),
-                            ],
-                          )
-                        : const SizedBox(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            ChatUtils.getMessageStatusIcon(
+                                context, lastMessage.messageStatus),
+                            SizedBox(
+                              width: Dimensions.width2,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: Dimensions.screenWidth * 0.45,
+                          child: Text(lastMessage.message,
+                              maxLines: 1,
+                              softWrap: false,
+                              style: theme.textTheme.bodySmall!
+                                  .copyWith(fontSize: Dimensions.height14)),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ],
@@ -82,7 +80,7 @@ class ChatCard extends StatelessWidget {
                       )
                     : const SizedBox(),
                 Text(
-                  chat.lastMessage?.createdAt.timeFormat() ?? "",
+                  lastMessage.createdAt.timeFormat(),
                   style: theme.textTheme.bodyMedium!.copyWith(
                     fontSize: Dimensions.height13,
                   ),

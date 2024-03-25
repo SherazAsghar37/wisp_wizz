@@ -22,7 +22,7 @@ class ChatModel extends ChatEntity {
   @override
   final UserModel recipient;
   @override
-  final MessageModel? lastMessage;
+  final List<MessageModel> messages;
 
   const ChatModel(
       {required this.senderId,
@@ -31,14 +31,14 @@ class ChatModel extends ChatEntity {
       required this.unreadMessages,
       required this.chatId,
       required this.recipient,
-      required this.lastMessage})
+      required this.messages})
       : super(
             recentTextMessage: recentTextMessage,
             createdAt: createdAt,
             unreadMessages: unreadMessages,
             chatId: chatId,
             recipient: recipient,
-            lastMessage: lastMessage,
+            messages: messages,
             senderId: senderId);
 
   Map<String, dynamic> toMap() {
@@ -49,7 +49,7 @@ class ChatModel extends ChatEntity {
       'unreadMessages': unreadMessages,
       'id': chatId,
       "recipient": recipient.toString(),
-      "lastMessage": lastMessage?.toMap()
+      "messages": messages.map((e) => e.toMap())
     };
   }
 
@@ -62,9 +62,8 @@ class ChatModel extends ChatEntity {
             unreadMessages: map['unreadMessages'],
             chatId: map['id'],
             recipient: UserModel.fromMap(map['sender']),
-            lastMessage: map['lastMessage'] != null
-                ? MessageModel.fromMap(map['lastMessage'])
-                : null);
+            messages: List<MessageModel>.from(
+                map['messages'].map((e) => MessageModel.fromMap(e))));
 
   ChatModel.fromDBData(Map<String, dynamic> map)
       : this(
@@ -80,16 +79,16 @@ class ChatModel extends ChatEntity {
                 status: map["status"] == 1 ? true : false,
                 lastSeen: DateFormatter.fromSqfliteFormat(map["lastSeen"]),
                 image: base64Decode(map["image"])),
-            lastMessage: map["messageId"] != null
-                ? MessageModel(
-                    senderId: map['senderId'],
-                    recipientId: map['recipientId'],
-                    message: map["message"],
-                    messageStatus: map["messageStatus"],
-                    createdAt: DateFormatter.fromSqfliteFormat(map["sentAt"]),
-                    messageId: map['messageId'],
-                    chatId: map['chatId'])
-                : null);
+            messages: List<MessageModel>.from(map["messages"]
+                .map((e) => MessageModel(
+                    senderId: e['senderId'],
+                    recipientId: e['recipientId'],
+                    message: e["message"],
+                    messageStatus: e["messageStatus"],
+                    createdAt: DateFormatter.fromSqfliteFormat(e["createdAt"]),
+                    messageId: e['messageId'],
+                    chatId: e['chatId']))
+                .toList()));
   String toJson() => json.encode(toMap());
 
   factory ChatModel.fromJson(String source) =>
@@ -103,7 +102,7 @@ class ChatModel extends ChatEntity {
             unreadMessages: 4,
             chatId: "12ab",
             recipient: UserModel.empty(),
-            lastMessage: MessageModel.empty());
+            messages: [MessageModel.empty()]);
 
   ChatModel copyWith(
       {UserModel? recipient,
@@ -112,7 +111,7 @@ class ChatModel extends ChatEntity {
       int? unreadMessages,
       String? chatId,
       String? senderId,
-      MessageModel? lastMessage}) {
+      List<MessageModel>? messages}) {
     return ChatModel(
         senderId: senderId ?? this.senderId,
         recentTextMessage: recentTextMessage ?? this.recentTextMessage,
@@ -120,6 +119,6 @@ class ChatModel extends ChatEntity {
         unreadMessages: unreadMessages ?? this.unreadMessages,
         chatId: chatId ?? this.chatId,
         recipient: recipient ?? this.recipient,
-        lastMessage: lastMessage ?? this.lastMessage);
+        messages: messages ?? this.messages);
   }
 }

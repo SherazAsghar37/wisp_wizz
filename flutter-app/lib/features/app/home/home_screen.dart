@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
@@ -45,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen>
     final chatBloc = context.read<UserChatsBloc>();
     chatBloc.add(FetchUserChatsEvent(chats: const [], userId: widget.user.id));
     WebSocketManager.socket.on("message${widget.user.id}", (data) {
+      log("received");
       context.read<MessageBloc>().add(ReceivedMessageEvent(
           senderId: data["senderId"],
           recipientId: data["recipientId"],
@@ -98,9 +101,9 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                DebugHelper.printWarning("Dropping database");
-                                await SqfliteManager.dropdb();
-                                // SqfliteManager.fetchChats(widget.user.id, 0);
+                                // DebugHelper.printWarning("Dropping database");
+                                // await SqfliteManager.dropdb();
+                                SqfliteManager.fetchChats(widget.user.id, 0);
                               },
                               child: Text(
                                 appName,

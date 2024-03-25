@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
@@ -9,28 +8,40 @@ import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 class SingleChatScreen extends StatefulWidget {
   static const String routeName = singleChatScreen;
   final ChatModel chat;
-  const SingleChatScreen({super.key, required this.chat});
+  final int index;
+  const SingleChatScreen({super.key, required this.chat, required this.index});
 
   @override
   State<SingleChatScreen> createState() => _SingleChatScreenState();
 }
 
-MessageModel message = MessageModel.empty();
-
 class _SingleChatScreenState extends State<SingleChatScreen> {
-  final List<MessageModel> messages = [];
+  List<MessageModel> messages = [];
+  bool _initialMessagesAssigned = false;
   @override
   void initState() {
+    if (!_initialMessagesAssigned) {
+      messages = widget.chat.messages;
+      _initialMessagesAssigned = true;
+    }
     context.read<MessageBloc>().messagesStream.listen((event) {
+      DebugHelper.printError(event.toString());
+      DebugHelper.printError((widget.chat.chatId).toString());
       if (event.isNotEmpty && event[0].chatId == widget.chat.chatId) {
         messages.addAll(event);
       }
     });
-    context
-        .read<MessageBloc>()
-        .add(FetchMessagesEvent(chatId: widget.chat.chatId));
+
+    // context
+    //     .read<MessageBloc>()
+    //     .add(FetchMessagesEvent(chatId: widget.chat.chatId));
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -56,17 +67,18 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                 Expanded(
                     child: BlocListener<MessageBloc, MessageState>(
                         listener: (context, state) {
-                          if (state is MessageSent ||
-                              state is MessageReceived) {
+                          if (state is MessageSent) {
                             final chatBloc = context.read<UserChatsBloc>();
                             final chatState = chatBloc.state;
                             if (chatState is UsersChatsFetched) {
-                              log("here");
-                              chatBloc.add(FetchUpdatedUserChatsEvent(
-                                  chats: chatState.chats,
-                                  userId: widget.chat.senderId,
-                                  totalUnreadMessages:
-                                      chatState.totalUnreadMessages));
+                              // log("here");
+                              // chatBloc.add(AddMessageUserChatsEvent(
+                              //     chats: chatState.chats,
+                              //     userId: widget.chat.senderId,
+                              //     totalUnreadMessages:
+                              //         chatState.totalUnreadMessages,
+                              //     message: messages.last,
+                              //     index: widget.index));
                             }
                           }
                         },

@@ -48,20 +48,19 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   void _onReceivedMessageEvent(
       ReceivedMessageEvent event, Emitter<MessageState> emit) async {
-    emit(MessageReceiving());
     final response = await _receivedMessageUseCase(CustomReceivedMessgeParam(
-        message: event.message,
-        senderId: event.senderId,
-        chatId: event.chatId,
-        recipientId: event.recipientId,
-        messageId: event.messageId,
-        repliedToId: event.repliedToId,
-        repliedToMessage: event.repliedMessage,
-        isChatClosed: event.isChatClosed,
-       ));
+      message: event.message,
+      senderId: event.senderId,
+      chatId: event.chatId,
+      recipientId: event.recipientId,
+      messageId: event.messageId,
+      repliedToId: event.repliedToId,
+      repliedToMessage: event.repliedMessage,
+      isChatClosed: event.isChatClosed,
+    ));
     response.fold((f) => emit(MessageFailed(f.message)), (s) {
       _addToSink(s);
-      emit(MessageReceived());
+      emit(MessageReceived(message: s));
     });
   }
 

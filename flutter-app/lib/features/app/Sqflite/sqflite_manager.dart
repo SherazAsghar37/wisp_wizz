@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -80,7 +81,7 @@ class SqfliteManager {
       {required String id,
       required String name,
       required String phoneNumber,
-      required Uint8List image}) async {
+      required String image}) async {
     try {
       final Database db = await getDB();
       final data = {
@@ -241,25 +242,45 @@ class SqfliteManager {
 
   static Future<MapData> fetchChats(String userId, int currentPage) async {
     try {
-      final data = await db.rawQuery('''
-      SELECT c.*, m.messageId, m.message, m.messageStatus, m.updatedAt AS sentAt,u.*
+      // final data = await db.rawQuery('''
+      // SELECT c.*, m.messageId, m.message, m.messageStatus, m.updatedAt AS sentAt,u.*
+      // FROM Chat AS c
+      // INNER JOIN User as u on c.recipientId = u.id
+      // LEFT JOIN Message AS m ON c.chatId = m.chatId
+      // AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY createdAt desc limit 1)
+      // WHERE c.senderId = ?
+      // ORDER BY m.updatedAt desc
+      // LIMIT ? OFFSET ?
+      // ''', [userId, chatsLoadAtEachTime, currentPage * chatsLoadAtEachTime]);
+
+      List<MapData> data = await db.rawQuery('''
+      SELECT c.*,u.*
       FROM Chat AS c
       INNER JOIN User as u on c.recipientId = u.id
       LEFT JOIN Message AS m ON c.chatId = m.chatId
-      AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY createdAt desc limit 1)
       WHERE c.senderId = ?
+      AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY createdAt desc limit 1)
       ORDER BY m.updatedAt desc
       LIMIT ? OFFSET ?
       ''', [userId, chatsLoadAtEachTime, currentPage * chatsLoadAtEachTime]);
+      List<MapData> newData = [];
+      for (var i = 0; i < data.length; i++) {
+        final messagesData = await db.rawQuery(
+            "Select * from Message WHERE chatId = ?", [data[i]["chatId"]]);
+        newData.add({...data[i], "messages": messagesData});
+        // data[i]["messages"] = messagesData;
+        // data[i] = {...data[i], "messages": messagesData};
+      }
+
       final totalUnreadMessages = await db.rawQuery('''
       SELECT SUM(unreadMessages) as totalUnreadMessages
       FROM Chat where senderId = '$userId'
       ''');
-      DebugHelper.printWarning(data.toString());
+      log(newData.toString());
 
       return {
-        "data": data,
-        "totalUnreadMessages": totalUnreadMessages[0]["totalUnreadMessages"]
+        "data": newData,
+        "totalUnreadMessages": totalUnreadMessages[0]["totalUnreadMessages"],
       };
     } catch (e) {
       throw SqfliteDBException(e.toString());

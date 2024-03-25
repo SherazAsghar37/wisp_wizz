@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:sqflite/sqflite.dart';
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/utils/typedef.dart';
@@ -11,7 +9,7 @@ class SqfliteManagerWrapper {
       {required String id,
       required String name,
       required String phoneNumber,
-      required Uint8List image}) {
+      required String image}) {
     return SqfliteManager.createUser(
         id: id, name: name, phoneNumber: phoneNumber, image: image);
   }
