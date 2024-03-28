@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
@@ -9,7 +8,7 @@ class WebSocketManager {
   static late IO.Socket _socket;
   static IO.Socket get socket => _socket;
   static void socketInit(String userId) {
-    log("Called");
+    DebugHelper.printWarning("Called");
     _socket = IO.io(socketIOBaseUrl, <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": true
@@ -35,7 +34,6 @@ class WebSocketManager {
     });
 
     _socket.connect();
-    DebugHelper.printWarning("here");
   }
 
   static void emitMesssage(dynamic data) => _socket.emit("message", data);

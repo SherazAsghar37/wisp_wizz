@@ -53,13 +53,17 @@ class ContactCard extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: Dimensions.height30,
-              width: Dimensions.width30,
+              height: Dimensions.height15,
+              width: Dimensions.width15,
               child: isLoading
                   ? CircularProgressIndicator(
                       color: theme.primaryColor,
+                      strokeWidth: Dimensions.width1,
                     )
-                  : const Icon(chatIcon),
+                  : Icon(
+                      chatIcon,
+                      color: theme.primaryColor,
+                    ),
             )
           ],
         ),

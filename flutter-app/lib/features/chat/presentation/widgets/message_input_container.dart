@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/switchable_icons.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';

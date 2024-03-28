@@ -78,6 +78,7 @@ class ChatsScreen extends StatelessWidget {
                                       vertical: Dimensions.height2),
                                   child: ChatCard(
                                     chat: state.chats[index],
+                                    userID: user.id,
                                     onPressed: () {
                                       final currentChatBloc =
                                           context.read<CurrentChatBloc>();
@@ -94,7 +95,8 @@ class ChatsScreen extends StatelessWidget {
                                               userId: user.id)));
                                       currentChatBloc.add(CurrentChatOpenEvent(
                                           chatId: state.chats[index].chatId,
-                                          userId: user.id));
+                                          userId: user.id,
+                                          index: index));
                                       userChatsBloc.add(IntiChatUserChatsEvent(
                                           chats: state.chats,
                                           totalUnreadMessages:
@@ -119,7 +121,8 @@ class ChatsScreen extends StatelessWidget {
                                     totalUnreadMessages:
                                         chatState.totalUnreadMessages,
                                     message: messageState.message,
-                                    index: null));
+                                    isChatClosed: messageState.isChatClosed,
+                                    index: messageState.index));
                               }
                             }
                           },
@@ -137,6 +140,7 @@ class ChatsScreen extends StatelessWidget {
                                         padding: EdgeInsets.symmetric(
                                             vertical: Dimensions.height2),
                                         child: ChatCard(
+                                          userID: user.id,
                                           chat: state.chats[index],
                                           onPressed: () {
                                             final currentChatBloc =
@@ -147,7 +151,8 @@ class ChatsScreen extends StatelessWidget {
                                                 CurrentChatOpenEvent(
                                                     chatId: state
                                                         .chats[index].chatId,
-                                                    userId: user.id));
+                                                    userId: user.id,
+                                                    index: index));
                                             Navigator.pushNamed(context,
                                                 SingleChatScreen.routeName,
                                                 arguments: [
@@ -157,11 +162,7 @@ class ChatsScreen extends StatelessWidget {
                                                 currentChatBloc.add(
                                                     CurrentChatCloseEvent(
                                                         userId: user.id)));
-                                            currentChatBloc.add(
-                                                CurrentChatOpenEvent(
-                                                    chatId: state
-                                                        .chats[index].chatId,
-                                                    userId: user.id));
+
                                             userChatsBloc.add(
                                                 IntiChatUserChatsEvent(
                                                     chats: state.chats,

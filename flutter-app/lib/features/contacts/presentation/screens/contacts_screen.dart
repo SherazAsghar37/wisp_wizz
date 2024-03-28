@@ -1,4 +1,4 @@
-import 'package:wisp_wizz/features/app/shared/widgets/contact_card.dart';
+import 'package:wisp_wizz/features/contacts/presentation/widgets/contact_card.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
 import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
@@ -91,8 +91,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
                                               isLoading:
                                                   index == chatState.index,
                                             )
-                                          : GestureDetector(
-                                              onTap: () {
+                                          : MaterialButton(
+                                              padding: EdgeInsets.zero,
+                                              onPressed: () {
                                                 AuthloggedIn senderState =
                                                     context
                                                         .read<AuthBloc>()
@@ -116,7 +117,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                                           index == 0) {
                                         Navigator.pushNamed(
                                             context, SingleChatScreen.routeName,
-                                            arguments: chatState.chat);
+                                            arguments: [chatState.chat, index]);
                                       } else if (chatState is ChatFetchFailed) {
                                         BotToast.showText(
                                             text: chatState.message,

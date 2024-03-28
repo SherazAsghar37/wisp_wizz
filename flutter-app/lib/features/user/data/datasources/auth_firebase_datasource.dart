@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/app/constants/status_codes.dart';
@@ -61,7 +60,6 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
       );
       try {
         completer.future.onError((error, stackTrace) {
-          log("error");
           throw const ApiException(
             message: "Failed to send code, please try again later",
             statusCode: StatusCode.FORBIDDEN,
@@ -72,7 +70,7 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
       }
       return completer.future;
     } on ApiException {
-      log("Got api exception");
+      DebugHelper.printError("Got api exception");
       rethrow;
     } catch (e) {
       DebugHelper.printError("Exception: ${e.toString()}");
@@ -91,7 +89,6 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
     try {
       final PhoneAuthCredential phoneAuthCredential = _phoneAuthProviderWrapper
           .credential(verificationId: verificationId, smsCode: otp);
-      DebugHelper.printWarning(phoneAuthCredential.toString());
       await getUserByCradentials(phoneAuthCredential: phoneAuthCredential);
       return phoneAuthCredential;
     } on FirebaseAuthException catch (authException) {

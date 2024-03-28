@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+
 import 'dart:isolate';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -63,9 +63,6 @@ class SqfliteManager {
   }
 
   static Future<Database> getDB() async {
-    var databasesPath = await getDatabasesPath();
-    DebugHelper.printError(databasesPath.toString());
-// String path = join(databasesPath, 'demo.db');
     try {
       return db = await sql.openDatabase(
         dbName,
@@ -98,22 +95,6 @@ class SqfliteManager {
       throw SqfliteDBException(e.toString());
     }
   }
-
-  // static Future<void> saveMessage({
-  //   required String senderId,
-  //   required String recipientId,
-  //   required String message,
-  // }) async {
-  //   try {
-  //     final db = await getDB();
-  //     final result = await db.query('Chat',
-  //         where: 'recipientId = ?',
-  //         whereArgs: [recipientId],
-  //         columns: ['id'] // Replace with your actual value for id
-  //         );
-  //     DebugHelper.printWarning(result.toString());
-  //   } catch (e) {}
-  // }
 
   static Future<MapData> fetchChat(String recipientId, String senderId) async {
     try {
@@ -150,7 +131,6 @@ class SqfliteManager {
         "messages": messages,
         ...chatAndSenderData[0],
       };
-      DebugHelper.printWarning(data.toString());
       return data;
     } catch (e) {
       throw SqfliteDBException(e.toString());
@@ -237,14 +217,12 @@ class SqfliteManager {
         "messageId": data["messageId"] ?? id,
         "updatedAt": data["createdAt"]
       };
-      // DebugHelper.printWarning(newdata.toString());
       await db.insert(
         "Message",
         newdata,
         conflictAlgorithm: ConflictAlgorithm.fail,
       );
       if (isChatClosed) {
-        DebugHelper.printError("here");
         await db.rawQuery("""
       UPDATE Chat SET unreadMessages = unreadMessages +1  WHERE chatId = ? 
       """, [data["chatId"]]);
@@ -257,17 +235,6 @@ class SqfliteManager {
 
   static Future<MapData> fetchChats(String userId, int currentPage) async {
     try {
-      // final data = await db.rawQuery('''
-      // SELECT c.*, m.messageId, m.message, m.messageStatus, m.updatedAt AS sentAt,u.*
-      // FROM Chat AS c
-      // INNER JOIN User as u on c.recipientId = u.id
-      // LEFT JOIN Message AS m ON c.chatId = m.chatId
-      // AND m.messageId = (SELECT m2.messageId FROM Message AS m2 WHERE m2.chatId = c.chatId ORDER BY createdAt desc limit 1)
-      // WHERE c.senderId = ?
-      // ORDER BY m.updatedAt desc
-      // LIMIT ? OFFSET ?
-      // ''', [userId, chatsLoadAtEachTime, currentPage * chatsLoadAtEachTime]);
-
       List<MapData> data = await db.rawQuery('''
       SELECT c.*,u.*
       FROM Chat AS c
@@ -283,15 +250,12 @@ class SqfliteManager {
         final messagesData = await db.rawQuery(
             "Select * from Message WHERE chatId = ?", [data[i]["chatId"]]);
         newData.add({...data[i], "messages": messagesData});
-        // data[i]["messages"] = messagesData;
-        // data[i] = {...data[i], "messages": messagesData};
       }
 
       final totalUnreadMessages = await db.rawQuery('''
       SELECT SUM(unreadMessages) as totalUnreadMessages
       FROM Chat where senderId = '$userId'
       ''');
-      log(newData.toString());
 
       return {
         "data": newData,

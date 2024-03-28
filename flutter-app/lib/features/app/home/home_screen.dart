@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
 import 'package:wisp_wizz/features/app/socket/socket_manager.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/current-chat-bloc/current_chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
@@ -45,9 +43,12 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
     tabController = TabController(vsync: this, length: tabScreens.length);
     final chatBloc = context.read<UserChatsBloc>();
+    final currentChatBLoc = context.read<CurrentChatBloc>();
+
     chatBloc.add(FetchUserChatsEvent(chats: const [], userId: widget.user.id));
+
     WebSocketManager.socket.on("message${widget.user.id}", (data) {
-      log("received");
+      final currentChatState = currentChatBLoc.state;
       context.read<MessageBloc>().add(ReceivedMessageEvent(
           senderId: data["senderId"],
           recipientId: data["recipientId"],
@@ -55,8 +56,11 @@ class _HomeScreenState extends State<HomeScreen>
           chatId: data["chatId"],
           repliedToId: data["repliedToId"],
           repliedMessage: data["repliedMessage"],
-          isChatClosed: true,
-          messageId: data["messageId"]));
+          isChatClosed: currentChatState is CurrentChatClosed ? true : false,
+          messageId: data["messageId"],
+          index: currentChatState is CurrentChatOpened
+              ? currentChatState.index
+              : -1));
     });
   }
 
@@ -101,8 +105,6 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                // DebugHelper.printWarning("Dropping database");
-                                // await SqfliteManager.dropdb();
                                 SqfliteManager.fetchChats(widget.user.id, 0);
                               },
                               child: Text(
@@ -132,15 +134,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 TextButton(
                                   onPressed: () async {
                                     Navigator.pushNamed(
-                                            context, SettingScreen.routeName,
-                                            arguments: state is AuthloggedIn
-                                                ? state.user
-                                                : widget.user)
-                                        .then((value) {
-                                      setState(() {
-                                        DebugHelper.printWarning("back");
-                                      });
-                                    });
+                                        context, SettingScreen.routeName,
+                                        arguments: state is AuthloggedIn
+                                            ? state.user
+                                            : widget.user);
                                   },
                                   child: CircleAvatar(
                                     backgroundColor:
@@ -158,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen>
                             CustomTabBar(
                                 tabs: tabIcons,
                                 tabController: tabController,
-                                notifications: const [true, false, false]),
+                                notifications: [true, false, false]),
                             Expanded(
                                 child: TabBarView(
                               controller: tabController,

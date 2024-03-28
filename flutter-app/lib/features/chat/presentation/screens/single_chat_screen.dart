@@ -1,5 +1,4 @@
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
@@ -21,21 +20,11 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
   @override
   void initState() {
     messages = widget.chat.messages;
-    // streamSubscription =
-    //     context.read<MessageBloc>().messagesStream.listen((event) {
-    //   DebugHelper.printError(event.toString());
-    //   DebugHelper.printError((widget.chat.chatId).toString());
-    //   if (event.isNotEmpty && event[0].chatId == widget.chat.chatId) {
-    //     messages.addAll(event);
-    //   }
-    // });
-
     super.initState();
   }
 
   @override
   void dispose() {
-    // streamSubscription.cancel();
     super.dispose();
   }
 
@@ -66,30 +55,16 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                             final chatBloc = context.read<UserChatsBloc>();
                             final chatState = chatBloc.state;
                             if (chatState is UsersChatsFetched) {
-                              DebugHelper.printWarning("here");
                               chatBloc.add(AddMessageUserChatsEvent(
                                   chats: chatState.chats,
                                   userId: widget.chat.senderId,
                                   totalUnreadMessages:
                                       chatState.totalUnreadMessages,
                                   message: state.message,
-                                  index: widget.index));
+                                  index: widget.index,
+                                  isChatClosed: false));
                             }
                           }
-                          // if (state is MessageReceived) {
-                          //   final chatBloc = context.read<UserChatsBloc>();
-                          //   final chatState = chatBloc.state;
-                          //   if (chatState is UsersChatsFetched) {
-                          //     DebugHelper.printWarning("here");
-                          //     chatBloc.add(AddMessageUserChatsEvent(
-                          //         chats: chatState.chats,
-                          //         userId: widget.chat.senderId,
-                          //         totalUnreadMessages:
-                          //             chatState.totalUnreadMessages,
-                          //         message: state.message,
-                          //         index: widget.index));
-                          //   }
-                          // }
                         },
                         child: StreamBuilder(
                           stream: context.read<MessageBloc>().messagesStream,

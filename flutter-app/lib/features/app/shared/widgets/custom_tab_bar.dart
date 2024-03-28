@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wisp_wizz/features/app/helper/dimensions.dart';
+import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 class CustomTabBar extends StatefulWidget {
   final List<IconData> tabs;
@@ -45,6 +47,7 @@ class _CustomTabBarState extends State<CustomTabBar>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final userChatsState = context.watch<UserChatsBloc>().state;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -85,7 +88,12 @@ class _CustomTabBarState extends State<CustomTabBar>
                           },
                           value: getAnimationFormula(e.key),
                           tabs: widget.tabs,
-                          hasNotification: widget.notifications[e.key]),
+                          hasNotification:
+                              userChatsState is UsersChatsFetched &&
+                                      userChatsState.totalUnreadMessages > 0 &&
+                                      e.key == 0
+                                  ? true
+                                  : false),
                     )
                     .toList(),
               ),

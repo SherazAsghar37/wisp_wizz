@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/icon_text_button.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/primary_icon.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
@@ -193,14 +192,12 @@ class _SettingScreenState extends State<SettingScreen> {
                               nameController.text.trim() == currUser.name
                           ? null
                           : nameController.text.trim();
-                      DebugHelper.printWarning(name.toString());
                       if (state is AuthloggedIn || state is AuthloginFailed) {
                         context.read<AuthBloc>().add(UpdateUserEvent(
                             id: widget.user.id,
                             name: name,
                             image: image == widget.user.image ? null : image));
                       } else {
-                        DebugHelper.printWarning("there");
                         final phoneNumberBloc =
                             // ignore: use_build_context_synchronously
                             context.read<PhoneNumberBloc>().state;

@@ -3,11 +3,13 @@ import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
 class ChatCard extends StatelessWidget {
   final ChatModel chat;
+  final String userID;
   final VoidCallback onPressed;
   ChatCard({
     super.key,
     required this.chat,
     required this.onPressed,
+    required this.userID,
   });
 
   final double radius = Dimensions.height12 + Dimensions.width12;
@@ -48,15 +50,17 @@ class ChatCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          children: [
-                            ChatUtils.getMessageStatusIcon(
-                                context, lastMessage.messageStatus),
-                            SizedBox(
-                              width: Dimensions.width2,
-                            ),
-                          ],
-                        ),
+                        lastMessage.senderId == userID
+                            ? Row(
+                                children: [
+                                  ChatUtils.getMessageStatusIcon(
+                                      context, lastMessage.messageStatus),
+                                  SizedBox(
+                                    width: Dimensions.width2,
+                                  ),
+                                ],
+                              )
+                            : const SizedBox(),
                         SizedBox(
                           width: Dimensions.screenWidth * 0.45,
                           child: Text(lastMessage.message,

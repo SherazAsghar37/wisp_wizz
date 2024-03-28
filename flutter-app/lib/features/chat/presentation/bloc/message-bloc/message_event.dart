@@ -47,6 +47,7 @@ class ReceivedMessageEvent extends MessageEvent {
   final String? repliedToId;
   final String messageId;
   final bool isChatClosed;
+  final int index;
 
   const ReceivedMessageEvent({
     required this.senderId,
@@ -55,6 +56,7 @@ class ReceivedMessageEvent extends MessageEvent {
     required this.message,
     required this.chatId,
     required this.isChatClosed,
+    required this.index,
     this.repliedMessage,
     this.repliedToId,
   });
@@ -68,7 +70,8 @@ class ReceivedMessageEvent extends MessageEvent {
         repliedMessage,
         repliedToId,
         messageId,
-        isChatClosed
+        isChatClosed,
+        index
       ];
 }
 

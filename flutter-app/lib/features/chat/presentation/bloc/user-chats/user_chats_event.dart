@@ -34,14 +34,14 @@ class AddMessageUserChatsEvent extends UserChatsEvent {
   final List<ChatModel> chats;
   final MessageModel message;
   final int? index;
-  final bool? isChatClosed;
+  final bool isChatClosed;
   const AddMessageUserChatsEvent(
       {required this.userId,
       required this.chats,
       required this.totalUnreadMessages,
       required this.message,
       this.index,
-      this.isChatClosed});
+      required this.isChatClosed});
   @override
   List<Object?> get props =>
       [userId, chats, totalUnreadMessages, message, index, isChatClosed];

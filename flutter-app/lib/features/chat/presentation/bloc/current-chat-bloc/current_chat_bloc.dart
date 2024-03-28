@@ -9,7 +9,7 @@ class CurrentChatBloc extends Bloc<CurrentChatEvent, CurrentChatState> {
   final SendStatusUsecase _sendStatusUsecase;
   CurrentChatBloc({required SendStatusUsecase sendStatusUsecase})
       : _sendStatusUsecase = sendStatusUsecase,
-        super(CurrentChatInitial()) {
+        super(const CurrentChatClosed()) {
     on<CurrentChatOpenEvent>(_onCurrentChatOpenEvent);
     on<CurrentChatCloseEvent>(_onCurrentChatCloseEvent);
   }
@@ -18,8 +18,10 @@ class CurrentChatBloc extends Bloc<CurrentChatEvent, CurrentChatState> {
     // emit(CurrentChatOpening());
     final res = _sendStatusUsecase(
         CustomSendStatusParam(chatId: event.chatId, userId: event.userId));
-    res.fold((f) => emit(CurrentChatStatusFailed(message: f.message)),
-        (s) => emit(CurrentChatOpened(chatId: event.chatId)));
+    res.fold(
+        (f) => emit(CurrentChatStatusFailed(message: f.message)),
+        (s) =>
+            emit(CurrentChatOpened(chatId: event.chatId, index: event.index)));
   }
 
   void _onCurrentChatCloseEvent(

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
@@ -20,6 +18,7 @@ class ChatLocalDatasource extends IChatLocalDatasource {
     try {
       final queryData =
           await _sqfliteManagerWrapper.fetchChat(recipientId, senderId);
+      DebugHelper.printWarning(queryData.toString());
       return ChatModel.fromDBData(queryData);
     } on SqfliteDBException catch (e) {
       DebugHelper.printError(e.toString());
@@ -74,7 +73,7 @@ class ChatLocalDatasource extends IChatLocalDatasource {
           data, isChatClosed ?? false);
 
       final newData = {...res, "repliedMessage": repliedMessage};
-      log(res.toString());
+
       return MessageModel.fromDBData(newData);
     } on SqfliteDBException catch (e) {
       DebugHelper.printError(e.toString());

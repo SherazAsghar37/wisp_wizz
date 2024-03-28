@@ -24,6 +24,7 @@ class AuthRepository implements IAuthRepository {
       : _remoteDatasource = remoteDataSource,
         _firebaseAuthentication = firebaseAuthentication,
         _localDataSource = localDataSource;
+
   @override
   FutureUser loginUser(
       {required String? name,
@@ -56,7 +57,7 @@ class AuthRepository implements IAuthRepository {
       );
       return Right(response);
     } on ApiException catch (e) {
-      DebugHelper.printWarning("exception");
+      DebugHelper.printError("exception");
       return Left(ApiFailure.fromException(e));
     }
   }

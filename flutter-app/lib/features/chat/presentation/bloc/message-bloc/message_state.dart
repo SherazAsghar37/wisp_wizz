@@ -29,10 +29,13 @@ final class MessageSent extends MessageState {
 
 final class MessageReceived extends MessageState {
   final MessageModel message;
-  const MessageReceived({required this.message});
+  final bool isChatClosed;
+  final int index;
+  const MessageReceived(
+      {required this.message, required this.isChatClosed, required this.index});
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [message, isChatClosed, index];
 }
 
 final class MessageFailed extends MessageState {

@@ -41,6 +41,7 @@ class GroupsScreen extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: Dimensions.height2),
                     child: ChatCard(
+                      userID: "",
                       chat: chat,
                       onPressed: () {},
                     ),
