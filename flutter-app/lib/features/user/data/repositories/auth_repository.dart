@@ -142,9 +142,9 @@ class AuthRepository implements IAuthRepository {
     try {
       await _localDataSource.initLocalDB();
       final user = _localDataSource.getCachedUserData();
-      if (user != null) {
-        _remoteDatasource.connectSocket(user.id);
-      }
+      // if (user != null) {
+      //   _remoteDatasource.connectSocket(user.id);
+      // }
       return Right(user);
     } on WebSocketException catch (e) {
       return Left(WebSocketFailure.fromException(e));
@@ -152,6 +152,16 @@ class AuthRepository implements IAuthRepository {
       return Left(SqfliteDBFailure.fromException(e));
     } on CacheException catch (e) {
       return Left(CacheFailure.fromException(e));
+    }
+  }
+
+  @override
+  Result<void> initSocket(String userId) {
+    try {
+      _remoteDatasource.connectSocket(userId);
+      return const Right(null);
+    } on WebSocketException catch (e) {
+      return Left(WebSocketFailure.fromException(e));
     }
   }
 }

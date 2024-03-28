@@ -91,7 +91,7 @@ class ChatLocalDatasource extends IChatLocalDatasource {
     try {
       final res = await _sqfliteManagerWrapper.fetchChats(userId, currentPage);
       return CustomGetMyChatsResponse(
-          totalUnreadMessages: res["totalUnreadMessages"],
+          totalUnreadMessages: res["totalUnreadMessages"] ?? 0,
           chats: List<ChatModel>.from(
               res["data"].map((e) => ChatModel.fromDBData(e)).toList()));
     } on SqfliteDBException catch (e) {
@@ -99,7 +99,7 @@ class ChatLocalDatasource extends IChatLocalDatasource {
       throw const SqfliteDBException(
           "Something went wrong, Unable to fetch your chats");
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("fetchChats error: $e");
       throw const SqfliteDBException("Something went wrong");
     }
   }

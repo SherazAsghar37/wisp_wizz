@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/phone-number/phone_number_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/socket/socket_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 
 // ignore: must_be_immutable
@@ -131,6 +132,9 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
               },
               listener: (context, state) {
                 if (state is AuthloggedIn) {
+                  context
+                      .read<SocketBloc>()
+                      .add(ConnectSocketEvent(state.user.id));
                   Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                       arguments: state.user);
                 }

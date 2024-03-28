@@ -61,10 +61,18 @@ class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
     if (!event.isChatClosed) {
       print("chat opened");
       event.chats[event.index!].messages.add(event.message);
-      emit(UsersChatsFetched(
-        event.chats,
-        event.totalUnreadMessages,
-      ));
+      if (event.message.senderId == event.userId) {
+        final chatModel = event.chats.removeAt(event.index!);
+        emit(UsersChatsFetched(
+          [chatModel, ...event.chats],
+          event.totalUnreadMessages,
+        ));
+      } else {
+        emit(UsersChatsFetched(
+          event.chats,
+          event.totalUnreadMessages,
+        ));
+      }
     } else {
       int index = event.chats
           .indexWhere((element) => element.chatId == event.message.chatId);

@@ -37,12 +37,14 @@ import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/init_application_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/init_socket_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/login_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/logout_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/send_code_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/update_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/verify_otp_usecase.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/socket/socket_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -177,4 +179,10 @@ Future<void> init() async {
     ..registerFactory(() => CurrentChatBloc(sendStatusUsecase: sl()))
     ..registerLazySingleton<SendStatusUsecase>(
         () => SendStatusUsecase(repository: sl()));
+
+  //socket bloc
+  sl
+    ..registerFactory(() => SocketBloc(initSocketUsecase: sl()))
+    ..registerLazySingleton<InitSocketUsecase>(
+        () => InitSocketUsecase(authRepository: sl()));
 }

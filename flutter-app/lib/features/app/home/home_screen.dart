@@ -56,9 +56,13 @@ class _HomeScreenState extends State<HomeScreen>
           chatId: data["chatId"],
           repliedToId: data["repliedToId"],
           repliedMessage: data["repliedMessage"],
-          isChatClosed: currentChatState is CurrentChatClosed ? true : false,
+          isChatClosed: currentChatState is CurrentChatOpened &&
+                  currentChatState.chatId == data["chatId"]
+              ? false
+              : true,
           messageId: data["messageId"],
-          index: currentChatState is CurrentChatOpened
+          index: currentChatState is CurrentChatOpened &&
+                  currentChatState.chatId == data["chatId"]
               ? currentChatState.index
               : -1));
     });

@@ -16,6 +16,7 @@ import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart'
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/otp/otp_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/phone-number/phone_number_bloc.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/socket/socket_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/provider/auth_controller.dart';
 import 'package:wisp_wizz/features/user/presentation/screens/login_screen.dart';
 import 'package:wisp_wizz/features/app/utils/router.dart';
@@ -57,6 +58,9 @@ void main() async {
         BlocProvider(
           create: (context) => dep.sl<CurrentChatBloc>(),
         ),
+        BlocProvider(
+          create: (context) => dep.sl<SocketBloc>(),
+        ),
       ],
       child: MultiProvider(providers: [
         ChangeNotifierProvider(
@@ -88,6 +92,7 @@ class MyApp extends StatelessWidget {
         },
         listener: (context, state) {
           if (state is AuthloggedIn) {
+            context.read<SocketBloc>().add(ConnectSocketEvent(state.user.id));
             Navigator.pushNamedAndRemoveUntil(
                 context, HomeScreen.routeName, (route) => false,
                 arguments: state.user);
