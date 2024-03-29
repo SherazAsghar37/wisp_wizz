@@ -29,11 +29,13 @@ class AuthRepository implements IAuthRepository {
   FutureUser loginUser(
       {required String? name,
       required String phoneNumber,
-      Uint8List? image}) async {
+      Uint8List? image,
+      String? mimeType}) async {
     try {
       final response = await _remoteDatasource.loginUser(
           name: name, phoneNumber: phoneNumber, image: image);
-      _remoteDatasource.connectSocket(response.id);
+      // _remoteDatasource.connectSocket(response.id);
+
       await _localDataSource.cacheUserData(response);
       return Right(response);
     } on ApiException catch (e) {
@@ -115,7 +117,10 @@ class AuthRepository implements IAuthRepository {
 
   @override
   FutureUser updateUser(
-      {required String? name, required String id, Uint8List? image}) async {
+      {required String? name,
+      required String id,
+      Uint8List? image,
+      String? mimeType}) async {
     try {
       final response =
           await _remoteDatasource.updateUser(name: name, id: id, image: image);

@@ -27,8 +27,10 @@ class ContactCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: radius,
-                  backgroundImage:
-                      Utils.getUserImageFromUint8List(contact.image),
+                  backgroundImage: Utils.getUserImageFromUint8List(
+                    null,
+                    contact.image,
+                  ),
                 ),
                 SizedBox(
                   width: Dimensions.width10,

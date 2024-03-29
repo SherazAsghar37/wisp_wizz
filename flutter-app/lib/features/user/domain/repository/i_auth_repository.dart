@@ -13,7 +13,10 @@ abstract class IAuthRepository {
   ResultFuture<PhoneAuthCredential> verifyOTP(
       {required String verificationId, required String otp});
   FutureUser loginUser(
-      {required String? name, required String phoneNumber, Uint8List? image});
+      {required String? name,
+      required String phoneNumber,
+      Uint8List? image,
+      String? mimeType});
   FutureNullabeleUser getUser({
     required String phoneNumber,
   });
@@ -21,7 +24,10 @@ abstract class IAuthRepository {
   FutureVoid logout();
   Result<void> initSocket(String userId);
   FutureUser updateUser(
-      {required String? name, required String id, Uint8List? image});
+      {required String? name,
+      required String id,
+      Uint8List? image,
+      String? mimeType});
   ResultFuture<void> cacheUser(UserModel user);
   ResultFuture<UserEntity?> initApplication();
 }

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'dart:isolate';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -20,7 +18,7 @@ class SqfliteManager {
                       id char(36) primary key not null,
                       name varchar(100) not null,
                       phoneNumber varchar(15) not null check (LENGTH(phoneNumber)>6) ,
-                      image LONGBLOB,
+                      image varchar(200),
                       status boolean not null default TRUE,
                       lastSeen datetime not null  default CURRENT_TIMESTAMP,
                       createdAt datetime not null  default CURRENT_TIMESTAMP,
@@ -195,7 +193,7 @@ class SqfliteManager {
               "id": item.id,
               "name": item.name,
               "phoneNumber": item.phoneNumber,
-              "image": base64Encode(item.image),
+              "image": item.image,
               "createdAt": DateTime.now().toSqfliteFormat(),
               "updatedAt": DateTime.now().toSqfliteFormat(),
             },

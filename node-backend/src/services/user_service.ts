@@ -2,8 +2,7 @@ import { singleton, inject } from "tsyringe";
 import { ThrowCriticalError } from "../exceptions/critical_error";
 import UserRepository from "../repositories/user_repository";
 import CustomError from "../exceptions/custom_error";
-import { User, BufferImage } from "../@types/user";
-import { Readable } from "stream";
+import User from "../@types/user";
 
 @singleton()
 export default class UserService {
@@ -28,20 +27,22 @@ export default class UserService {
     }
   };
   public signUpLocal = async (
+    id: string,
     name: string,
     phoneNumber: string,
-    image: Buffer
+    image: string
   ): Promise<User> => {
     try {
       var user: User | null = await this._userRepository.findByPhoneNumber(
         phoneNumber
       );
       if (!user) {
-        user = await this._userRepository.createByLocal({
+        user = await this._userRepository.createByLocal(
+          id,
           name,
           phoneNumber,
-          image,
-        });
+          image
+        );
       } else {
         user = user = await this._userRepository.updateUser({
           name,

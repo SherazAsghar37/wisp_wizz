@@ -12,7 +12,10 @@ class UpdateUser extends UsecaseWithParam<UserModel, UpdateUserParam> {
   @override
   FutureUser call(UpdateUserParam param) async {
     return authRepository.updateUser(
-        name: param.name, id: param.id, image: param.image);
+        name: param.name,
+        id: param.id,
+        image: param.image,
+        mimeType: param.mimeType);
   }
 }
 
@@ -20,10 +23,13 @@ class UpdateUserParam extends Equatable {
   final String? name;
   final String id;
   final Uint8List? image;
-
+  final String? mimeType;
   const UpdateUserParam(
-      {required this.name, required this.id, required this.image});
+      {required this.name,
+      required this.id,
+      required this.image,
+      required this.mimeType});
 
   @override
-  List<Object?> get props => [name, id, image];
+  List<Object?> get props => [name, id, image, mimeType];
 }

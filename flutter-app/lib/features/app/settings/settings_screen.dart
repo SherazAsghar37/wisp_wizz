@@ -20,10 +20,12 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   TextEditingController nameController = TextEditingController();
   Uint8List? image;
+  String? imageUrl;
+  String? mimeType;
   late UserModel currUser;
   @override
   void initState() {
-    image = widget.user.image;
+    imageUrl = widget.user.image;
     final name = widget.user.name;
     nameController.text = name;
     currUser = widget.user;
@@ -83,6 +85,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             XFile? file = await Utils.pickImage();
 
                             if (file != null) {
+                              mimeType = file.mimeType;
                               image = await file.readAsBytes();
                               setState(() {});
                             }
@@ -93,7 +96,8 @@ class _SettingScreenState extends State<SettingScreen> {
                             child: CircleAvatar(
                                 radius: radius - 5,
                                 backgroundImage:
-                                    Utils.getUserImageFromUint8List(image)),
+                                    Utils.getUserImageFromUint8List(
+                                        image, imageUrl)),
                           ),
                         ),
                         SizedBox(
@@ -167,15 +171,16 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
         ),
         floatingActionButton: nameController.text.trim() == currUser.name &&
-                (image == currUser.image)
+                (image == null)
             ? null
             : BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthloggedIn) {
                     setState(() {
                       currUser = state.user;
-                      image = state.user.image;
+                      imageUrl = state.user.image;
                       nameController.text = state.user.name;
+                      image = null;
                     });
                   }
                   if (state is AuthloginFailed) {
@@ -196,12 +201,11 @@ class _SettingScreenState extends State<SettingScreen> {
                         context.read<AuthBloc>().add(UpdateUserEvent(
                             id: widget.user.id,
                             name: name,
-                            image: image == widget.user.image ? null : image));
+                            image: image,
+                            mimeType: mimeType));
                       } else {
                         final phoneNumberBloc =
-                            // ignore: use_build_context_synchronously
                             context.read<PhoneNumberBloc>().state;
-                        // ignore: use_build_context_synchronously
                         context.read<AuthBloc>().add(LoginEvent(
                             phoneNumber: phoneNumberBloc.countryCode +
                                 phoneNumberBloc.textEditingController.text,

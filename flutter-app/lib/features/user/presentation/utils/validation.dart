@@ -25,7 +25,7 @@ Either<ValidationFailure, bool> loginValidation(
 ) {
   if (!phoneNumber.startsWith("+")) {
     return const Left(ValidationFailure(message: "Invalid phone number"));
-  } else if (phoneNumber.length != 10) {
+  } else if (phoneNumber.length < 10) {
     return const Left(ValidationFailure(message: "Invalid phone number"));
   } else {
     return const Right(true);

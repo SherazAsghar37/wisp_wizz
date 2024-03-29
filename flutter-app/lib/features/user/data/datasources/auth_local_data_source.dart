@@ -25,7 +25,7 @@ class AuthLocalDatasource implements IAuthLocalDatasource {
           id: user.id,
           name: user.name,
           phoneNumber: user.phoneNumber,
-          image: base64Encode(user.image));
+          image: user.image);
       if (!res) {
         throw const CacheException(message: "Failed to cache user data");
       }

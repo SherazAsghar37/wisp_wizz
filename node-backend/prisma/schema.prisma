@@ -26,7 +26,7 @@ model User {
   phoneNumber       String      @unique @db.VarChar(16) 
   status            Boolean     @default(true)
   lastSeen          DateTime    @default(now())
-  image             Bytes?
+  image             String?
   chats             Chat[]      
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @default(now())
@@ -64,41 +64,4 @@ model Message {
 }
 
 
-// model User {
-//   id          String   @id @default(uuid()) 
-//   name        String
-//   phoneNumber String   @unique
-//   image       Bytes?
-//   status      Boolean  @default(true)
-//   lastSeen    DateTime @default(now())
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
-// }
-
-// model Chat {
-//   chatId        String   @id  @default(uuid())
-//   recipientId   String
-//   senderId      String
-//   unreadMessages Int      @default(0)
-//   createdAt     DateTime @default(now())
-//   updatedAt     DateTime @updatedAt
-//   sender         User     @relation("sender", fields: [recipientId], references: [id])
-//   recipient      User     @relation(fields: [senderId], references: [id])
-// }
-
-// model Message {
-//   messageId     String    @id  @default(uuid())
-//   chatId        String
-//   recipientId   String
-//   senderId      String
-//   message       String
-//   messageStatus String    @default("Sent")
-//   repliedToId   String?
-//   createdAt     DateTime  @default(now())
-//   updatedAt     DateTime  @updatedAt
-//   Chat          Chat      @relation(fields: [chatId], references: [chatId])
-  // sender        User      @relation(fields: [recipientId], references: [id])
-  // recipient     User      @relation("sender",fields: [senderId], references: [id])
-//   Message       Message?  @relation("repliedMessage", fields: [repliedToId], references: [messageId])
-// }
 

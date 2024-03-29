@@ -7,6 +7,7 @@ import colors from "colors";
 import authRouter from "./src/routes/auth";
 import userRouter from "./src/routes/user";
 import socketIoConfig from "./src/config/socket_io_config";
+import staticRouter from "./src/routes/static";
 
 colors;
 dotenv.config();
@@ -30,5 +31,6 @@ server.listen(socketPort, ip, () => {
 // Register routes
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/image", staticRouter);
 
 //mongooseConfig();

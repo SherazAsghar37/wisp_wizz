@@ -1,22 +1,24 @@
-import { Readable } from "stream";
-import { User } from "../@types/user";
+import User from "../@types/user";
 import CustomError from "../exceptions/custom_error";
-import userModel from "../models/user";
 import db from "../utils/db.server";
 import HttpStatusCode from "../utils/http_status_codes";
 
 export default class UserRepository {
   public createByLocal = async (
-    data: Pick<User, "name" | "phoneNumber" | "image">
+    id: string,
+    name: string,
+    phoneNumber: string,
+    image: string
   ): Promise<User> => {
     try {
       console.log("Before creating user...");
 
       const newUser = await db.user.create({
         data: {
-          name: data.name,
-          phoneNumber: data.phoneNumber,
-          image: data.image == undefined ? null : data.image,
+          id: id,
+          name: name,
+          phoneNumber: phoneNumber,
+          image: image,
         },
       });
 

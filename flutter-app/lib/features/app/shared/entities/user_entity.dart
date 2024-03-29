@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:equatable/equatable.dart';
 
 abstract class UserEntity extends Equatable {
@@ -8,7 +6,7 @@ abstract class UserEntity extends Equatable {
   final String? phoneNumber;
   final bool? status;
   final DateTime? lastSeen;
-  final Uint8List image;
+  final String image;
 
   const UserEntity({
     required this.name,

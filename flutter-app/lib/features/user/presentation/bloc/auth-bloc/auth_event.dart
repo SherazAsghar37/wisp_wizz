@@ -4,7 +4,7 @@ sealed class AuthEvent extends Equatable {
   const AuthEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class SendCodeEvent extends AuthEvent {
@@ -38,15 +38,11 @@ class LoginEvent extends AuthEvent {
   final String? name;
   final String phoneNumber;
   final Uint8List? image;
-  const LoginEvent({
-    required this.phoneNumber,
-    this.name,
-    this.image,
-  });
+  final String? mimeType;
+  const LoginEvent(
+      {required this.phoneNumber, this.name, this.image, this.mimeType});
   @override
-  List<Object> get props => [
-        phoneNumber,
-      ];
+  List<Object?> get props => [phoneNumber, mimeType, name, image];
 }
 
 class LogoutEvent extends AuthEvent {
@@ -57,13 +53,11 @@ class UpdateUserEvent extends AuthEvent {
   final String? name;
   final String id;
   final Uint8List? image;
-  const UpdateUserEvent({
-    required this.id,
-    this.name,
-    this.image,
-  });
+  final String? mimeType;
+  const UpdateUserEvent(
+      {required this.id, this.name, this.image, this.mimeType});
   @override
-  List<Object> get props => [id];
+  List<Object?> get props => [id, image, mimeType, name];
 }
 
 class GetCachedUserEvent extends AuthEvent {

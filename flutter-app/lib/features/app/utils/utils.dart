@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
@@ -8,25 +9,30 @@ import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 class Utils {
   static Future<XFile?> pickImage() async {
     final ImagePicker picker = ImagePicker();
-    return await picker.pickImage(source: ImageSource.gallery);
+    return await picker.pickImage(
+      source: ImageSource.gallery,
+    );
   }
 
   static ImageProvider<Object> getUserImage(UserModel user) {
     try {
-      return Image.memory(user.image).image;
+      return Image.network(baseUrl + user.image).image;
     } catch (e) {
       DebugHelper.printError("Loading User Model Image Error : $e");
       return Image.asset("images/profile.png").image;
     }
   }
 
-  static ImageProvider<Object> getUserImageFromUint8List(Uint8List? image) {
+  static ImageProvider<Object> getUserImageFromUint8List(
+      Uint8List? image, String? imageUrl) {
     try {
       return image == null
-          ? Image.asset(
-              "images/profile.png",
-              fit: BoxFit.cover,
-            ).image
+          ? imageUrl == null
+              ? Image.asset(
+                  "images/profile.png",
+                  fit: BoxFit.cover,
+                ).image
+              : Image.network(baseUrl + imageUrl).image
           : Image.memory(
               image,
               fit: BoxFit.cover,

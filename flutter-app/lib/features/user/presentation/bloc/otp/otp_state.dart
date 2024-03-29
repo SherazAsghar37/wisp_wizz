@@ -20,3 +20,9 @@ final class OtpUpdated extends OtpState {
   @override
   List<Object> get props => [otp, focusFieldNumber];
 }
+
+final class OtpUpdating extends OtpState {
+  const OtpUpdating({required super.otp, required super.focusFieldNumber});
+  @override
+  List<Object> get props => [otp, focusFieldNumber];
+}

@@ -1,11 +1,10 @@
-import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
 
 class ContactEntity extends Equatable {
   final String? phoneNumber;
   final String? name;
   final String? _id;
-  final Uint8List? image;
+  final String? image;
   const ContactEntity(
       {required String id,
       required this.phoneNumber,

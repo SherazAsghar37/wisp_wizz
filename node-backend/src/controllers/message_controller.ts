@@ -1,9 +1,4 @@
-import { NextFunction, Request, Response } from "express";
-import { inject, singleton } from "tsyringe";
-import UserService from "../services/user_service";
-import HttpStatusCode from "../utils/http_status_codes";
-import { ErrorHandler } from "../exceptions/error_handler";
-import { Socket } from "socket.io";
+import { singleton } from "tsyringe";
 
 @singleton()
 export default class MessageController {

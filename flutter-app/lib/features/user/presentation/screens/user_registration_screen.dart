@@ -17,15 +17,16 @@ class UserRegistrationScreen extends StatefulWidget {
 class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
   // File? image;
   Uint8List? image;
+  String? mimeType;
+  String? imageUrl;
 
   TextEditingController nameController = TextEditingController();
   @override
   void initState() {
     final state = context.read<AuthBloc>().state;
     if (state is AuthUserFound) {
-      image = state.user.image;
+      imageUrl = state.user.image;
       final name = state.user.name;
-      // image = File.fromRawPath(userImage);
       nameController.text = name;
     }
     super.initState();
@@ -70,7 +71,9 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                     TextButton(
                       onPressed: () async {
                         XFile? file = await Utils.pickImage();
+
                         if (file != null) {
+                          mimeType = file.mimeType;
                           image = await file.readAsBytes();
                           setState(() {});
                         }
@@ -80,8 +83,8 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                         backgroundColor: theme.primaryColor,
                         child: CircleAvatar(
                             radius: radius - 5,
-                            backgroundImage:
-                                Utils.getUserImageFromUint8List(image)),
+                            backgroundImage: Utils.getUserImageFromUint8List(
+                                image, imageUrl)),
                       ),
                     ),
                     SizedBox(
@@ -111,20 +114,20 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                                     name: nameController.text.isEmpty
                                         ? null
                                         : nameController.text,
-                                    image: image));
+                                    image: image,
+                                    mimeType: mimeType));
                               } else {
                                 final phoneNumberBloc =
-                                    // ignore: use_build_context_synchronously
                                     context.read<PhoneNumberBloc>().state;
-                                // ignore: use_build_context_synchronously
                                 context.read<AuthBloc>().add(LoginEvent(
                                     phoneNumber: phoneNumberBloc.countryCode +
                                         phoneNumberBloc
                                             .textEditingController.text,
-                                    name: nameController.text.isEmpty
+                                    name: nameController.text.trim().isEmpty
                                         ? null
-                                        : nameController.text,
-                                    image: image));
+                                        : nameController.text.trim(),
+                                    image: image,
+                                    mimeType: mimeType));
                               }
                             })
                   ],

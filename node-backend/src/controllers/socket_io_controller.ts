@@ -1,4 +1,3 @@
-import { Socket } from "socket.io";
 import { inject, singleton } from "tsyringe";
 import SocketIOManager from "../services/socket_io_manager";
 

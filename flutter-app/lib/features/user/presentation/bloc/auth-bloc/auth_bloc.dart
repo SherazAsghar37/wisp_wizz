@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/config/extensions.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
@@ -114,12 +115,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       event.name,
       event.phoneNumber,
     );
+    DebugHelper.printWarning(event.phoneNumber);
+
     if (validation.isLeft()) {
       validation.fold((f) => emit(AuthloginFailed(f.message)), (s) => null);
       return;
     }
     final res = await _loginUser(CustomUserParam(
-        name: event.name, phoneNumber: event.phoneNumber, image: event.image));
+        name: event.name,
+        phoneNumber: event.phoneNumber,
+        image: event.image,
+        mimeType: event.mimeType));
     if (res.isRight()) {
       final UserModel user = res.asRight();
       final response = await _cacheUser(user);
@@ -188,8 +194,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
 
-    final res = await _updateUser(
-        UpdateUserParam(name: event.name, id: event.id, image: event.image));
+    final res = await _updateUser(UpdateUserParam(
+        name: event.name,
+        id: event.id,
+        image: event.image,
+        mimeType: event.mimeType));
     if (res.isRight()) {
       final UserModel user = res.asRight();
       final response = await _cacheUser(user);

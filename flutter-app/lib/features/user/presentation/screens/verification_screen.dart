@@ -16,6 +16,8 @@ class VerificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
+    final phoneNumberBloc = context.read<phone_number_bloc.PhoneNumberBloc>();
+    final otpBloc = context.read<OtpBloc>();
     return Scaffold(
       backgroundColor: colorScheme.background,
       extendBodyBehindAppBar: true,
@@ -32,7 +34,10 @@ class VerificationScreen extends StatelessWidget {
                     children: [
                       PrimaryIcon(
                         iconData: arrowBack,
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          otpBloc.add(const ClearEvent());
+                          Navigator.pop(context);
+                        },
                       ),
                     ],
                   ),
@@ -44,7 +49,7 @@ class VerificationScreen extends StatelessWidget {
                     height: Dimensions.height5,
                   ),
                   Text(
-                    "sent to +92${context.read<phone_number_bloc.PhoneNumberBloc>().state.textEditingController.text}",
+                    "sent to +92${phoneNumberBloc.state.textEditingController.text}",
                     textAlign: TextAlign.center,
                     style: TextStyle(color: colorScheme.primary),
                   ),
@@ -58,9 +63,12 @@ class VerificationScreen extends StatelessWidget {
                       (index) => BlocBuilder<OtpBloc, OtpState>(
                         builder: (context, state) {
                           return DigitInputField(
-                            focusIndex: state.focusFieldNumber,
+                            focusIndex: state is OtpUpdated
+                                ? state.focusFieldNumber
+                                : 0,
                             index: index,
-                            text: state.otp.length >= index + 1
+                            text: state is OtpUpdated &&
+                                    state.otp.length >= index + 1
                                 ? state.otp.substring(index, index + 1)
                                 : "_",
                           );
@@ -87,9 +95,8 @@ class VerificationScreen extends StatelessWidget {
                                   MaterialStatePropertyAll(EdgeInsets.all(0))),
                           onPressed: () {
                             if (value.secondsRemaining == 0) {
-                              final phoneNumberBlocState = context
-                                  .read<phone_number_bloc.PhoneNumberBloc>()
-                                  .state;
+                              final phoneNumberBlocState =
+                                  phoneNumberBloc.state;
                               final String phoneNumber = phoneNumberBlocState
                                   .textEditingController.text;
                               final String countryCode =
@@ -137,8 +144,7 @@ class VerificationScreen extends StatelessWidget {
                         return PrimaryButton(
                           text: "Submit",
                           onTap: () {
-                            final String otp =
-                                context.read<OtpBloc>().state.otp;
+                            final String otp = otpBloc.state.otp;
                             context
                                 .read<auth_bloc.AuthBloc>()
                                 .add(auth_bloc.VerifyOTPEvent(otp: otp));
@@ -148,8 +154,6 @@ class VerificationScreen extends StatelessWidget {
                     },
                     listener: (context, state) {
                       if (state is auth_bloc.AuthOTPVerified) {
-                        final phoneNumberBloc =
-                            context.read<phone_number_bloc.PhoneNumberBloc>();
                         context
                             .read<auth_bloc.AuthBloc>()
                             .add(auth_bloc.GetUserEvent(

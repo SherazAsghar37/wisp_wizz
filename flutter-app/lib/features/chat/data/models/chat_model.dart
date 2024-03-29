@@ -78,7 +78,7 @@ class ChatModel extends ChatEntity {
                 id: map["id"],
                 status: map["status"] == 1 ? true : false,
                 lastSeen: DateFormatter.fromSqfliteFormat(map["lastSeen"]),
-                image: base64Decode(map["image"])),
+                image: map["image"]),
             messages: List<MessageModel>.from(map["messages"]
                 .map((e) => MessageModel(
                     senderId: e['senderId'],

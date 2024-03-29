@@ -22,20 +22,21 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
   Future<UserModel> loginUser(
       {required String? name,
       required String phoneNumber,
-      Uint8List? image}) async {
+      Uint8List? image,
+      String? mimeType}) async {
     try {
-      final String url = _dio.options.baseUrl + loginUrl;
-      ByteData assetByteData = await rootBundle.load("images/profile.png");
-      Uint8List assetBytes = assetByteData.buffer.asUint8List();
-      image = image ?? assetBytes;
+      // ByteData assetByteData = await rootBundle.load("images/profile.png");
+      // Uint8List assetBytes = assetByteData.buffer.asUint8List();
+      // image = image ?? assetBytes;
       final MapData data = {
-        'image': base64Encode(image),
+        'image': image != null ? base64Encode(image) : null,
         "name": name,
         "phoneNumber": phoneNumber,
+        "mimeType": mimeType
       };
 
       final response = await _dio.post(
-        url,
+        loginUrl,
         data: data,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -65,13 +66,12 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
     required String phoneNumber,
   }) async {
     try {
-      final String url = _dio.options.baseUrl + getUserUrl;
       final MapData data = {
         "phoneNumber": phoneNumber,
       };
 
       final response = await _dio.post(
-        url,
+        getUserUrl,
         data: data,
       );
       DebugHelper.printError(response.toString());
@@ -102,12 +102,16 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
 
   @override
   Future<UserModel> updateUser(
-      {required String? name, required String id, Uint8List? image}) async {
+      {required String? name,
+      required String id,
+      Uint8List? image,
+      String? mimeType}) async {
     try {
       final MapData data = {
         'image': image != null ? base64Encode(image) : null,
         "name": name,
         "id": id,
+        "mimeType": mimeType
       };
       final String url = _dio.options.baseUrl + updateUserUrl;
       final response = await _dio.put(

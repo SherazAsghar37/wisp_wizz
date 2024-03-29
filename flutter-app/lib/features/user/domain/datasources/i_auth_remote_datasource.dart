@@ -9,13 +9,19 @@ abstract class IAuthRemoteDatasource {
   IAuthRemoteDatasource({required Dio dio}) : _dio = dio;
 
   Future<UserModel> loginUser(
-      {required String? name, required String phoneNumber, Uint8List? image});
+      {required String? name,
+      required String phoneNumber,
+      Uint8List? image,
+      String? mimeType});
 
   Future<UserModel?> getUser({
     required String phoneNumber,
   });
   Future<UserModel> updateUser(
-      {required String? name, required String id, Uint8List? image});
+      {required String? name,
+      required String id,
+      Uint8List? image,
+      String? mimeType});
   void connectSocket(String userId);
   void disconnectSocket();
 }

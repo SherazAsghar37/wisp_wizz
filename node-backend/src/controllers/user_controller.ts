@@ -3,16 +3,15 @@ import { inject, singleton } from "tsyringe";
 import UserService from "../services/user_service";
 import HttpStatusCode from "../utils/http_status_codes";
 import { ErrorHandler } from "../exceptions/error_handler";
-import { User } from "../@types/user";
-import { AnyMxRecord } from "dns";
-import { Readable } from "stream";
-import { stdout } from "process";
+import ImageService from "../services/image_service";
 
 @singleton()
 export default class UserController {
   constructor(
     @inject(UserService)
     private readonly _userServices: UserService,
+    @inject(ImageService)
+    private readonly _imageServices: ImageService,
     private readonly _errorHandler: ErrorHandler
   ) {}
   public getUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -58,7 +57,8 @@ export default class UserController {
       }
       if (data.image) {
         const bufferImage: Buffer = Buffer.from(data.image, "base64");
-        newRec.image = bufferImage;
+        const path = await this._imageServices.saveImage(bufferImage, data.id);
+        newRec.image = path;
       }
       console.log(newRec);
       const user: any | null = await this._userServices.updateUser(newRec);

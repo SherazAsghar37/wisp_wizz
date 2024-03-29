@@ -1,8 +1,5 @@
 // ignore_for_file: overridden_fields
-
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/contacts/domain/entities/contact_entity.dart';
 
@@ -14,7 +11,7 @@ class ContactModel extends ContactEntity {
   @override
   final String name;
   @override
-  final Uint8List image;
+  final String image;
   const ContactModel(
       {required String id,
       required this.phoneNumber,
@@ -28,7 +25,7 @@ class ContactModel extends ContactEntity {
     String? phoneNumber,
     String? name,
     String? id,
-    Uint8List? image,
+    String? image,
   }) {
     return ContactModel(
       phoneNumber: phoneNumber ?? this.phoneNumber,
@@ -43,7 +40,7 @@ class ContactModel extends ContactEntity {
       'phoneNumber': phoneNumber,
       'name': name,
       'id': _id,
-      'image': base64Encode(image),
+      'image': image,
     };
   }
 
@@ -52,7 +49,7 @@ class ContactModel extends ContactEntity {
           phoneNumber: map['phoneNumber'],
           name: map['name'],
           id: map['id'],
-          image: base64Decode(map['image']),
+          image: map['image'],
         );
 
   String toJson() => json.encode(toMap());
@@ -60,11 +57,11 @@ class ContactModel extends ContactEntity {
   factory ContactModel.fromJson(String source) =>
       ContactModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  ContactModel.empty()
+  const ContactModel.empty()
       : this(
           phoneNumber: "empty.phoneNumber",
           name: "empty.name",
           id: "empty.id",
-          image: base64Decode(appDefaultPic),
+          image: defaultImageUrl,
         );
 }

@@ -31,8 +31,8 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: radius,
-                  backgroundImage:
-                      Utils.getUserImageFromUint8List(chat.recipient.image),
+                  backgroundImage: Utils.getUserImageFromUint8List(
+                      null, chat.recipient.image),
                 ),
                 SizedBox(
                   width: Dimensions.width10,
