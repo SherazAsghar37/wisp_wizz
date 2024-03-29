@@ -17,7 +17,6 @@ class UserRegistrationScreen extends StatefulWidget {
 class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
   // File? image;
   Uint8List? image;
-  String? mimeType;
   String? imageUrl;
 
   TextEditingController nameController = TextEditingController();
@@ -73,7 +72,6 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                         XFile? file = await Utils.pickImage();
 
                         if (file != null) {
-                          mimeType = file.mimeType;
                           image = await file.readAsBytes();
                           setState(() {});
                         }
@@ -108,26 +106,29 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                         : PrimaryButton(
                             text: "Submit",
                             onTap: () {
+                              imageCache.clear();
+                              imageCache.clearLiveImages();
+
                               if (state is AuthUserFound) {
                                 context.read<AuthBloc>().add(UpdateUserEvent(
-                                    id: state.user.id,
-                                    name: nameController.text.isEmpty
-                                        ? null
-                                        : nameController.text,
-                                    image: image,
-                                    mimeType: mimeType));
+                                      id: state.user.id,
+                                      name: nameController.text.isEmpty
+                                          ? null
+                                          : nameController.text,
+                                      image: image,
+                                    ));
                               } else {
                                 final phoneNumberBloc =
                                     context.read<PhoneNumberBloc>().state;
                                 context.read<AuthBloc>().add(LoginEvent(
-                                    phoneNumber: phoneNumberBloc.countryCode +
-                                        phoneNumberBloc
-                                            .textEditingController.text,
-                                    name: nameController.text.trim().isEmpty
-                                        ? null
-                                        : nameController.text.trim(),
-                                    image: image,
-                                    mimeType: mimeType));
+                                      phoneNumber: phoneNumberBloc.countryCode +
+                                          phoneNumberBloc
+                                              .textEditingController.text,
+                                      name: nameController.text.trim().isEmpty
+                                          ? null
+                                          : nameController.text.trim(),
+                                      image: image,
+                                    ));
                               }
                             })
                   ],

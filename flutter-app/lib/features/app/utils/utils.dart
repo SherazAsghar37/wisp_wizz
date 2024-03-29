@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +26,7 @@ class Utils {
 
   static ImageProvider<Object> getUserImageFromUint8List(
       Uint8List? image, String? imageUrl) {
+    DebugHelper.printWarning("called $imageUrl $image");
     try {
       return image == null
           ? imageUrl == null
@@ -32,7 +34,10 @@ class Utils {
                   "images/profile.png",
                   fit: BoxFit.cover,
                 ).image
-              : Image.network(baseUrl + imageUrl).image
+              : Image.network(
+                  baseUrl + imageUrl,
+                  key: ValueKey(Random().nextInt(100)),
+                ).image
           : Image.memory(
               image,
               fit: BoxFit.cover,

@@ -122,10 +122,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
     final res = await _loginUser(CustomUserParam(
-        name: event.name,
-        phoneNumber: event.phoneNumber,
-        image: event.image,
-        mimeType: event.mimeType));
+      name: event.name,
+      phoneNumber: event.phoneNumber,
+      image: event.image,
+    ));
     if (res.isRight()) {
       final UserModel user = res.asRight();
       final response = await _cacheUser(user);
@@ -195,10 +195,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     final res = await _updateUser(UpdateUserParam(
-        name: event.name,
-        id: event.id,
-        image: event.image,
-        mimeType: event.mimeType));
+      name: event.name,
+      id: event.id,
+      image: event.image,
+    ));
     if (res.isRight()) {
       final UserModel user = res.asRight();
       final response = await _cacheUser(user);

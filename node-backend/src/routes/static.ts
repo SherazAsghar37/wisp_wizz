@@ -3,8 +3,9 @@ import path from "path";
 const staticRouter = express.Router();
 
 staticRouter.route("/profile:id").get((req, res) => {
-  console.log(req.params);
-  return res.sendFile(path.resolve("../node-backend/src/public/profile.png"));
+  const id = req.params.id;
+  console.log(id);
+  return res.sendFile(path.resolve(`../node-backend/src/public/${id}.png`));
 });
 
 export default staticRouter;

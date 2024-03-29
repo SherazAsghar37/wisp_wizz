@@ -72,7 +72,7 @@ export default class UserController {
             phoneNumber: user.phoneNumber,
             status: user.status,
             lastSeen: user.lastSeen,
-            image: user.image.toString("base64"),
+            image: user.image,
           },
         })
       );

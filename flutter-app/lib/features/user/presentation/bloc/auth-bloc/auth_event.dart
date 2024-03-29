@@ -38,11 +38,13 @@ class LoginEvent extends AuthEvent {
   final String? name;
   final String phoneNumber;
   final Uint8List? image;
-  final String? mimeType;
-  const LoginEvent(
-      {required this.phoneNumber, this.name, this.image, this.mimeType});
+  const LoginEvent({
+    required this.phoneNumber,
+    this.name,
+    this.image,
+  });
   @override
-  List<Object?> get props => [phoneNumber, mimeType, name, image];
+  List<Object?> get props => [phoneNumber, name, image];
 }
 
 class LogoutEvent extends AuthEvent {
@@ -53,11 +55,13 @@ class UpdateUserEvent extends AuthEvent {
   final String? name;
   final String id;
   final Uint8List? image;
-  final String? mimeType;
-  const UpdateUserEvent(
-      {required this.id, this.name, this.image, this.mimeType});
+  const UpdateUserEvent({
+    required this.id,
+    this.name,
+    this.image,
+  });
   @override
-  List<Object?> get props => [id, image, mimeType, name];
+  List<Object?> get props => [id, image, name];
 }
 
 class GetCachedUserEvent extends AuthEvent {

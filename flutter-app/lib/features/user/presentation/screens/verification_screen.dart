@@ -166,6 +166,7 @@ class VerificationScreen extends StatelessWidget {
                         context.read<AuthController>().cancelTimer();
                         Navigator.pushReplacementNamed(
                             context, UserRegistrationScreen.routeName);
+                        otpBloc.add(const ClearEvent());
                       } else if (state is auth_bloc.AuthOTPVerificationFailed) {
                         BotToast.showText(
                             text: state.message,

@@ -19,11 +19,11 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
         _webSocketManagerWrapper = webSocketManagerWrapper;
 
   @override
-  Future<UserModel> loginUser(
-      {required String? name,
-      required String phoneNumber,
-      Uint8List? image,
-      String? mimeType}) async {
+  Future<UserModel> loginUser({
+    required String? name,
+    required String phoneNumber,
+    Uint8List? image,
+  }) async {
     try {
       // ByteData assetByteData = await rootBundle.load("images/profile.png");
       // Uint8List assetBytes = assetByteData.buffer.asUint8List();
@@ -31,8 +31,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       final MapData data = {
         'image': image != null ? base64Encode(image) : null,
         "name": name,
-        "phoneNumber": phoneNumber,
-        "mimeType": mimeType
+        "phoneNumber": phoneNumber
       };
 
       final response = await _dio.post(
@@ -101,17 +100,16 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
   }
 
   @override
-  Future<UserModel> updateUser(
-      {required String? name,
-      required String id,
-      Uint8List? image,
-      String? mimeType}) async {
+  Future<UserModel> updateUser({
+    required String? name,
+    required String id,
+    Uint8List? image,
+  }) async {
     try {
       final MapData data = {
         'image': image != null ? base64Encode(image) : null,
         "name": name,
-        "id": id,
-        "mimeType": mimeType
+        "id": id
       };
       final String url = _dio.options.baseUrl + updateUserUrl;
       final response = await _dio.put(

@@ -21,7 +21,6 @@ class _SettingScreenState extends State<SettingScreen> {
   TextEditingController nameController = TextEditingController();
   Uint8List? image;
   String? imageUrl;
-  String? mimeType;
   late UserModel currUser;
   @override
   void initState() {
@@ -85,7 +84,6 @@ class _SettingScreenState extends State<SettingScreen> {
                             XFile? file = await Utils.pickImage();
 
                             if (file != null) {
-                              mimeType = file.mimeType;
                               image = await file.readAsBytes();
                               setState(() {});
                             }
@@ -193,16 +191,19 @@ class _SettingScreenState extends State<SettingScreen> {
                 builder: (context, state) {
                   return FloatingActionButton(
                     onPressed: () {
-                      final String? name = nameController.text.isEmpty ||
+                      imageCache.clear();
+                      imageCache.clearLiveImages();
+
+                      final String? name = nameController.text.trim().isEmpty ||
                               nameController.text.trim() == currUser.name
                           ? null
                           : nameController.text.trim();
                       if (state is AuthloggedIn || state is AuthloginFailed) {
                         context.read<AuthBloc>().add(UpdateUserEvent(
-                            id: widget.user.id,
-                            name: name,
-                            image: image,
-                            mimeType: mimeType));
+                              id: widget.user.id,
+                              name: name,
+                              image: image,
+                            ));
                       } else {
                         final phoneNumberBloc =
                             context.read<PhoneNumberBloc>().state;
