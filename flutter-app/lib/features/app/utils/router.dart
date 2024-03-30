@@ -29,7 +29,10 @@ Route<dynamic> routesGenerator(RouteSettings routeSettings) {
       return SlidePageRoute(widget: const UserRegistrationScreen());
 
     case ContactsScreen.routeName:
-      return SlidePageRoute(widget: const ContactsScreen());
+      return SlidePageRoute(
+          widget: ContactsScreen(
+        user: routeSettings.arguments as UserModel,
+      ));
 
     case SettingScreen.routeName:
       return SlidePageRoute(

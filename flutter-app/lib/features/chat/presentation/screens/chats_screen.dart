@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/current-chat-bloc/current_chat_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/message-bloc/message_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/bloc/user-chats/user_chats_bloc.dart';
@@ -101,7 +102,8 @@ class ChatsScreen extends StatelessWidget {
                                           chats: state.chats,
                                           totalUnreadMessages:
                                               state.totalUnreadMessages,
-                                          index: index));
+                                          index: index,
+                                          chatId: state.chats[index].chatId));
                                     },
                                   ),
                                 );
@@ -114,6 +116,7 @@ class ChatsScreen extends StatelessWidget {
                             if (messageState is MessageReceived) {
                               final chatBloc = context.read<UserChatsBloc>();
                               final chatState = chatBloc.state;
+                              DebugHelper.printWarning("here1");
                               if (chatState is UsersChatsFetched) {
                                 chatBloc.add(AddMessageUserChatsEvent(
                                     chats: chatState.chats,
@@ -122,7 +125,8 @@ class ChatsScreen extends StatelessWidget {
                                         chatState.totalUnreadMessages,
                                     message: messageState.message,
                                     isChatClosed: messageState.isChatClosed,
-                                    index: messageState.index));
+                                    index: messageState.index,
+                                    chat: null));
                               }
                             }
                           },
@@ -168,7 +172,9 @@ class ChatsScreen extends StatelessWidget {
                                                     chats: state.chats,
                                                     totalUnreadMessages: state
                                                         .totalUnreadMessages,
-                                                    index: index));
+                                                    index: index,
+                                                    chatId: state
+                                                        .chats[index].chatId));
                                           },
                                         ),
                                       );
@@ -191,7 +197,8 @@ class ChatsScreen extends StatelessWidget {
               context.read<ContactBloc>().add(const ContactFetchEvent());
             }
 
-            Navigator.pushNamed(context, ContactsScreen.routeName);
+            Navigator.pushNamed(context, ContactsScreen.routeName,
+                arguments: user);
           }
         },
         child: Icon(

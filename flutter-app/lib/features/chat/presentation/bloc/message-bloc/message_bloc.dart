@@ -39,10 +39,11 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     emit(MessageSending());
 
     final response = await _sendMessageUseCase(CustomSendMessgeParam(
-        message: event.message,
-        senderId: event.senderId,
-        chatId: event.chatId,
-        recipientId: event.recipientId));
+      message: event.message,
+      senderId: event.senderId,
+      chatId: event.chatId,
+      recipientId: event.recipientId,
+    ));
     response.fold((f) => emit(MessageFailed(f.message)), (s) {
       _addToSink(s);
       emit(MessageSent(message: s));

@@ -13,7 +13,6 @@ export default function socketIoConfig(server: http.Server) {
   io.on("connection", (socket: Socket) => {
     console.log(`connected ${socket.id}`);
     socket.on("message", (newMessage) => {
-      console.log(`${newMessage}`.green);
       socketIOController.onMessage(newMessage, io);
     });
     socket.on("login", (userId) => {

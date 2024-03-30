@@ -1,13 +1,9 @@
-import 'package:wisp_wizz/features/contacts/presentation/widgets/contact_card.dart';
-import 'package:wisp_wizz/features/chat/presentation/bloc/chat-bloc/chat_bloc.dart';
-import 'package:wisp_wizz/features/chat/presentation/screens/single_chat_screen.dart';
-import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
-import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
-import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/contacts/presentation/utils/contacts_exports.dart';
 
 class ContactsScreen extends StatefulWidget {
   static const String routeName = contactsScreen;
-  const ContactsScreen({super.key});
+  final UserModel user;
+  const ContactsScreen({super.key, required this.user});
 
   @override
   State<ContactsScreen> createState() => _ContactsScreenState();
@@ -45,7 +41,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         color: theme.primaryColor, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
-                    height: Dimensions.height5,
+                    height: Dimensions.height10,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,77 +60,52 @@ class _ContactsScreenState extends State<ContactsScreen> {
                     ],
                   ),
                   SizedBox(
+                    height: Dimensions.height20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "${state is ContactsFetched ? state.contacts.length : 0} Contacts",
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      state is ContactsFetching || state is LocalContactsFetched
+                          ? SizedBox(
+                              height: Dimensions.height15,
+                              width: Dimensions.width15,
+                              child: CircularProgressIndicator(
+                                color: theme.primaryColor,
+                                strokeWidth: Dimensions.width1,
+                              ))
+                          : const SizedBox()
+                    ],
+                  ),
+                  SizedBox(
                     height: Dimensions.height10,
                   ),
-                  Text(
-                    "${state is ContactsFetched ? state.contacts.length : 0} Contacts",
-                    style: theme.textTheme.bodyMedium,
-                  ),
                   Expanded(
-                      child: state is ContactsFetched
-                          ? RefreshIndicator(
-                              onRefresh: () async {
-                                context
-                                    .read<ContactBloc>()
-                                    .add(const ContactFetchEvent());
-                              },
-                              child: ListView.builder(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: Dimensions.height5),
-                                itemCount: state.contacts.length,
-                                itemBuilder: (context, index) {
-                                  return BlocConsumer<ChatBloc, ChatState>(
-                                    builder: (context, chatState) {
-                                      return chatState is ChatFetching
-                                          ? ContactCard(
-                                              contact: state.contacts[index],
-                                              isLoading:
-                                                  index == chatState.index,
-                                            )
-                                          : MaterialButton(
-                                              padding: EdgeInsets.zero,
-                                              onPressed: () {
-                                                AuthloggedIn senderState =
-                                                    context
-                                                        .read<AuthBloc>()
-                                                        .state as AuthloggedIn;
-                                                context.read<ChatBloc>().add(
-                                                    ChatFetchEvent(
-                                                        recipientId: state
-                                                            .contacts[index].id,
-                                                        senderId:
-                                                            senderState.user.id,
-                                                        index: index));
-                                              },
-                                              child: ContactCard(
-                                                contact: state.contacts[index],
-                                                isLoading: false,
-                                              ),
-                                            );
-                                    },
-                                    listener: (context, chatState) {
-                                      if (chatState is ChatFetched &&
-                                          index == 0) {
-                                        Navigator.pushNamed(
-                                            context, SingleChatScreen.routeName,
-                                            arguments: [chatState.chat, index]);
-                                      } else if (chatState is ChatFetchFailed) {
-                                        BotToast.showText(
-                                            text: chatState.message,
-                                            contentColor:
-                                                theme.primaryColorLight,
-                                            textStyle:
-                                                theme.textTheme.bodyMedium!);
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                            )
-                          : Center(
-                              child: CircularProgressIndicator(
-                              color: theme.primaryColor,
-                            ))),
+                    child: RefreshIndicator(
+                        color: theme.primaryColor,
+                        onRefresh: () async {
+                          context
+                              .read<ContactBloc>()
+                              .add(const ContactFetchEvent());
+                        },
+                        child: state is ContactsFetched
+                            ? ContactsFetchedItemsBuilder(
+                                state: state,
+                                user: widget.user,
+                              )
+                            : state is LocalContactsFetched
+                                ? LocalContactsFetchedItemsBuilder(
+                                    state: state,
+                                    user: widget.user,
+                                  )
+                                : Center(
+                                    child: CircularProgressIndicator(
+                                    color: theme.primaryColor,
+                                  ))),
+                  ),
                 ],
               ),
             ),

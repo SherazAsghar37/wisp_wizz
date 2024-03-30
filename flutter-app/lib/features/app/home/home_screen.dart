@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
@@ -48,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen>
     chatBloc.add(FetchUserChatsEvent(chats: const [], userId: widget.user.id));
 
     WebSocketManager.socket.on("message${widget.user.id}", (data) {
+      log("received");
+      log("message${widget.user.id}");
       final currentChatState = currentChatBLoc.state;
       context.read<MessageBloc>().add(ReceivedMessageEvent(
           senderId: data["senderId"],
@@ -63,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen>
           messageId: data["messageId"],
           index: currentChatState is CurrentChatOpened &&
                   currentChatState.chatId == data["chatId"]
-              ? currentChatState.index
+              ? currentChatState.index ?? -1
               : -1));
     });
   }
@@ -109,7 +113,8 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                SqfliteManager.fetchChats(widget.user.id, 0);
+                                // SqfliteManager.fetchChats(widget.user.id, 0);
+                                SqfliteManager.dropdb();
                               },
                               child: Text(
                                 appName,

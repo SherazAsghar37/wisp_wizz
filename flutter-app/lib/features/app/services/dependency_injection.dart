@@ -24,7 +24,8 @@ import 'package:wisp_wizz/features/contacts/data/datasources/contacts_local_data
 import 'package:wisp_wizz/features/contacts/data/datasources/flutter_contacts_wraper.dart';
 import 'package:wisp_wizz/features/contacts/data/repositories/contact_repository.dart';
 import 'package:wisp_wizz/features/contacts/domain/repository/i_contacts_repository.dart';
-import 'package:wisp_wizz/features/contacts/domain/usecases/fetch_contacts.dart';
+import 'package:wisp_wizz/features/contacts/domain/usecases/fetch_contacts_usecase.dart';
+import 'package:wisp_wizz/features/contacts/domain/usecases/fetch_server_contacts.dart';
 import 'package:wisp_wizz/features/contacts/presentation/bloc/contact_bloc.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_firebase_datasource.dart';
 import 'package:wisp_wizz/features/user/data/datasources/auth_local_data_source.dart';
@@ -112,16 +113,19 @@ Future<void> init() async {
 
 //-----------Contact Bloc
   sl
-    ..registerFactory(() => ContactBloc(fetchContacts: sl()))
+    ..registerFactory(() => ContactBloc(
+        fetchContactsUsecase: sl(), fetchServerContactsUsecase: sl()))
     //usecases
-    ..registerLazySingleton<FetchContacts>(
-        () => FetchContacts(contactReposiotry: sl()))
+    ..registerLazySingleton<FetchContactsUsecase>(
+        () => FetchContactsUsecase(contactReposiotry: sl()))
+    ..registerLazySingleton<FetchServerContactsUsecase>(
+        () => FetchServerContactsUsecase(contactReposiotry: sl()))
     //repositories
     ..registerLazySingleton<IContactReposiotry>(() => ContactReposiotry(
         contactDatasource: sl(), contactLocalDatasource: sl()))
     //data sources
-    ..registerLazySingleton<ContactDatasource>(
-        () => ContactDatasource(flutterContactsWrapper: sl(), dio: sl()))
+    ..registerLazySingleton<ContactDatasource>(() => ContactDatasource(
+        flutterContactsWrapper: sl(), dio: sl(), sqfliteManagerWrapper: sl()))
     ..registerLazySingleton<ContactLocalDatasource>(
         () => ContactLocalDatasource(
               sqfliteManagerWrapper: sl(),

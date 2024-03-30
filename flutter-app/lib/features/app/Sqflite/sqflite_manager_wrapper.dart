@@ -27,6 +27,10 @@ class SqfliteManagerWrapper {
   //       recipientId: recipientId, message: message, senderId: senderId);
   // }
 
+  Future<List<MapData>> fetchContacts() async {
+    return SqfliteManager.fetchContacts();
+  }
+
   Future<void> insertMultipleContacts(List<ContactModel> data) async {
     return SqfliteManager.insertMultipleContacts(data);
   }

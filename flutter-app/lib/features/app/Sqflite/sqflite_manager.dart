@@ -153,6 +153,17 @@ class SqfliteManager {
     }
   }
 
+  static Future<List<MapData>> fetchContacts() async {
+    try {
+      List<Map<String, dynamic>> contacts = await db.rawQuery("""
+          SELECT c.chatId as id, u.name, u.image, u.phoneNumber from Chat as c INNER JOIN User as u on u.id=c.senderId """);
+
+      return contacts;
+    } catch (e) {
+      throw SqfliteDBException(e.toString());
+    }
+  }
+
   static Future<void> removeUnreadMarkFromChat(String chatId) async {
     try {
       await db.rawQuery("""

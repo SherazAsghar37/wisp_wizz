@@ -61,7 +61,7 @@ class ChatLocalDatasource extends IChatLocalDatasource {
       final data = {
         "message": message,
         "chatId": chatId,
-        "messageStatus": "Sent",
+        "messageStatus": senderId == recipientId ? "Seen" : "Sent",
         "repliedToId": repliedToId,
         "senderId": senderId,
         "recipientId": recipientId,

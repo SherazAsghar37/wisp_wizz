@@ -11,6 +11,13 @@ final class ContactInitial extends ContactState {}
 
 final class ContactsFetching extends ContactState {}
 
+final class LocalContactsFetched extends ContactState {
+  final List<ContactModel> contacts;
+  const LocalContactsFetched({required this.contacts});
+  @override
+  List<Object> get props => [contacts];
+}
+
 final class ContactsFetched extends ContactState {
   final List<ContactModel> contacts;
   const ContactsFetched({required this.contacts});

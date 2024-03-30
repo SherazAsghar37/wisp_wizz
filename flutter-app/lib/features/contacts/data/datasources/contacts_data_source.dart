@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
@@ -12,8 +13,12 @@ import 'package:wisp_wizz/features/contacts/domain/datasources/i_contacts_data_s
 
 class ContactDatasource extends IContactDatasource {
   final FlutterContactsWrapper flutterContactsWrapper;
+  final SqfliteManagerWrapper sqfliteManagerWrapper;
   final Dio dio;
-  ContactDatasource({required this.flutterContactsWrapper, required this.dio});
+  ContactDatasource(
+      {required this.flutterContactsWrapper,
+      required this.dio,
+      required this.sqfliteManagerWrapper});
   // final StreamController<ContactModel> _streamController =
   //     StreamController<ContactModel>();
 
@@ -46,7 +51,6 @@ class ContactDatasource extends IContactDatasource {
       throw const ContactException(message: "Failed to Load Contacts");
     }
   }
-
   // @override
   // Future<Stream<ContactModel>> readContacts() async {
   //   try {

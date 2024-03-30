@@ -65,13 +65,16 @@ class ChatRepository implements IChatRepository {
     String? repliedMessage,
   }) async {
     try {
-      _remoteDatasource.sendMessage(
-        chatId: chatId,
-        message: message,
-        recipientId: recipientId,
-        senderId: senderId,
-        repliedToId: repliedToId,
-      );
+      if (senderId != recipientId) {
+        _remoteDatasource.sendMessage(
+          chatId: chatId,
+          message: message,
+          recipientId: recipientId,
+          senderId: senderId,
+          repliedToId: repliedToId,
+        );
+      }
+
       final response = await _localDatasource.saveMessage(
           chatId: chatId,
           message: message,

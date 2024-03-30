@@ -18,4 +18,19 @@ class ContactLocalDatasource extends IContactLocalDatasource {
       throw const SqfliteDBException("Failed to save Contacts");
     }
   }
+
+  @override
+  Future<List<ContactModel>> fetchContacts() async {
+    try {
+      List<ContactModel> data = [];
+      final contacts = await sqfliteManagerWrapper.fetchContacts();
+      data =
+          List<ContactModel>.from(contacts.map((e) => ContactModel.fromMap(e)));
+      DebugHelper.printWarning(data.toString());
+      return data;
+    } catch (e) {
+      DebugHelper.printError("Contacts Exception : $e");
+      throw const SqfliteDBException("Failed to Load Contacts");
+    }
+  }
 }

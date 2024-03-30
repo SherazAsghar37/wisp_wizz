@@ -62,8 +62,10 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                                       chatState.totalUnreadMessages,
                                   message: state.message,
                                   index: widget.index,
-                                  isChatClosed: false));
+                                  isChatClosed: false,
+                                  chat: widget.chat));
                             }
+                            messages.add(state.message);
                           }
                         },
                         child: StreamBuilder(

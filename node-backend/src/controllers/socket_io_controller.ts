@@ -8,14 +8,7 @@ class SocketIOController {
     private readonly _socketIOManager: SocketIOManager
   ) {}
   public onMessage = (newMessage: any, socket: any) => {
-    const {
-      senderId,
-      recipientId,
-      repliedToId,
-      chatId,
-      message,
-      repliedMessage,
-    } = newMessage;
+    const { senderId, recipientId, chatId } = newMessage;
     const connectionStatus =
       this._socketIOManager.checkUsersConnectionStatus(recipientId);
     if (connectionStatus) {

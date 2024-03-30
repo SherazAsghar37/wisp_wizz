@@ -16,6 +16,17 @@ class ContactReposiotry extends IContactReposiotry {
   @override
   ResultFuture<List<ContactModel>> fetchContacts() async {
     try {
+      final contacts = await contactLocalDatasource.fetchContacts();
+
+      return right(contacts);
+    } on ContactException catch (e) {
+      return Left(ContactFailure.fromException(e));
+    }
+  }
+
+  @override
+  ResultFuture<List<ContactModel>> fetchServerContacts() async {
+    try {
       final contacts = await contactDatasource.readContacts();
       await contactLocalDatasource.saveContacts(contacts);
       return right(contacts);

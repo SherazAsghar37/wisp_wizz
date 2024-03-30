@@ -3,4 +3,5 @@ import 'package:wisp_wizz/features/contacts/data/models/contact_model.dart';
 
 abstract class IContactReposiotry {
   ResultFuture<List<ContactModel>> fetchContacts();
+  ResultFuture<List<ContactModel>> fetchServerContacts();
 }

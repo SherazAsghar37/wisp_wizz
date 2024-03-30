@@ -4,17 +4,17 @@ sealed class CurrentChatEvent extends Equatable {
   const CurrentChatEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class CurrentChatOpenEvent extends CurrentChatEvent {
   final String chatId;
   final String userId;
-  final int index;
+  final int? index;
   const CurrentChatOpenEvent(
       {required this.chatId, required this.userId, required this.index});
   @override
-  List<Object> get props => [chatId, userId, index];
+  List<Object?> get props => [chatId, userId, index];
 }
 
 class CurrentChatCloseEvent extends CurrentChatEvent {
