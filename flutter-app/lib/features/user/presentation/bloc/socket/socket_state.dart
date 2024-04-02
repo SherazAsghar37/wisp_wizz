@@ -11,6 +11,8 @@ sealed class SocketState extends Equatable {
 
 final class SocketConnecting extends SocketState {}
 
+final class SocketDisconnecting extends SocketState {}
+
 final class SocketConnected extends SocketState {}
 
 final class SocketDisonnected extends SocketState {}

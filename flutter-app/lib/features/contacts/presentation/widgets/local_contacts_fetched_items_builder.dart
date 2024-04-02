@@ -50,7 +50,7 @@ class LocalContactsFetchedItemsBuilder extends StatelessWidget {
                   userId: user.id,
                   index: null));
               Navigator.pushNamed(context, SingleChatScreen.routeName,
-                      arguments: [chatState.chat, index])
+                      arguments: [chatState.chat, null])
                   .then((value) => currentChatBloc
                       .add(CurrentChatCloseEvent(userId: user.id)));
 

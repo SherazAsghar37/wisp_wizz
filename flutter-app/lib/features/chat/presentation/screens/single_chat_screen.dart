@@ -7,7 +7,7 @@ import 'package:wisp_wizz/features/user/presentation/utils/exports.dart';
 class SingleChatScreen extends StatefulWidget {
   static const String routeName = singleChatScreen;
   final ChatModel chat;
-  final int index;
+  final int? index;
   const SingleChatScreen({super.key, required this.chat, required this.index});
 
   @override
@@ -65,7 +65,10 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                                   isChatClosed: false,
                                   chat: widget.chat));
                             }
-                            messages.add(state.message);
+                            if (widget.index == null) {
+                              messages.add(state.message);
+                              // setState(() {});
+                            }
                           }
                         },
                         child: StreamBuilder(

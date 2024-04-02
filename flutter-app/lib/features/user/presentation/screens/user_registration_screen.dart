@@ -139,6 +139,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                   context
                       .read<SocketBloc>()
                       .add(ConnectSocketEvent(state.user.id));
+                  
                   Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                       arguments: state.user);
                 }

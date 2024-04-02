@@ -35,6 +35,7 @@ import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/disconnect_socket_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/init_application_usecase.dart';
@@ -186,7 +187,10 @@ Future<void> init() async {
 
   //socket bloc
   sl
-    ..registerFactory(() => SocketBloc(initSocketUsecase: sl()))
+    ..registerFactory(() =>
+        SocketBloc(initSocketUsecase: sl(), disconnectSocketUsecase: sl()))
     ..registerLazySingleton<InitSocketUsecase>(
-        () => InitSocketUsecase(authRepository: sl()));
+        () => InitSocketUsecase(authRepository: sl()))
+    ..registerLazySingleton<DisconnectSocketUsecase>(
+        () => DisconnectSocketUsecase(authRepository: sl()));
 }

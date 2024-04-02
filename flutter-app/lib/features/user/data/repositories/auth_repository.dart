@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wisp_wizz/features/app/constants/status_codes.dart';
 import 'package:wisp_wizz/features/app/errors/exceptions.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
@@ -57,6 +58,12 @@ class AuthRepository implements IAuthRepository {
       final response = await _firebaseAuthentication.sendCode(
         phoneNumber: phoneNumber,
       );
+      if (response.phoneAuthCredential == null &&
+          response.verificationId.isEmpty) {
+        return const Left(ApiFailure(
+            message: "unable to send code, please try again",
+            statusCode: StatusCode.FORBIDDEN));
+      }
       return Right(response);
     } on ApiException catch (e) {
       DebugHelper.printError("exception");
@@ -106,7 +113,7 @@ class AuthRepository implements IAuthRepository {
   FutureVoid logout() async {
     try {
       final response = await _localDataSource.removeCachedUser();
-      _remoteDatasource.disconnectSocket();
+
       return Right(response);
     } on CacheException catch (e) {
       return Left(CacheFailure.fromException(e));
@@ -164,6 +171,16 @@ class AuthRepository implements IAuthRepository {
   Result<void> initSocket(String userId) {
     try {
       _remoteDatasource.connectSocket(userId);
+      return const Right(null);
+    } on WebSocketException catch (e) {
+      return Left(WebSocketFailure.fromException(e));
+    }
+  }
+
+  @override
+  Result<void> disconnectSocket() {
+    try {
+      _remoteDatasource.disconnectSocket();
       return const Right(null);
     } on WebSocketException catch (e) {
       return Left(WebSocketFailure.fromException(e));

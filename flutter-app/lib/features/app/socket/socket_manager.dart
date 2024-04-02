@@ -12,28 +12,25 @@ class WebSocketManager {
     _socket = IO.io(socketIOBaseUrl, <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": true
-    });
+    }).connect();
     _socket.onConnect((_) {
-      DebugHelper.printWarning('$_ connect');
       _socket.emit("login", userId);
     });
     _socket.onDisconnect((_) {
       DebugHelper.printWarning('disconnected');
     });
     _socket.onerror((error) {
-      DebugHelper.printError(error);
-      throw WebSocketException(error);
+      DebugHelper.printError("onerror $error");
+      throw WebSocketException(error.toString());
     });
     _socket.onConnectError((data) {
-      DebugHelper.printError(data);
-      throw WebSocketException(data);
+      DebugHelper.printError("onConnectError $data");
+      throw WebSocketException(data.toString());
     });
     _socket.onConnectTimeout((data) {
-      DebugHelper.printError(data);
-      throw WebSocketException(data);
+      DebugHelper.printError("onConnectTimeout $data");
+      throw WebSocketException(data.toString());
     });
-
-    _socket.connect();
   }
 
   static void emitMesssage(dynamic data) => _socket.emit("message", data);

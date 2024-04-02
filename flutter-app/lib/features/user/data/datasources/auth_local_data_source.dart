@@ -37,7 +37,7 @@ class AuthLocalDatasource implements IAuthLocalDatasource {
         "Something went wrong",
       );
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("cacheUserData $e");
       throw const CacheException(
         message: "Something went wrong",
       );
@@ -57,7 +57,7 @@ class AuthLocalDatasource implements IAuthLocalDatasource {
         return null;
       }
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("getCachedUserData $e");
       throw const CacheException(
         message: "Something went wrong",
       );
@@ -75,7 +75,7 @@ class AuthLocalDatasource implements IAuthLocalDatasource {
     } on CacheException {
       rethrow;
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("removeCachedUser $e");
       throw const CacheException(
         message: "Something went wrong",
       );
@@ -87,7 +87,7 @@ class AuthLocalDatasource implements IAuthLocalDatasource {
     try {
       await _sqfliteManagerWrapper.getDB();
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("initLocalDB $e");
       throw const SqfliteDBException(
         "Something went wrong",
       );

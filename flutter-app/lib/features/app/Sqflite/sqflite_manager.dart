@@ -106,6 +106,7 @@ class SqfliteManager {
           : [];
 
       if (chatAndSenderData.isEmpty) {
+        DebugHelper.printWarning("New chat initializing");
         var uuid = const Uuid();
         await db.insert(
             "Chat",
@@ -156,7 +157,7 @@ class SqfliteManager {
   static Future<List<MapData>> fetchContacts() async {
     try {
       List<Map<String, dynamic>> contacts = await db.rawQuery("""
-          SELECT c.chatId as id, u.name, u.image, u.phoneNumber from Chat as c INNER JOIN User as u on u.id=c.senderId """);
+          SELECT  id, name, image, phoneNumber from User""");
 
       return contacts;
     } catch (e) {
@@ -181,6 +182,7 @@ class SqfliteManager {
 
   static Future<void> insertMultipleContacts(List<ContactModel> data) async {
     try {
+      DebugHelper.printWarning(data.toString());
       final db = await getDB();
       final token = RootIsolateToken.instance!;
       final port = ReceivePort("contacts");

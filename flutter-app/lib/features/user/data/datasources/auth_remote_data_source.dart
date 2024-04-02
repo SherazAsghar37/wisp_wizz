@@ -93,7 +93,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       throw const ApiException(
           message: "Internal server error", statusCode: 500);
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("get user error:$e");
       throw const ApiException(
           message: "Something went wrong", statusCode: 500);
     }
@@ -143,7 +143,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
     try {
       return _webSocketManagerWrapper.initSocket(userId);
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("connectSocket $e");
       throw const WebSocketException("unable to connect to the server");
     }
   }
@@ -153,7 +153,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
     try {
       return _webSocketManagerWrapper.disconnect();
     } catch (e) {
-      DebugHelper.printError(e.toString());
+      DebugHelper.printError("connectSocket $e");
       throw const WebSocketException("unable to connect to the server");
     }
   }

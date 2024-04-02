@@ -1,7 +1,6 @@
 // ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
@@ -60,10 +59,10 @@ class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
       event.chats,
       event.totalUnreadMessages,
     ));
-
+    int? index = event.index;
     if (!event.isChatClosed) {
       print("chat opened");
-      int? index = event.index;
+
       if (index == null) {
         index = event.chats
             .indexWhere((element) => element.chatId == event.message.chatId);
@@ -76,9 +75,8 @@ class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
         }
       }
 
-      event.chats[event.index!].messages.add(event.message);
-      final chatModel = event.chats.removeAt(event.index!);
-      DebugHelper.printWarning(chatModel.toString());
+      event.chats[index].messages.add(event.message);
+      final chatModel = event.chats.removeAt(index);
       emit(UsersChatsFetched(
         [chatModel, ...event.chats],
         event.totalUnreadMessages,

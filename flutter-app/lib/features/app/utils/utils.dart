@@ -26,7 +26,7 @@ class Utils {
 
   static ImageProvider<Object> getUserImageFromUint8List(
       Uint8List? image, String? imageUrl) {
-    DebugHelper.printWarning("called $imageUrl $image");
+    // DebugHelper.printWarning("called $imageUrl $image");
     try {
       return image == null
           ? imageUrl == null

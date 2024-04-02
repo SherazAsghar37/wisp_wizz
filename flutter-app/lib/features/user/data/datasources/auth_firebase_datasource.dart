@@ -37,7 +37,11 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
           ));
         },
         verificationFailed: (FirebaseAuthException e) {
-          completer.completeError(e);
+          DebugHelper.printError(e.toString());
+          completer.complete(CustomPhoneResoponse(
+            verificationId: _verificationId,
+            phoneAuthCredential: null,
+          ));
         },
         codeSent: (String verificationId, int? resendToken) {
           if (!completer.isCompleted) {
@@ -58,16 +62,18 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
           }
         },
       );
-      try {
-        completer.future.onError((error, stackTrace) {
-          throw const ApiException(
-            message: "Failed to send code, please try again later",
-            statusCode: StatusCode.FORBIDDEN,
-          );
-        });
-      } on ApiException {
-        rethrow;
-      }
+      //  completer.future.onError((error, stackTrace) {
+      //     throw const ApiException(
+      //       message: "Failed to send code, please try again later",
+      //       statusCode: StatusCode.FORBIDDEN,
+      //     );
+      //   });
+      // try {
+      //
+      // } on ApiException {
+      //   rethrow;
+      // }
+
       return completer.future;
     } on ApiException {
       DebugHelper.printError("Got api exception");

@@ -14,3 +14,7 @@ class ConnectSocketEvent extends SocketEvent {
   @override
   List<Object> get props => [userId];
 }
+
+class DisconnectSocketEvent extends SocketEvent {
+  const DisconnectSocketEvent();
+}

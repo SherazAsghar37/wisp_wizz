@@ -22,12 +22,15 @@ abstract class IAuthRepository {
   });
   NullabeleUser getCachedUser();
   FutureVoid logout();
+
   Result<void> initSocket(String userId);
+  Result<void> disconnectSocket();
   FutureUser updateUser({
     required String? name,
     required String id,
     Uint8List? image,
   });
+
   ResultFuture<void> cacheUser(UserModel user);
   ResultFuture<UserEntity?> initApplication();
 }

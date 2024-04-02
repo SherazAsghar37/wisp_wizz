@@ -6,6 +6,7 @@ import 'package:wisp_wizz/features/app/shared/widgets/primary_icon.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/phone-number/phone_number_bloc.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
+import 'package:wisp_wizz/features/user/presentation/bloc/socket/socket_bloc.dart';
 
 // ignore: must_be_immutable
 class SettingScreen extends StatefulWidget {
@@ -156,6 +157,9 @@ class _SettingScreenState extends State<SettingScreen> {
                                 context
                                     .read<AuthBloc>()
                                     .add(const LogoutEvent());
+                                context
+                                    .read<SocketBloc>()
+                                    .add(const DisconnectSocketEvent());
                               },
                             );
                           },
