@@ -1,6 +1,7 @@
 // ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
@@ -28,12 +29,13 @@ class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
 
   Future<void> _onFetchUserChatsEvent(
       FetchUserChatsEvent event, Emitter<UserChatsState> emit) async {
+    DebugHelper.printWarning("here1");
     emit(UsersChatsFetching(event.chats, 0));
+    DebugHelper.printWarning("here2");
     final res = await _getMyChatsUseCase(CustomGetMyChatsParams(
         currentPage: _currentPages, userId: event.userId));
     res.fold((f) => emit(UsersChatsFetchFailed(f.message)), (s) {
-      _currentPages += 1;
-
+      DebugHelper.printWarning(s.toString());
       emit(UsersChatsFetched(
           [...event.chats, ...s.chats], s.totalUnreadMessages));
     });

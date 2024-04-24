@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart'
     as auth_bloc;
 import 'package:wisp_wizz/features/user/presentation/bloc/otp/otp_bloc.dart';
@@ -152,7 +153,7 @@ class VerificationScreen extends StatelessWidget {
                         );
                       }
                     },
-                    listener: (context, state) {
+                    listener: (context, state) async {
                       if (state is auth_bloc.AuthOTPVerified) {
                         context
                             .read<auth_bloc.AuthBloc>()
@@ -161,8 +162,14 @@ class VerificationScreen extends StatelessWidget {
                                   phoneNumberBloc
                                       .state.textEditingController.text,
                             ));
-                      } else if (state is auth_bloc.AuthUserFound ||
-                          state is auth_bloc.AuthUserNotFound) {
+                      } else if (state is auth_bloc.AuthUserFound) {
+                        context.read<AuthController>().cancelTimer();
+                        await CachedNetworkImage.evictFromCache(
+                            baseUrl + state.user.image);
+                        Navigator.pushReplacementNamed(
+                            context, UserRegistrationScreen.routeName);
+                        otpBloc.add(const ClearEvent());
+                      } else if (state is auth_bloc.AuthUserNotFound) {
                         context.read<AuthController>().cancelTimer();
                         Navigator.pushReplacementNamed(
                             context, UserRegistrationScreen.routeName);

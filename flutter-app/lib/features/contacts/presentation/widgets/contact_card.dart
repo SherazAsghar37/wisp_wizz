@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 import 'package:wisp_wizz/features/contacts/data/models/contact_model.dart';
 
@@ -25,12 +28,19 @@ class ContactCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: radius,
-                  backgroundImage: Utils.getUserImageFromUint8List(
-                    null,
-                    contact.image,
-                  ),
+                CachedNetworkImage(
+                  imageUrl: baseUrl + contact.image,
+                  key: ValueKey(Random().nextInt(100)),
+                  placeholder: (context, url) => CircleAvatar(
+                      radius: radius,
+                      backgroundImage: Image.asset("images/profile.png").image),
+                  errorWidget: (context, url, error) => CircleAvatar(
+                      radius: radius,
+                      backgroundImage: Image.asset("images/profile.png").image),
+                  imageBuilder: (context, imageProvider) {
+                    return CircleAvatar(
+                        radius: radius, backgroundImage: imageProvider);
+                  },
                 ),
                 SizedBox(
                   width: Dimensions.width10,

@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
@@ -29,10 +32,25 @@ class ChatCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: radius,
-                  backgroundImage: Utils.getUserImageFromUint8List(
-                      null, chat.recipient.image),
+                // CachedNet
+                // CircleAvatar(
+                //   radius: radius,
+                //   backgroundImage: Utils.getUserImageFromUint8List(
+                //       null, chat.recipient.image),
+                // ),
+                CachedNetworkImage(
+                  imageUrl: baseUrl + chat.recipient.image,
+                  key: ValueKey(Random().nextInt(100)),
+                  placeholder: (context, url) => CircleAvatar(
+                      radius: radius,
+                      backgroundImage: Image.asset("images/profile.png").image),
+                  errorWidget: (context, url, error) => CircleAvatar(
+                      radius: radius,
+                      backgroundImage: Image.asset("images/profile.png").image),
+                  imageBuilder: (context, imageProvider) {
+                    return CircleAvatar(
+                        radius: radius, backgroundImage: imageProvider);
+                  },
                 ),
                 SizedBox(
                   width: Dimensions.width10,

@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/icon_text_button.dart';
@@ -89,15 +91,33 @@ class _SettingScreenState extends State<SettingScreen> {
                               setState(() {});
                             }
                           },
-                          child: CircleAvatar(
-                            radius: radius,
-                            backgroundColor: theme.primaryColor,
-                            child: CircleAvatar(
-                                radius: radius - 5,
-                                backgroundImage:
-                                    Utils.getUserImageFromUint8List(
-                                        image, imageUrl)),
-                          ),
+                          child: image == null
+                              ? CachedNetworkImage(
+                                  imageUrl: baseUrl + (imageUrl ?? ""),
+                                  key: ValueKey(Random().nextInt(100)),
+                                  placeholder: (context, url) => CircleAvatar(
+                                      radius: radius,
+                                      backgroundImage:
+                                          Image.asset("images/profile.png")
+                                              .image),
+                                  errorWidget: (context, url, error) =>
+                                      CircleAvatar(
+                                          radius: radius,
+                                          backgroundImage:
+                                              Image.asset("images/profile.png")
+                                                  .image),
+                                  imageBuilder: (context, imageProvider) {
+                                    return CircleAvatar(
+                                        radius: radius,
+                                        backgroundImage: imageProvider);
+                                  },
+                                )
+                              : CircleAvatar(
+                                  radius: radius,
+                                  backgroundImage:
+                                      Utils.getUserImageFromUint8List(
+                                    image,
+                                  )),
                         ),
                         SizedBox(
                           height: Dimensions.height20,
@@ -194,7 +214,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 },
                 builder: (context, state) {
                   return FloatingActionButton(
-                    onPressed: () {
+                    onPressed: () async {
                       imageCache.clear();
                       imageCache.clearLiveImages();
 
@@ -217,6 +237,8 @@ class _SettingScreenState extends State<SettingScreen> {
                             name: name,
                             image: image));
                       }
+                      await CachedNetworkImage.evictFromCache(
+                          baseUrl + currUser.image);
                     },
                     child: state is AuthloggingIn || state is AuthUpdatingUser
                         ? CircularProgressIndicator(

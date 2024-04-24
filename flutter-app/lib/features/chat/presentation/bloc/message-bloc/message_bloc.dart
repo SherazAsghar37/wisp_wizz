@@ -36,7 +36,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   }
   void _onSendMessage(
       SendMessageEvent event, Emitter<MessageState> emit) async {
-    emit(MessageSending());
+    // emit(MessageSending());
 
     final response = await _sendMessageUseCase(CustomSendMessgeParam(
       message: event.message,
@@ -45,7 +45,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       recipientId: event.recipientId,
     ));
     response.fold((f) => emit(MessageFailed(f.message)), (s) {
-      _addToSink(s);
       emit(MessageSent(message: s));
     });
   }

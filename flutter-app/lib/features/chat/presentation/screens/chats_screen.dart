@@ -28,6 +28,7 @@ class ChatsScreen extends StatelessWidget {
         ),
         child: BlocBuilder<UserChatsBloc, UserChatsState>(
             builder: (context, state) {
+          DebugHelper.printWarning(state.toString());
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -131,54 +132,77 @@ class ChatsScreen extends StatelessWidget {
                             }
                           },
                           child: state.chats.isEmpty
-                              ? const Center(
-                                  child: Text("No chats found"),
+                              ? Expanded(
+                                  child: RefreshIndicator(
+                                      onRefresh: () async {
+                                        final chatBloc =
+                                            context.read<UserChatsBloc>();
+
+                                        chatBloc.add(FetchUserChatsEvent(
+                                            chats: const [], userId: user.id));
+                                      },
+                                      child: ListView.builder(
+                                        itemCount: 1,
+                                        itemBuilder: (context, index) => Center(
+                                          child: Text("No chats found"),
+                                        ),
+                                      )),
                                 )
                               : Expanded(
-                                  child: ListView.builder(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: Dimensions.height5),
-                                    itemCount: state.chats.length,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: Dimensions.height2),
-                                        child: ChatCard(
-                                          userID: user.id,
-                                          chat: state.chats[index],
-                                          onPressed: () {
-                                            final currentChatBloc =
-                                                context.read<CurrentChatBloc>();
-                                            final userChatsBloc =
-                                                context.read<UserChatsBloc>();
-                                            currentChatBloc.add(
-                                                CurrentChatOpenEvent(
-                                                    chatId: state
-                                                        .chats[index].chatId,
-                                                    userId: user.id,
-                                                    index: index));
-                                            Navigator.pushNamed(context,
-                                                SingleChatScreen.routeName,
-                                                arguments: [
-                                                  state.chats[index],
-                                                  index,
-                                                ]).then((value) =>
-                                                currentChatBloc.add(
-                                                    CurrentChatCloseEvent(
-                                                        userId: user.id)));
+                                  child: RefreshIndicator(
+                                    onRefresh: () async {
+                                      DebugHelper.printWarning("heee");
+                                      final chatBloc =
+                                          context.read<UserChatsBloc>();
 
-                                            userChatsBloc.add(
-                                                IntiChatUserChatsEvent(
-                                                    chats: state.chats,
-                                                    totalUnreadMessages: state
-                                                        .totalUnreadMessages,
-                                                    index: index,
-                                                    chatId: state
-                                                        .chats[index].chatId));
-                                          },
-                                        ),
-                                      );
+                                      chatBloc.add(FetchUserChatsEvent(
+                                          chats: const [], userId: user.id));
                                     },
+                                    child: ListView.builder(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: Dimensions.height5),
+                                      itemCount: state.chats.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: Dimensions.height2),
+                                          child: ChatCard(
+                                            userID: user.id,
+                                            chat: state.chats[index],
+                                            onPressed: () {
+                                              final currentChatBloc = context
+                                                  .read<CurrentChatBloc>();
+                                              final userChatsBloc =
+                                                  context.read<UserChatsBloc>();
+                                              currentChatBloc.add(
+                                                  CurrentChatOpenEvent(
+                                                      chatId: state
+                                                          .chats[index].chatId,
+                                                      userId: user.id,
+                                                      index: index));
+                                              Navigator.pushNamed(context,
+                                                  SingleChatScreen.routeName,
+                                                  arguments: [
+                                                    state.chats[index],
+                                                    index,
+                                                  ]).then((value) =>
+                                                  currentChatBloc.add(
+                                                      CurrentChatCloseEvent(
+                                                          userId: user.id)));
+
+                                              userChatsBloc.add(
+                                                  IntiChatUserChatsEvent(
+                                                      chats: state.chats,
+                                                      totalUnreadMessages: state
+                                                          .totalUnreadMessages,
+                                                      index: index,
+                                                      chatId: state.chats[index]
+                                                          .chatId));
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
                         )

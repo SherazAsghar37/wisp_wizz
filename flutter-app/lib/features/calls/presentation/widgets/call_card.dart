@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wisp_wizz/features/calls/presentation/utils/calls_utils.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
@@ -38,10 +41,29 @@ class CallCard extends StatelessWidget {
                       child: CircleAvatar(
                         radius: radius,
                         backgroundColor: colorScheme.primary,
-                        child: CircleAvatar(
-                          radius: radius - 2,
-                          backgroundImage: Utils.getUserImage(user),
+                        child: CachedNetworkImage(
+                          imageUrl: baseUrl + user.image,
+                          key: ValueKey(Random().nextInt(100)),
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(
+                            strokeWidth: 1,
+                            color: theme.primaryColor,
+                          ),
+                          errorWidget: (context, url, error) => CircleAvatar(
+                              radius: radius,
+                              backgroundImage:
+                                  Image.asset("images/profile.png").image),
+                          imageBuilder: (context, imageProvider) {
+                            return CircleAvatar(
+                                radius: radius - 2,
+                                backgroundImage: imageProvider);
+                          },
                         ),
+
+                        // CircleAvatar(
+                        //   radius: radius - 2,
+                        //   backgroundImage: Utils.getUserImage(user),
+                        // ),
                       ),
                     ),
                     Align(

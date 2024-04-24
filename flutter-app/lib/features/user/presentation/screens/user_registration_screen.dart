@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/auth-bloc/auth_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/phone-number/phone_number_bloc.dart';
 import 'package:wisp_wizz/features/user/presentation/bloc/socket/socket_bloc.dart';
@@ -68,23 +70,45 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                       height: Dimensions.height20,
                     ),
                     TextButton(
-                      onPressed: () async {
-                        XFile? file = await Utils.pickImage();
+                        onPressed: () async {
+                          XFile? file = await Utils.pickImage();
 
-                        if (file != null) {
-                          image = await file.readAsBytes();
-                          setState(() {});
-                        }
-                      },
-                      child: CircleAvatar(
-                        radius: radius,
-                        backgroundColor: theme.primaryColor,
+                          if (file != null) {
+                            image = await file.readAsBytes();
+                            setState(() {});
+                          }
+                        },
                         child: CircleAvatar(
-                            radius: radius - 5,
-                            backgroundImage: Utils.getUserImageFromUint8List(
-                                image, imageUrl)),
-                      ),
-                    ),
+                          radius: radius,
+                          backgroundColor: theme.primaryColor,
+                          child: image == null
+                              ? CachedNetworkImage(
+                                  imageUrl: baseUrl + (imageUrl ?? ""),
+                                  key: ValueKey(Random().nextInt(100)),
+                                  placeholder: (context, url) => CircleAvatar(
+                                      radius: radius - 5,
+                                      backgroundImage:
+                                          Image.asset("images/profile.png")
+                                              .image),
+                                  errorWidget: (context, url, error) =>
+                                      CircleAvatar(
+                                          radius: radius - 5,
+                                          backgroundImage:
+                                              Image.asset("images/profile.png")
+                                                  .image),
+                                  imageBuilder: (context, imageProvider) {
+                                    return CircleAvatar(
+                                        radius: radius - 5,
+                                        backgroundImage: imageProvider);
+                                  },
+                                )
+                              : CircleAvatar(
+                                  radius: radius - 5,
+                                  backgroundImage:
+                                      Utils.getUserImageFromUint8List(
+                                    image,
+                                  )),
+                        )),
                     SizedBox(
                       height: Dimensions.height20,
                     ),
@@ -139,7 +163,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                   context
                       .read<SocketBloc>()
                       .add(ConnectSocketEvent(state.user.id));
-                  
+
                   Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                       arguments: state.user);
                 }

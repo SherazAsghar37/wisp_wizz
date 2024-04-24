@@ -1,8 +1,7 @@
-import 'dart:math';
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wisp_wizz/features/app/constants/app_constants.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
@@ -17,32 +16,43 @@ class Utils {
 
   static ImageProvider<Object> getUserImage(UserModel user) {
     try {
-      return Image.network(baseUrl + user.image).image;
+      // return Image.network(baseUrl + user.image).image;
+      return Image.asset("images/profile.png").image;
     } catch (e) {
       DebugHelper.printError("Loading User Model Image Error : $e");
       return Image.asset("images/profile.png").image;
     }
   }
 
-  static ImageProvider<Object> getUserImageFromUint8List(
-      Uint8List? image, String? imageUrl) {
-    // DebugHelper.printWarning("called $imageUrl $image");
+  // static CachedNetworkImage getCahcedNetworkImage(String url,Widget widget) {
+  //   return CachedNetworkImage(
+  //       imageUrl: baseUrl + url,
+  //       key: ValueKey(Random().nextInt(100)),
+  //       placeholder: (context, url) => const CircularProgressIndicator(),
+  //       errorWidget: (context, url, error) => Image.asset("images/profile.png"),
+  //       imageBuilder: (context, imageProvider) {
+  //         CircleAvatar(
+  //                 radius: radius,
+  //                 backgroundImage: Utils.getUserImageFromUint8List(
+  //                     null, chat.recipient.image),
+  //               ),
+  //       },
+  //     );
+  // }
+
+  static ImageProvider<Object> getUserImageFromUint8List(Uint8List? image) {
     try {
       return image == null
-          ? imageUrl == null
-              ? Image.asset(
-                  "images/profile.png",
-                  fit: BoxFit.cover,
-                ).image
-              : Image.network(
-                  baseUrl + imageUrl,
-                  key: ValueKey(Random().nextInt(100)),
-                ).image
+          ? Image.asset(
+              "images/profile.png",
+              fit: BoxFit.cover,
+            ).image
           : Image.memory(
               image,
               fit: BoxFit.cover,
             ).image;
     } catch (e) {
+      DebugHelper.printWarning("called1");
       DebugHelper.printError("Loading Uint8List Image Error : $e");
       return Image.asset("images/profile.png").image;
     }

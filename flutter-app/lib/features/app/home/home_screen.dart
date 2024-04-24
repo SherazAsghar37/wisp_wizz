@@ -1,6 +1,9 @@
 import 'dart:developer';
+import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
+import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/app/settings/settings_screen.dart';
 import 'package:wisp_wizz/features/app/shared/widgets/custom_tab_bar.dart';
 import 'package:wisp_wizz/features/app/socket/socket_manager.dart';
@@ -48,10 +51,10 @@ class _HomeScreenState extends State<HomeScreen>
     final currentChatBLoc = context.read<CurrentChatBloc>();
 
     chatBloc.add(FetchUserChatsEvent(chats: const [], userId: widget.user.id));
-
+    DebugHelper.printWarning("fetching users");
     WebSocketManager.socket.on("message${widget.user.id}", (data) {
-      log("received");
-      log("message${widget.user.id}");
+      print("received");
+      print("message${widget.user.id}");
       final currentChatState = currentChatBLoc.state;
       context.read<MessageBloc>().add(ReceivedMessageEvent(
           senderId: data["senderId"],
@@ -148,15 +151,41 @@ class _HomeScreenState extends State<HomeScreen>
                                             ? state.user
                                             : widget.user);
                                   },
-                                  child: CircleAvatar(
-                                    backgroundColor:
-                                        theme.colorScheme.background,
-                                    radius: radius,
-                                    backgroundImage: Utils.getUserImage(
-                                        state is AuthloggedIn
-                                            ? state.user
-                                            : widget.user),
+                                  child: CachedNetworkImage(
+                                    imageUrl: baseUrl +
+                                        (state is AuthloggedIn
+                                            ? state.user.image
+                                            : widget.user.image),
+                                    key: ValueKey(Random().nextInt(100)),
+                                    placeholder: (context, url) => CircleAvatar(
+                                        radius: radius,
+                                        backgroundImage:
+                                            Image.asset("images/profile.png")
+                                                .image),
+                                    errorWidget: (context, url, error) =>
+                                        CircleAvatar(
+                                            radius: radius,
+                                            backgroundImage: Image.asset(
+                                                    "images/profile.png")
+                                                .image),
+                                    imageBuilder: (context, imageProvider) {
+                                      return CircleAvatar(
+                                          backgroundColor:
+                                              theme.colorScheme.background,
+                                          radius: radius,
+                                          backgroundImage: imageProvider);
+                                    },
                                   ),
+
+                                  // CircleAvatar(
+                                  //   backgroundColor:
+                                  //       theme.colorScheme.background,
+                                  //   radius: radius,
+                                  //   backgroundImage: Utils.getUserImage(
+                                  //       state is AuthloggedIn
+                                  //           ? state.user
+                                  //           : widget.user),
+                                  // ),
                                 )
                               ],
                             ),

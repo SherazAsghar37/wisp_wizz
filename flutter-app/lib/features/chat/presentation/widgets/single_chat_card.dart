@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/chat/presentation/utils/exports.dart';
 
@@ -46,10 +49,25 @@ class SingleChatCard extends StatelessWidget {
                 IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(arrowBack)),
-                CircleAvatar(
-                  radius: radius,
-                  backgroundImage: Utils.getUserImage(user),
+                CachedNetworkImage(
+                  imageUrl: baseUrl + user.image,
+                  key: ValueKey(Random().nextInt(100)),
+                  placeholder: (context, url) => CircularProgressIndicator(
+                    strokeWidth: 1,
+                    color: theme.primaryColor,
+                  ),
+                  errorWidget: (context, url, error) => CircleAvatar(
+                      radius: radius,
+                      backgroundImage: Image.asset("images/profile.png").image),
+                  imageBuilder: (context, imageProvider) {
+                    return CircleAvatar(
+                        radius: radius, backgroundImage: imageProvider);
+                  },
                 ),
+                // CircleAvatar(
+                //   radius: radius,
+                //   backgroundImage: Utils.getUserImage(user),
+                // ),
                 SizedBox(
                   width: Dimensions.width10,
                 ),
