@@ -35,14 +35,17 @@ class FetchUpdatedUserChatsEvent extends UserChatsEvent {
 
 class AddMessageUserChatsEvent extends UserChatsEvent {
   final String userId;
+  final String recipientId;
   final int totalUnreadMessages;
   final List<ChatModel> chats;
   final MessageModel message;
   final int? index;
   final bool isChatClosed;
   final ChatModel? chat;
+
   const AddMessageUserChatsEvent(
       {required this.userId,
+      required this.recipientId,
       required this.chats,
       required this.totalUnreadMessages,
       required this.message,
@@ -50,8 +53,16 @@ class AddMessageUserChatsEvent extends UserChatsEvent {
       this.index,
       required this.isChatClosed});
   @override
-  List<Object?> get props =>
-      [userId, chats, totalUnreadMessages, message, index, isChatClosed, chat];
+  List<Object?> get props => [
+        userId,
+        chats,
+        totalUnreadMessages,
+        message,
+        index,
+        isChatClosed,
+        chat,
+        recipientId
+      ];
 }
 
 class IntiChatUserChatsEvent extends UserChatsEvent {

@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';

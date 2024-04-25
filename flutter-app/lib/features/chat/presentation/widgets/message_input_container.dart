@@ -172,13 +172,22 @@ class _MessageInputContainerState extends State<MessageInputContainer> {
                                 final chat = widget.chat;
                                 final messageBloc = context.read<MessageBloc>();
                                 // final messageState = messageBloc.state;
+                                final String message =
+                                    messageController.text.trim();
 
-                                messageBloc.add(SendMessageEvent(
-                                  senderId: chat.senderId,
-                                  recipientId: chat.recipient.id,
-                                  message: messageController.text,
-                                  chatId: chat.chatId,
-                                ));
+                                if (message.isNotEmpty) {
+                                  messageBloc.add(SendMessageEvent(
+                                    senderId: chat.senderId,
+                                    recipientId: chat.recipient.id,
+                                    message: message,
+                                    chatId: chat.chatId,
+                                  ));
+                                } else {
+                                  BotToast.showText(
+                                      text: "Message cannot be empty",
+                                      contentColor: theme.primaryColorLight,
+                                      textStyle: theme.textTheme.bodyMedium!);
+                                }
 
                                 setState(() {
                                   messageController.clear();

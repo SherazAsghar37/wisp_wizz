@@ -171,8 +171,8 @@ Future<void> init() async {
 
   //-----------User Chat Bloc
   sl
-    ..registerFactory(
-        () => UserChatsBloc(getMyChatsUseCase: sl(), initChatUsecase: sl()))
+    ..registerFactory(() => UserChatsBloc(
+        getMyChatsUseCase: sl(), initChatUsecase: sl(), getChatUsecase: sl()))
     //usecases
     ..registerLazySingleton<GetMyChatsUseCase>(
         () => GetMyChatsUseCase(repository: sl()))
