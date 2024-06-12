@@ -122,6 +122,7 @@ class ChatsScreen extends StatelessWidget {
                                 chatBloc.add(AddMessageUserChatsEvent(
                                     chats: chatState.chats,
                                     userId: user.id,
+                                    recipientId: messageState.message.senderId,
                                     totalUnreadMessages:
                                         chatState.totalUnreadMessages,
                                     message: messageState.message,
@@ -143,7 +144,8 @@ class ChatsScreen extends StatelessWidget {
                                       },
                                       child: ListView.builder(
                                         itemCount: 1,
-                                        itemBuilder: (context, index) => Center(
+                                        itemBuilder: (context, index) =>
+                                            const Center(
                                           child: Text("No chats found"),
                                         ),
                                       )),

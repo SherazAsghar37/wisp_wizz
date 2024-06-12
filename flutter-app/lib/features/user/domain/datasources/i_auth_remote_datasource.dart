@@ -22,6 +22,9 @@ abstract class IAuthRemoteDatasource {
     required String id,
     Uint8List? image,
   });
+  Future<bool> deleteUser({
+    required String id,
+  });
   void connectSocket(String userId);
   void disconnectSocket();
 }

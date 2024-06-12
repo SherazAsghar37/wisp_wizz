@@ -59,6 +59,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                         chatBloc.add(AddMessageUserChatsEvent(
                             chats: chatState.chats,
                             userId: widget.chat.senderId,
+                            recipientId: state.message.senderId,
                             totalUnreadMessages: chatState.totalUnreadMessages,
                             message: state.message,
                             index: widget.index,

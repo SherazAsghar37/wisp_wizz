@@ -233,6 +233,21 @@ class SqfliteManager {
         newdata,
         conflictAlgorithm: ConflictAlgorithm.fail,
       );
+      List<MapData> chatId = await db.rawQuery("""
+      Select chatId from Chat WHERE chatId = ? 
+      """, [data["chatId"]]);
+      if (chatId.isEmpty) {
+        await db.insert(
+            "Chat",
+            {
+              "recipientId": data["senderId"],
+              "senderId": data["recipientId"],
+              "chatId": data["chatId"],
+              "createdAt": DateTime.now().toSqfliteFormat(),
+              "updatedAt": DateTime.now().toSqfliteFormat(),
+            },
+            conflictAlgorithm: ConflictAlgorithm.abort);
+      }
       if (isChatClosed) {
         await db.rawQuery("""
       UPDATE Chat SET unreadMessages = unreadMessages +1  WHERE chatId = ? 

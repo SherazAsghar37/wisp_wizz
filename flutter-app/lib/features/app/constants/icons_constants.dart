@@ -34,3 +34,4 @@ const IconData sendIcon = FluentIcons.send_16_regular;
 const IconData documnetIcon = FluentIcons.document_20_filled;
 const IconData imageIcon = FluentIcons.image_20_filled;
 const IconData headphonesIcon = FluentIcons.headphones_20_filled;
+const IconData deleteIcon = FluentIcons.delete_16_regular;

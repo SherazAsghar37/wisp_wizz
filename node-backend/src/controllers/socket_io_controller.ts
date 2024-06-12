@@ -1,6 +1,6 @@
 import { inject, singleton } from "tsyringe";
 import SocketIOManager from "../services/socket_io_manager";
-
+import { v4 as uuidV4 } from "uuid";
 @singleton()
 class SocketIOController {
   constructor(
@@ -8,7 +8,11 @@ class SocketIOController {
     private readonly _socketIOManager: SocketIOManager
   ) {}
   public onMessage = (newMessage: any, socket: any) => {
+    const uuid = uuidV4();
+
     const { senderId, recipientId, chatId } = newMessage;
+    newMessage["messageId"] = uuid;
+    console.log(newMessage);
     const connectionStatus =
       this._socketIOManager.checkUsersConnectionStatus(recipientId);
     if (connectionStatus) {

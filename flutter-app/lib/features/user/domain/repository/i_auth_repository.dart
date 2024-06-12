@@ -30,6 +30,9 @@ abstract class IAuthRepository {
     required String id,
     Uint8List? image,
   });
+  FutureVoid deleteUser({
+    required String id,
+  });
 
   ResultFuture<void> cacheUser(UserModel user);
   ResultFuture<UserEntity?> initApplication();

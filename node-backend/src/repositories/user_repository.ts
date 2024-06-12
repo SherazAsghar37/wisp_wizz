@@ -140,6 +140,29 @@ export default class UserRepository {
       );
     }
   };
+  public deleteUserAccount = async (id: string): Promise<User> => {
+    try {
+      console.log("Before deleting user...");
+      const newUser = await db.user.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      if (newUser) {
+        return newUser as User;
+      } else {
+        console.log(newUser);
+        throw new CustomError("Failed to delete user", HttpStatusCode.CONFLICT);
+      }
+    } catch (error) {
+      console.log(`${error}`.red);
+      throw new CustomError(
+        `Error : ${error}`,
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
+    }
+  };
   // public findManyByPhoneNumbers = async (
   //   contacts: Array<string>
   // ): Promise<Readable> => {

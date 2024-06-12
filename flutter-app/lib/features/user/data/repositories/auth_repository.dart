@@ -186,4 +186,20 @@ class AuthRepository implements IAuthRepository {
       return Left(WebSocketFailure.fromException(e));
     }
   }
+
+  @override
+  FutureVoid deleteUser({required String id}) async {
+    try {
+      await _localDataSource.removeCachedUser();
+      final bool response = await _remoteDatasource.deleteUser(id: id);
+      return response
+          ? const Right(null)
+          : const Left(
+              ApiFailure(message: "Unable to delete user", statusCode: 500));
+    } on CacheException catch (e) {
+      return Left(CacheFailure.fromException(e));
+    } on WebSocketException catch (e) {
+      return Left(WebSocketFailure.fromException(e));
+    }
+  }
 }

@@ -157,4 +157,35 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       throw const WebSocketException("unable to connect to the server");
     }
   }
+
+  @override
+  Future<bool> deleteUser({required String id}) async {
+    try {
+      final MapData data = {"id": id};
+      final String url = _dio.options.baseUrl + deleteUserUrl;
+      final response = await _dio.delete(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        MapData userData = MapData.from(json.decode(response.data));
+        return userData["status"];
+      } else {
+        throw ApiException(
+          message: response.data["message"],
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on ApiException {
+      rethrow;
+    } on DioException catch (dioException) {
+      DebugHelper.printError("Dio Exception : ${dioException.message}");
+      throw const ApiException(
+          message: "Internal server error", statusCode: 500);
+    } catch (e) {
+      DebugHelper.printError("Exception: $e");
+      throw const ApiException(
+          message: "Something went wrong", statusCode: 500);
+    }
+  }
 }

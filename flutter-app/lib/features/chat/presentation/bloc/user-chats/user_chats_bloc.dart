@@ -1,10 +1,13 @@
 // ignore: depend_on_referenced_packages
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/chat/data/models/chat_model.dart';
 import 'package:wisp_wizz/features/chat/data/models/message_model.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/get_my_chat_usecase.dart';
+import 'package:wisp_wizz/features/chat/domain/usecases/get_single_chat_usecase.dart';
 import 'package:wisp_wizz/features/chat/domain/usecases/init_chat_usecase.dart';
 
 part 'user_chats_event.dart';
@@ -13,13 +16,16 @@ part 'user_chats_state.dart';
 class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
   final GetMyChatsUseCase _getMyChatsUseCase;
   final InitChatUsecase _initChatUsecase;
+  final GetChatUsecase _getChatUsecase;
   int _currentPages = 0;
 
   UserChatsBloc(
       {required GetMyChatsUseCase getMyChatsUseCase,
-      required InitChatUsecase initChatUsecase})
+      required InitChatUsecase initChatUsecase,
+      required GetChatUsecase getChatUsecase})
       : _getMyChatsUseCase = getMyChatsUseCase,
         _initChatUsecase = initChatUsecase,
+        _getChatUsecase = getChatUsecase,
         super(UserChatsInitial()) {
     on<FetchUserChatsEvent>(_onFetchUserChatsEvent);
     on<FetchUpdatedUserChatsEvent>(_onFetchUpdatedUserChatsEvent);
@@ -86,14 +92,27 @@ class UserChatsBloc extends Bloc<UserChatsEvent, UserChatsState> {
     } else {
       int index = event.chats
           .indexWhere((element) => element.chatId == event.message.chatId);
-      print(index.toString());
-      event.chats[index].messages.add(event.message);
-      event.chats[index] = event.chats[index]
-          .copyWith(unreadMessages: event.chats[index].unreadMessages + 1);
-      emit(UsersChatsFetched(
-        event.chats,
-        event.totalUnreadMessages + 1,
-      ));
+      log(index.toString());
+      if (index == -1) {
+        final res = await _getChatUsecase(CustomGetChatParam(
+            recipientId: event.recipientId, senderId: event.userId));
+        res.fold((f) => emit(UsersChatsFetchFailed(f.message)), (s) {
+          s.messages.add(event.message);
+          s = s.copyWith(unreadMessages: s.unreadMessages + 1);
+          emit(UsersChatsFetched(
+            [s, ...event.chats],
+            event.totalUnreadMessages + 1,
+          ));
+        });
+      } else {
+        event.chats[index].messages.add(event.message);
+        event.chats[index] = event.chats[index]
+            .copyWith(unreadMessages: event.chats[index].unreadMessages + 1);
+        emit(UsersChatsFetched(
+          event.chats,
+          event.totalUnreadMessages + 1,
+        ));
+      }
     }
   }
 

@@ -4,6 +4,7 @@ import UserService from "../services/user_service";
 import HttpStatusCode from "../utils/http_status_codes";
 import { ErrorHandler } from "../exceptions/error_handler";
 import ImageService from "../services/image_service";
+import User from "../@types/user";
 
 @singleton()
 export default class UserController {
@@ -108,36 +109,28 @@ export default class UserController {
       this._errorHandler.handleError(error, res);
     }
   };
-  // public getContacts = async (
-  //   req: Request,
-  //   res: Response,
-  //   next: NextFunction
-  // ) => {
-  //   try {
-  //     const { contacts } = req.body;
 
-  //     const users: Readable = await this._userServices.fetchContacts(contacts);
-  //     // res.writeHead(200, { "Content-Type": "application/json" });
-  //     users.on("data", (user) => {
-  //       const e = JSON.parse(user);
-  //       res.send(
-  //         JSON.stringify({
-  //           id: e.id,
-  //           name: e.name,
-  //           phoneNumber: e.phoneNumber,
-  //           image: e.image.toString("base64"),
-  //         })
-  //       );
-  //     });
-  //     users.on("end", () => {
-  //       console.log("end");
-  //       return res.end();
-  //     });
-  //     users.on("error", () => {
-  //       this._errorHandler.handleError("something went wrong", res);
-  //     });
-  //   } catch (error) {
-  //     this._errorHandler.handleError(error, res);
-  //   }
-  // };
+  public deleteUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { id } = req.body;
+
+      const user: User = await this._userServices.deleteAccount(id);
+      // const user = { test: "test" };
+      console.log(user);
+      return await res.status(HttpStatusCode.OK).json(
+        JSON.stringify({
+          status: user ? true : false,
+          message: user
+            ? "Account deleted sucessfully"
+            : "Failed to delete account",
+        })
+      );
+    } catch (error) {
+      this._errorHandler.handleError(error, res);
+    }
+  };
 }

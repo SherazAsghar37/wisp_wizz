@@ -117,3 +117,18 @@ final class AuthInitializationFailed extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+final class AuthDeletingUser extends AuthState {
+  const AuthDeletingUser();
+}
+
+final class AuthUserDeleted extends AuthState {
+  const AuthUserDeleted();
+}
+
+final class AuthUserDeleteFailed extends AuthState {
+  final String message;
+  const AuthUserDeleteFailed(this.message);
+  @override
+  List<Object> get props => [message];
+}

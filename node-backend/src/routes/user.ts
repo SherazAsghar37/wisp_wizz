@@ -15,5 +15,8 @@ userRouter
 userRouter
   .route("/getContacts")
   .post(validation.getContactsValidation, userController.getContacts);
+userRouter
+  .route("/deleteUser")
+  .delete(validation.deleteAccountValidation, userController.deleteUser);
 
 export default userRouter;

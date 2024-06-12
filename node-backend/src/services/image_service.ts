@@ -9,8 +9,9 @@ import path from "node:path";
 export default class ImageService {
   public saveImage = async (image: Buffer, uuid: string): Promise<string> => {
     try {
-      let imgPath = `/image/profile${uuid}`;
-      const outputFileName = `../node-backend/src/public/${uuid}.png`;
+      const timeNow = new Date().getTime();
+      let imgPath = `/image/profile${uuid}-${timeNow}`;
+      const outputFileName = `../node-backend/src/public/${uuid}-${timeNow}.png`;
       fs.createWriteStream(outputFileName).write(image);
       return imgPath;
     } catch (error) {
