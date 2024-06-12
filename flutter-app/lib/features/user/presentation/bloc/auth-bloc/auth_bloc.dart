@@ -1,4 +1,6 @@
 // ignore: depend_on_referenced_packages
+// ignore_for_file: unnecessary_set_literal
+
 import 'dart:typed_data';
 
 // ignore: depend_on_referenced_packages
@@ -8,6 +10,7 @@ import 'package:wisp_wizz/features/app/config/extensions.dart';
 import 'package:wisp_wizz/features/app/helper/debug_helper.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/delete_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
@@ -32,6 +35,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UpdateUser _updateUser;
   final CacheUser _cacheUser;
   final InitApplication _initApplication;
+  final DeleteUser _deleteUser;
   String _verificationId = "";
 
   AuthBloc(
@@ -43,7 +47,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       required LogoutUser logoutUser,
       required UpdateUser updateUser,
       required CacheUser cacheUser,
-      required InitApplication initApplication})
+      required InitApplication initApplication,
+      required DeleteUser deleteUser})
       : _loginUser = loginUser,
         _sendCode = sendCode,
         _verifyOTP = verifyOTP,
@@ -53,6 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _updateUser = updateUser,
         _cacheUser = cacheUser,
         _initApplication = initApplication,
+        _deleteUser = deleteUser,
         super(const AuthLoggedOut()) {
     on<SendCodeEvent>(_onSendCodeEvent);
     on<VerifyOTPEvent>(_onVerifyOTPEvent);
@@ -62,6 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogoutEvent>(_onLogout);
     on<UpdateUserEvent>(_onUpdateUser);
     on<InitApplicationEvent>(_onInitApplication);
+    on<DeleteUserEvent>(_onDeleteUser);
   }
 
   Future<void> _onSendCodeEvent(
@@ -222,5 +229,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               else
                 {emit(const AuthLoggedOut())}
             });
+  }
+
+  void _onDeleteUser(DeleteUserEvent event, Emitter<AuthState> emit) async {
+    emit(const AuthDeletingUser());
+
+    final res = await _deleteUser(event.id);
+
+    res.fold((f) => emit(AuthUserDeleteFailed(f.message)),
+        (s) => emit(const AuthLoggedOut()));
   }
 }

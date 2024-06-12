@@ -94,7 +94,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           child: image == null
                               ? CachedNetworkImage(
                                   imageUrl: baseUrl + (imageUrl ?? ""),
-                                  key: ValueKey(Random().nextInt(100)),
+                                  key: ValueKey(Random().nextInt(1000)),
                                   placeholder: (context, url) => CircleAvatar(
                                       radius: radius,
                                       backgroundImage:
@@ -183,7 +183,35 @@ class _SettingScreenState extends State<SettingScreen> {
                               },
                             );
                           },
-                        )
+                        ),
+                        SizedBox(
+                          height: Dimensions.height15,
+                        ),
+                        BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            return IconTextButton(
+                              icon: deleteIcon,
+                              text: "Delete my account",
+                              isLoading: state is AuthDeletingUser,
+                              onPressed: () {
+                                Utils.showAlertDialogue(
+                                  context,
+                                  "Are you sure you want to delete your account?",
+                                  failureBtnName: "Cancel",
+                                  sucessBtnName: "Delete",
+                                  success: () {
+                                    context
+                                        .read<AuthBloc>()
+                                        .add(DeleteUserEvent(id: currUser.id));
+                                    context
+                                        .read<SocketBloc>()
+                                        .add(const DisconnectSocketEvent());
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ],
                     ),
                   )
@@ -206,6 +234,11 @@ class _SettingScreenState extends State<SettingScreen> {
                     });
                   }
                   if (state is AuthloginFailed) {
+                    BotToast.showText(
+                        text: state.message,
+                        contentColor: theme.primaryColorLight,
+                        textStyle: theme.textTheme.bodyMedium!);
+                  } else if (state is AuthUserDeleteFailed) {
                     BotToast.showText(
                         text: state.message,
                         contentColor: theme.primaryColorLight,

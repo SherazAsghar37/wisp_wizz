@@ -93,6 +93,19 @@ export default class UserService {
       }
     }
   };
+  public deleteAccount = async (id: string): Promise<User> => {
+    try {
+      const user: User = await this._userRepository.deleteUserAccount(id);
+      return user;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.log("!!!Criticial Error!!!", error);
+        throw new ThrowCriticalError(error);
+      }
+    }
+  };
   // public fetchContacts = async (contacts: Array<string>): Promise<Readable> => {
   //   try {
   //     const users: Readable = await this._userRepository.findManyByPhoneNumbers(

@@ -71,3 +71,12 @@ class GetCachedUserEvent extends AuthEvent {
 class InitApplicationEvent extends AuthEvent {
   const InitApplicationEvent();
 }
+
+class DeleteUserEvent extends AuthEvent {
+  final String id;
+  const DeleteUserEvent({required this.id});
+  @override
+  List<Object?> get props => [
+        id,
+      ];
+}

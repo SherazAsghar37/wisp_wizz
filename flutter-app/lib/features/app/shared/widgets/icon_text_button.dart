@@ -6,12 +6,13 @@ class IconTextButton extends StatelessWidget {
   final IconData icon;
   final String text;
   final VoidCallback onPressed;
-  const IconTextButton({
-    super.key,
-    required this.icon,
-    required this.text,
-    required this.onPressed,
-  });
+  final bool isLoading;
+  const IconTextButton(
+      {super.key,
+      required this.icon,
+      required this.text,
+      required this.onPressed,
+      this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +28,32 @@ class IconTextButton extends StatelessWidget {
             color: theme.primaryColorLight,
             borderRadius: BorderRadius.circular(borderRadius)),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(
-              icon,
-              color: theme.shadowColor,
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  color: theme.shadowColor,
+                ),
+                SizedBox(
+                  width: Dimensions.width13,
+                ),
+                Text(
+                  text,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
             ),
-            SizedBox(
-              width: Dimensions.width13,
-            ),
-            Text(
-              text,
-              style: theme.textTheme.bodyMedium,
-            )
+            isLoading
+                ? SizedBox(
+                    height: Dimensions.height20,
+                    child: FittedBox(
+                        child: CircularProgressIndicator(
+                      color: theme.primaryColor,
+                      strokeWidth: 2,
+                    )))
+                : const SizedBox()
           ],
         ),
       ),

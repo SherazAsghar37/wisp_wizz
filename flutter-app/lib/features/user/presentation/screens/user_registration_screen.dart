@@ -84,7 +84,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                           child: image == null
                               ? CachedNetworkImage(
                                   imageUrl: baseUrl + (imageUrl ?? ""),
-                                  key: ValueKey(Random().nextInt(100)),
+                                  key: ValueKey(Random().nextInt(10000)),
                                   placeholder: (context, url) => CircleAvatar(
                                       radius: radius - 5,
                                       backgroundImage:

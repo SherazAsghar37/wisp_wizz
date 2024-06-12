@@ -35,6 +35,7 @@ import 'package:wisp_wizz/features/app/Sqflite/sqflite_manager_wrapper.dart';
 import 'package:wisp_wizz/features/user/data/repositories/auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/repository/i_auth_repository.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/delete_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/disconnect_socket_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
@@ -76,7 +77,8 @@ Future<void> init() async {
         logoutUser: sl(),
         updateUser: sl(),
         cacheUser: sl(),
-        initApplication: sl()))
+        initApplication: sl(),
+        deleteUser: sl()))
     //usecases
     ..registerLazySingleton<SendCode>(() => SendCode(authRepository: sl()))
     ..registerLazySingleton<VerifyOTP>(() => VerifyOTP(authRepository: sl()))
@@ -89,6 +91,7 @@ Future<void> init() async {
     ..registerLazySingleton<CacheUser>(() => CacheUser(authRepository: sl()))
     ..registerLazySingleton<InitApplication>(
         () => InitApplication(authRepository: sl()))
+    ..registerLazySingleton<DeleteUser>(() => DeleteUser(authRepository: sl()))
 
     //repositories
     ..registerLazySingleton<IAuthRepository>(() => AuthRepository(
