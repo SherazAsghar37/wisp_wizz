@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:wisp_wizz/features/app/errors/failure.dart';
 import 'package:wisp_wizz/features/user/data/models/user_model.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/cache_user_usecase.dart';
+import 'package:wisp_wizz/features/user/domain/usecase/delete_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_cached_user.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/get_user_usecase.dart';
 import 'package:wisp_wizz/features/user/domain/usecase/init_application_usecase.dart';
@@ -36,6 +37,8 @@ class MUpdateUser extends Mock implements UpdateUser {}
 
 class MCacheUser extends Mock implements CacheUser {}
 
+class MDeleteUser extends Mock implements DeleteUser {}
+
 class MInitApplication extends Mock implements InitApplication {}
 
 void main() {
@@ -48,6 +51,7 @@ void main() {
   late LogoutUser logoutUser;
   late UpdateUser updateUser;
   late CacheUser cacheUser;
+  late DeleteUser deleteUser;
   late InitApplication initApplication;
 
   late PhoneAuthCredential phoneAuthCredential;
@@ -98,6 +102,7 @@ void main() {
     updateUser = MUpdateUser();
     cacheUser = MCacheUser();
     initApplication = MInitApplication();
+    deleteUser = MDeleteUser();
 
     authBloc = AuthBloc(
         loginUser: loginUser,
@@ -108,6 +113,7 @@ void main() {
         logoutUser: logoutUser,
         updateUser: updateUser,
         cacheUser: cacheUser,
+        deleteUser: deleteUser,
         initApplication: initApplication);
     phoneAuthCredential = MPhoneAuthCradential();
 

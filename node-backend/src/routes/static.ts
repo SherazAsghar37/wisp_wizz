@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+
 const staticRouter = express.Router();
 
 staticRouter.route("/profile:id").get((req, res) => {

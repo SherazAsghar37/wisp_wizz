@@ -1,67 +1,57 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-enum MessageStatus{
+model User {
+  id          String    @id @default(uuid())
+  name        String
+  phoneNumber String    @unique @db.VarChar(16)
+  status      Boolean   @default(true)
+  lastSeen    DateTime  @default(now())
+  image       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  chats       Chat[]
+  sender      Message[] @relation("sender")
+  recipient   Message[] @relation("recipient")
+}
+
+model Chat {
+  chatId         String    @id @default(uuid())
+  recipientId    String
+  unreadMessages Int       @default(0)
+  lastMessageId  String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now())
+  recipient      User      @relation(fields: [recipientId], references: [id])
+  Messages       Message[]
+}
+
+model Message {
+  messageId      String        @id @default(uuid())
+  chatId         String
+  recipientId    String
+  senderId       String
+  message        String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now())
+  messageStatus  MessageStatus @default(Sent)
+  repliedToId    String?       @map("repliedToId")
+  chat           Chat          @relation(fields: [chatId], references: [chatId])
+  sender         User          @relation("sender", fields: [recipientId], references: [id])
+  repliedTo      Message?      @relation("Replies", fields: [repliedToId], references: [messageId])
+  repliedMessage Message[]     @relation("Replies")
+  recipient      User          @relation("recipient", fields: [senderId], references: [id])
+}
+
+enum MessageStatus {
   Sending
   Sent
   Delivered
   Seen
 }
-
-model User {
-  id                String      @id @default(uuid())
-  name              String
-  phoneNumber       String      @unique @db.VarChar(16) 
-  status            Boolean     @default(true)
-  lastSeen          DateTime    @default(now())
-  image             String?
-  chats             Chat[]      
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @default(now())
-  sender            Message[]   @relation("sender")
-  recipient         Message[]   @relation("recipient")
-  } 
-
-model Chat{
-  chatId                String      @id @default(uuid())
-  recipientId       String      
-  recipient         User?       @relation(fields: [recipientId], references: [id])
-  unreadMessages    Int         @default(0)
-  lastMessageId     String      
-  Messages          Message[]
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @default(now())
-}
-
-
-model Message {
-  messageId       String        @id @default(uuid()) 
-  chatId          String        
-  recipientId     String        
-  senderId        String        
-  chat            Chat?         @relation(fields: [chatId], references: [chatId])
-  message         String
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @default(now())
-  messageStatus   MessageStatus @default(Sent)
-  repliedTo       Message?      @relation("Replies",fields: [repliedToId], references: [messageId])
-  repliedToId     String?       @map("repliedToId")
-  repliedMessage        Message[]      @relation(name: "Replies")
-  sender        User      @relation("sender", fields: [recipientId], references: [id])
-  recipient     User      @relation("recipient",fields: [senderId], references: [id])
-}
-
-
-

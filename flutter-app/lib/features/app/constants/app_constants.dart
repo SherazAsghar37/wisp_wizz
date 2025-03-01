@@ -3,7 +3,8 @@ import 'package:wisp_wizz/features/app/helper/dimensions.dart';
 const String appName = 'Wisp Wiz';
 const String dbName = 'wispwiz';
 // const String baseUrl = "http://127.0.0.1:8000";
-const String base = "http://192.168.1.106:";
+const String base = "http://192.168.43.221:";
+// const String base = "http://192.168.1.106:";
 const String baseUrl = "${base}8000";
 const String socketIOBaseUrl = "${base}8001";
 const String defaultImageUrl = "/image/profile1";
@@ -17,7 +18,6 @@ const String getContactsUrl = "$baseUrl/user/getContacts";
 const String imageFileName = "profilePic";
 const String dCountryCode = "+92";
 const String dFlagCode = "PK";
-
 RegExp contryCodeRegex = RegExp(r'\[([^\]]*)\]');
 const int verificationCodeLength = 6;
 

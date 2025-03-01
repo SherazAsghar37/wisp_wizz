@@ -25,11 +25,9 @@ export default class UserRepository {
       if (newUser) {
         return newUser as User;
       } else {
-        console.log("here");
         throw new CustomError("Failed to create user", HttpStatusCode.CONFLICT);
       }
     } catch (error) {
-      console.log(error);
       throw new CustomError(`${error}`, HttpStatusCode.INTERNAL_SERVER_ERROR);
     }
   };

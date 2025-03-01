@@ -1,0 +1,39 @@
+services:
+  app:
+    image: node:18
+    container_name: chat_app
+    working_dir: /usr/src/app
+    volumes:
+      - ../:/usr/src/app
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:password@db:5432/chat_app"
+    depends_on:
+      - db
+    command: ["sh", "-c", "npm install && npm run dev"]
+
+  db:
+    image: postgres:15
+    container_name: chat_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat_app
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - db
+
+volumes:
+  db_data:

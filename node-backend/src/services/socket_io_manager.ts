@@ -5,7 +5,9 @@ import { singleton } from "tsyringe";
 export default class SocketIOManager {
   private _connectedUsers: Record<string, any> = {};
   private _connectedSockets: Record<string, any> = {};
+
   constructor() {}
+
   public userConnected = (userId: string, socket: Socket) => {
     const data = {
       userId: userId,

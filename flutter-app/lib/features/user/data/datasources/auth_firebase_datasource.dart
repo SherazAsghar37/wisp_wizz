@@ -62,24 +62,13 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
           }
         },
       );
-      //  completer.future.onError((error, stackTrace) {
-      //     throw const ApiException(
-      //       message: "Failed to send code, please try again later",
-      //       statusCode: StatusCode.FORBIDDEN,
-      //     );
-      //   });
-      // try {
-      //
-      // } on ApiException {
-      //   rethrow;
-      // }
 
       return completer.future;
     } on ApiException {
       DebugHelper.printError("Got api exception");
       rethrow;
     } catch (e) {
-      DebugHelper.printError("Exception: ${e.toString()}");
+      DebugHelper.printError("Code Sending Exception: ${e.toString()}");
       throw const ApiException(
         message: "Failed to send code, please try again later",
         statusCode: StatusCode.FORBIDDEN,
@@ -104,7 +93,7 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
     } on ApiException {
       rethrow;
     } catch (e) {
-      DebugHelper.printError("Exception: ${e.toString()}");
+      DebugHelper.printError("Varification Code Exception: ${e.toString()}");
       throw const ApiException(
           message: "Invalid OTP", statusCode: StatusCode.FORBIDDEN);
     }
@@ -126,7 +115,7 @@ class AuthFirebaseDatasource implements IAuthFirebaseDatasource {
     } on ApiException {
       rethrow;
     } catch (e) {
-      DebugHelper.printError("Exception: ${e.toString()}");
+      DebugHelper.printError("Firebase User Info Exception: ${e.toString()}");
       throw const ApiException(
           message: "User Not found", statusCode: StatusCode.FORBIDDEN);
     }

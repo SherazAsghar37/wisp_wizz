@@ -6,10 +6,7 @@ import { singleton } from "tsyringe";
 @singleton()
 export class ErrorHandler {
   private isTrustedError(error: Error): boolean {
-    if (error instanceof CustomError) {
-      return true;
-    }
-    return false;
+    return error instanceof CustomError;
   }
 
   private handleTrustedError(error: CustomError, response: Response): void {
@@ -27,7 +24,7 @@ export class ErrorHandler {
         .json({ message: "Internal server error" });
     }
 
-    console.log("Application encountered a critical error");
+    console.log("Application encountered a critical error".red);
     // process.exit(1);
   }
 
